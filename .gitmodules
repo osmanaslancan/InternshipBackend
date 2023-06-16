@@ -1,0 +1,4 @@
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/MelihAfsar/internship_frontend.git
+	branch = main
