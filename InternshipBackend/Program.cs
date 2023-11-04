@@ -1,8 +1,13 @@
+using InternshipBackend.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.AddDbContext<InternshipDbContext>(options =>
+            options.UseNpgsql(builder.Configuration.GetConnectionString("Supabase")));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
