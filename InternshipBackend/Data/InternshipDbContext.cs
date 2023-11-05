@@ -11,6 +11,5 @@ public class InternshipDbContext : DbContext
     public InternshipDbContext(DbContextOptions options)
         : base(options)
     {
-        
     }
 }
