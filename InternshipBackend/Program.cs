@@ -1,6 +1,7 @@
 using FluentValidation;
 using InternshipBackend.Core;
 using InternshipBackend.Data;
+using InternshipBackend.Data.Seeds;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -140,6 +141,8 @@ app.Use(async (context, next) =>
     }
 });
 
+
+await new UniversitySeeder().SeedAsync(app.Services);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

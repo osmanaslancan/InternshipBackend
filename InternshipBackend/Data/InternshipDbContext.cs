@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using InternshipBackend.Data.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using System.Text.Json;
 
@@ -9,6 +10,7 @@ public class InternshipDbContext : DbContext
     public DbSet<UserInfo> UserInfos { get; set; }
     public DbSet<UserProject> UserProjects { get; set; }
     public DbSet<University> Universities { get; set; }
+    public DbSet<DbSeed> DbSeeds { get; set; }
 
     public InternshipDbContext()
     {

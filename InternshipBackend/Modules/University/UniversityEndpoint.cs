@@ -8,8 +8,8 @@ namespace InternshipBackend.Modules;
 public class UniversityEndpoint(IUniversityService universityService) : ServiceEndpoint
 {
     [HttpGet]
-    public async Task<IEnumerable<University>> ListAsync()
+    public async Task<ServiceResponse<List<University>>> ListAsync()
     {
-        return await universityService.ListAsync();
+        return ServiceResponse.Success(await universityService.ListAsync());
     }
 }

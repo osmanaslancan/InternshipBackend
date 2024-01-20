@@ -17,10 +17,10 @@ public class UserInfoEndpoint(IUserInfoService userInfoService) : ServiceEndpoin
     }
 
     [Authorize, HttpGet]
-    public async Task<UserInfoDTO> Get()
+    public async Task<ServiceResponse<UserInfoDTO>> Get()
     {
         var info = await userInfoService.GetCurrentUserInfoAsync();
 
-        return info;
+        return ServiceResponse.Success(info);
     }
 }
