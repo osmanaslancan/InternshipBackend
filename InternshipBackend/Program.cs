@@ -142,7 +142,32 @@ app.Use(async (context, next) =>
 });
 
 
+var scope = app.Services.CreateScope();
+var context = scope.ServiceProvider.GetRequiredService<InternshipDbContext>();
+context.Database.Migrate();
+
+#region Enable Row Level Security
+
+var tableNames = context.Model.GetEntityTypes()
+    .Select(t => t.GetTableName())
+    .Distinct()
+    .ToList();
+var query = "";
+foreach (var tableName in tableNames)
+{
+    query += "alter table \"" + tableName + "\" enable row level security;\n";
+}
+
+query += "alter table" + "\"__EFMigrationsHistory\"" + " enable row level security;\n";
+
+context.Database.ExecuteSqlRaw(query);
+
+scope.Dispose();
+
+#endregion
+
 await new UniversitySeeder().SeedAsync(app.Services);
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
