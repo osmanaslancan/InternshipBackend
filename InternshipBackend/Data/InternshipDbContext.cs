@@ -26,5 +26,8 @@ public class InternshipDbContext : DbContext
         modelBuilder.Entity<UserInfo>()
             .HasIndex(x => x.SupabaseId)
             .IsUnique();
+        modelBuilder.Entity<UserInfo>()
+            .HasIndex(x => x.Email)
+            .IsUnique();
     }
 }

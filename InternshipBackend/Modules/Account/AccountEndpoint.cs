@@ -5,13 +5,13 @@ using System.Net.Mime;
 
 namespace InternshipBackend.Modules;
 
-[Route("UserInfo/[action]")]
-public class UserInfoEndpoint(IUserInfoService userInfoService) : ServiceEndpoint
+[Route("Account/[action]")]
+public class AccountEndpoint(IAccountService accountService) : ServiceEndpoint
 {
     [Authorize, HttpPost]
-    public async Task<EmptyResponse> CreateAsync(CreateUserInfoDTO userInfoDTO)
+    public async Task<EmptyResponse> RegisterAsync(CreateAccountDTO userInfoDTO)
     {
-        await userInfoService.CreateAsync(userInfoDTO);
+        await accountService.CreateAsync(userInfoDTO);
 
         return new EmptyResponse();
     }
@@ -19,7 +19,7 @@ public class UserInfoEndpoint(IUserInfoService userInfoService) : ServiceEndpoin
     [Authorize, HttpGet]
     public async Task<ServiceResponse<UserInfoDTO>> Get()
     {
-        var info = await userInfoService.GetCurrentUserInfoAsync();
+        var info = await accountService.GetCurrentUserInfoAsync();
 
         return ServiceResponse.Success(info);
     }
