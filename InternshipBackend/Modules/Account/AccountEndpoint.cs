@@ -19,8 +19,16 @@ public class AccountEndpoint(IAccountService accountService) : ServiceEndpoint
     [Authorize, HttpGet]
     public async Task<ServiceResponse<UserInfoDTO>> Get()
     {
-        var info = await accountService.GetCurrentUserInfoAsync();
+        var info = await accountService.GetCurrentUserInfoDTOAsync();
 
         return ServiceResponse.Success(info);
+    }
+
+    [Authorize, HttpPost]
+    public async Task<EmptyResponse> UpdateUserInfo(UserInfoUpdateDTO userInfo)
+    {
+        await accountService.UpdateUserInfo(userInfo);
+
+        return new EmptyResponse();
     }
 }

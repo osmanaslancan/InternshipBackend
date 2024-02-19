@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using InternshipBackend.Core;
 using InternshipBackend.Data;
 using System.Security.Claims;
@@ -8,19 +9,30 @@ namespace InternshipBackend.Modules;
 public interface IAccountService
 {
     Task CreateAsync(CreateAccountDTO userInfo);
-    Task<UserInfoDTO> GetCurrentUserInfoAsync();
+    Task<UserInfoDTO> GetCurrentUserInfoDTOAsync();
+    Task UpdateUserInfo(UserInfoUpdateDTO userInfo);
 }
 
-public class AccountService(IAccountRepository accountRepository, IHttpContextAccessor httpContextAccessor, IValidator<CreateAccountDTO> validator) : IService, IAccountService
+public class AccountService(
+    IAccountRepository accountRepository, 
+    IHttpContextAccessor httpContextAccessor, 
+    IValidator<CreateAccountDTO> createAccountDtoValidator, 
+    IValidator<UserInfoUpdateDTO> userInfoUpdateDtoValidator,
+    IMapper mapper) : IService, IAccountService
 {
     public async Task CreateAsync(CreateAccountDTO userInfoDTO)
     {
-        await validator.ValidateAndThrowAsync(userInfoDTO);
+        await createAccountDtoValidator.ValidateAndThrowAsync(userInfoDTO);
 
         var supabaseId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var tokenEmail = httpContextAccessor.HttpContext!.User.FindFirstValue("email");
 
-        if (await accountRepository.ExistsByEmail(userInfoDTO.Email))
+        if (string.IsNullOrEmpty(tokenEmail))
+        {
+            throw new ValidationException("Email not found in token");
+        }
+
+        if (await accountRepository.ExistsByEmail(tokenEmail))
         {
             throw new ValidationException("Email already exists");
         }
@@ -30,15 +42,10 @@ public class AccountService(IAccountRepository accountRepository, IHttpContextAc
             throw new ValidationException("User already exists");
         }
 
-        if (tokenEmail != userInfoDTO.Email)
-        {
-            throw new ValidationException("Name specified in token should match the given email");
-        }
-
         var userInfo = new UserInfo()
         {
             Name = userInfoDTO.Name,
-            Email = userInfoDTO.Email,
+            Email = tokenEmail,
             Surname = userInfoDTO.Surname,
             SupabaseId = supabaseId
         };
@@ -46,7 +53,7 @@ public class AccountService(IAccountRepository accountRepository, IHttpContextAc
         await accountRepository.CreateAsync(userInfo);
     }
 
-    public async Task<UserInfoDTO> GetCurrentUserInfoAsync()
+    private async Task<UserInfo> GetCurrentUserInfo()
     {
         var userId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
@@ -57,6 +64,13 @@ public class AccountService(IAccountRepository accountRepository, IHttpContextAc
             throw new ValidationException("UserInfo not found for current user");
         }
 
+        return userInfo;
+    }
+
+    public async Task<UserInfoDTO> GetCurrentUserInfoDTOAsync()
+    {
+        var userInfo = await GetCurrentUserInfo();
+
         return new UserInfoDTO()
         {
             Name = userInfo.Name,
@@ -65,5 +79,16 @@ public class AccountService(IAccountRepository accountRepository, IHttpContextAc
             Age = (int?)userInfo.Age,
             UniversityName = userInfo.University?.Name,
         };
+    }
+
+    public async Task UpdateUserInfo(UserInfoUpdateDTO newUserInfo)
+    {
+        var oldUserInfo = await GetCurrentUserInfo();
+
+        await userInfoUpdateDtoValidator.ValidateAndThrowAsync(newUserInfo);
+
+        var result = mapper.Map(newUserInfo, oldUserInfo);
+
+        await accountRepository.UpdateAsync(result);
     }
 }

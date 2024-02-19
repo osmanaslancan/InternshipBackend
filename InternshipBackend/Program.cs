@@ -2,6 +2,7 @@ using FluentValidation;
 using InternshipBackend.Core;
 using InternshipBackend.Data;
 using InternshipBackend.Data.Seeds;
+using InternshipBackend.Modules;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -78,6 +79,11 @@ builder.Services.AddCors(o =>
     });
 });
 
+builder.Services.AddAutoMapper(o => 
+{
+    o.CreateMap<UserInfoUpdateDTO, UserInfo>();
+
+}, typeof(Program));
 
 builder.Services.AddControllers(o =>
 {

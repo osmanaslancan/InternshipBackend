@@ -10,6 +10,7 @@ public interface IAccountRepository
     Task<UserInfo?> GetBySupabaseIdAsync(Guid id);
     Task<bool> ExistsByEmail(string email);
     Task<bool> ExistsBySupabaseId(Guid supabaseId);
+    Task UpdateAsync(UserInfo userInfo);
 }
 
 public class AccountRepository(InternshipDbContext context) : IRepository, IAccountRepository
@@ -17,6 +18,12 @@ public class AccountRepository(InternshipDbContext context) : IRepository, IAcco
     public async Task CreateAsync(UserInfo userInfo)
     {
         await context.UserInfos.AddAsync(userInfo);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(UserInfo userInfo)
+    {
+        context.UserInfos.Update(userInfo);
         await context.SaveChangesAsync();
     }
 
