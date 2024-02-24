@@ -81,7 +81,7 @@ builder.Services.AddCors(o =>
 
 builder.Services.AddAutoMapper(o => 
 {
-    o.CreateMap<UserInfoUpdateDTO, UserInfo>();
+    o.CreateMap<UserInfoUpdateDTO, User>();
 
 }, typeof(Program));
 

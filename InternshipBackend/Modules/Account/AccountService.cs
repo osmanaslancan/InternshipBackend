@@ -42,7 +42,7 @@ public class AccountService(
             throw new ValidationException("User already exists");
         }
 
-        var userInfo = new UserInfo()
+        var userInfo = new User()
         {
             Name = userInfoDTO.Name,
             Email = tokenEmail,
@@ -53,17 +53,19 @@ public class AccountService(
         await accountRepository.CreateAsync(userInfo);
     }
 
-    private async Task<UserInfo> GetCurrentUserInfo()
+    public async Task<bool> HasProfile()
+    {
+        var userId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var user = await accountRepository.GetBySupabaseIdAsync(userId);
+
+        return user is not null;
+    }
+
+    private async Task<User> GetCurrentUserInfo()
     {
         var userId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        var userInfo = await accountRepository.GetBySupabaseIdAsync(userId);
-
-        if (userInfo is null)
-        {
-            throw new ValidationException("UserInfo not found for current user");
-        }
-
+        var userInfo = await accountRepository.GetBySupabaseIdAsync(userId) ?? throw new ValidationException("UserInfo not found for current user");
         return userInfo;
     }
 
@@ -76,8 +78,6 @@ public class AccountService(
             Name = userInfo.Name,
             Surname = userInfo.Surname,
             Email = userInfo.Email,
-            Age = (int?)userInfo.Age,
-            UniversityName = userInfo.University?.Name,
         };
     }
 

@@ -1,5 +1,4 @@
-﻿using InternshipBackend.Data.Models;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace InternshipBackend.Data.Seeds;

@@ -6,30 +6,30 @@ namespace InternshipBackend.Modules;
 
 public interface IAccountRepository
 {
-    Task CreateAsync(UserInfo userInfo);
-    Task<UserInfo?> GetBySupabaseIdAsync(Guid id);
+    Task CreateAsync(User userInfo);
+    Task<User?> GetBySupabaseIdAsync(Guid id);
     Task<bool> ExistsByEmail(string email);
     Task<bool> ExistsBySupabaseId(Guid supabaseId);
-    Task UpdateAsync(UserInfo userInfo);
+    Task UpdateAsync(User userInfo);
 }
 
 public class AccountRepository(InternshipDbContext context) : IRepository, IAccountRepository
 {
-    public async Task CreateAsync(UserInfo userInfo)
+    public async Task CreateAsync(User userInfo)
     {
         await context.UserInfos.AddAsync(userInfo);
         await context.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(UserInfo userInfo)
+    public async Task UpdateAsync(User userInfo)
     {
         context.UserInfos.Update(userInfo);
         await context.SaveChangesAsync();
     }
 
-    public Task<UserInfo?> GetBySupabaseIdAsync(Guid id)
+    public Task<User?> GetBySupabaseIdAsync(Guid id)
     {
-        return context.UserInfos.Include(x => x.University).FirstOrDefaultAsync(x => x.SupabaseId == id);
+        return context.UserInfos.FirstOrDefaultAsync(x => x.SupabaseId == id);
     }
 
     public Task<bool> ExistsByEmail(string email)
