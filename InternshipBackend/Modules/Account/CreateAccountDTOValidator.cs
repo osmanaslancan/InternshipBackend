@@ -8,7 +8,6 @@ public class CreateAccountDTOValidator : AbstractValidator<CreateAccountDTO>
     {
         RuleFor(x => x.Name).NotEmpty();
         RuleFor(x => x.Surname).NotEmpty();
-        RuleFor(x => x.Email).NotEmpty().EmailAddress();
     }
 }
 
