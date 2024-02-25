@@ -172,7 +172,7 @@ scope.Dispose();
 
 #endregion
 
-await new UniversitySeeder().SeedAsync(app.Services);
+await new SeederManager().ExecuteAsync(app.Services);
 
 
 // Configure the HTTP request pipeline.

@@ -9,7 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Data\Seeds\Universities.json" />
+    <EmbeddedResource Include="Data\Seeds\*.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Data\Seeds\Cities.json" />
   </ItemGroup>
 
   <ItemGroup>
