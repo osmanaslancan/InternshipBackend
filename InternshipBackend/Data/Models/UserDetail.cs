@@ -1,7 +1,10 @@
-﻿namespace InternshipBackend.Data;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace InternshipBackend.Data;
 
 public class UserDetail
 {
+    [Key]
     public int UserId { get; set; }
     public required string PhoneNumber { get; set; }
     public DateTime DateOfBirth { get; set; }

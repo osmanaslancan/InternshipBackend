@@ -1,7 +1,7 @@
 ﻿using InternshipBackend.Core;
+using InternshipBackend.Modules.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net.Mime;
 
 namespace InternshipBackend.Modules;
 
@@ -30,5 +30,16 @@ public class AccountEndpoint(IAccountService accountService) : ServiceEndpoint
         await accountService.UpdateUserInfo(userInfo);
 
         return new EmptyResponse();
+    }
+
+    [Authorize, HttpPost]
+    public async Task<UserRegisteredResponse> IsUserRegistered()
+    {
+        var userInfo = await accountService.GetCurrentUserInfoOrDefault();
+
+        return new UserRegisteredResponse()
+        {
+            IsRegistered = userInfo is not null,
+        };
     }
 }

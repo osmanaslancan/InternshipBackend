@@ -11,6 +11,7 @@ public interface IAccountService
     Task CreateAsync(CreateAccountDTO userInfo);
     Task<UserInfoDTO> GetCurrentUserInfoDTOAsync();
     Task UpdateUserInfo(UserInfoUpdateDTO userInfo);
+    Task<User?> GetCurrentUserInfoOrDefault();
 }
 
 public class AccountService(
@@ -53,12 +54,12 @@ public class AccountService(
         await accountRepository.CreateAsync(userInfo);
     }
 
-    public async Task<bool> HasProfile()
+    public async Task<User?> GetCurrentUserInfoOrDefault()
     {
         var userId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var user = await accountRepository.GetBySupabaseIdAsync(userId);
 
-        return user is not null;
+        return user;
     }
 
     private async Task<User> GetCurrentUserInfo()

@@ -8,4 +8,9 @@ public class User
     public string? Name { get; set; }
     public string? Surname { get; set; }
     public string? ProfilePhotoUrl { get; set; }
+    public ICollection<ForeignLanguage> ForeignLanguages { get; set; } = [];
+    public ICollection<UniversityEducation> UniversityEducations { get; set; } = [];
+    public ICollection<WorkHistory> Works { get; set; } = [];
+    public ICollection<UserProject> UserProjects { get; set; } = [];
+    public UserDetail? Detail { get; set; }
 }

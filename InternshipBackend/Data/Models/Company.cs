@@ -9,4 +9,5 @@ public class Company
     public required string Name { get; set; }
     public int NumberOfWorkers { get; set; }
     public required string Description { get; set; }
+    public ICollection<CompanyEmployee> Employees { get; set; } = [];
 }
