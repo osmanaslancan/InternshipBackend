@@ -1,5 +1,6 @@
 using FluentValidation;
 using InternshipBackend.Core;
+using InternshipBackend.Core.Seed;
 using InternshipBackend.Data;
 using InternshipBackend.Data.Seeds;
 using InternshipBackend.Modules;

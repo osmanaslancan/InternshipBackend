@@ -10,7 +10,7 @@ public class SeederManager
             .Where(t => t.IsClass && !t.IsAbstract && typeof(ISeeder).IsAssignableFrom(t))
             .ToList();
 
-        seeders = seeders.OrderBy(x => x.GetCustomAttribute<SeederAttribute>()?.Date ?? throw new InvalidDataException("SeederAttribute in seeders is required!")).ToList();
+        seeders = [..seeders.OrderBy(x => x.GetCustomAttribute<SeederAttribute>()?.Date ?? throw new InvalidDataException("SeederAttribute in seeders is required!"))];
 
         foreach (var seeder in seeders)
         {
