@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
-namespace InternshipBackend.Data.Seeds;
+namespace InternshipBackend.Core.Seed;
 
 
 public abstract class SeederBase : ISeeder

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using InternshipBackend.Core.Seed;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace InternshipBackend.Data.Seeds;

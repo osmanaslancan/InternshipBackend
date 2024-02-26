@@ -1,4 +1,6 @@
-﻿namespace InternshipBackend.Data.Seeds;
+﻿using InternshipBackend.Core.Seed;
+
+namespace InternshipBackend.Data.Seeds;
 
 [Seeder(2024_02_25_15_00)]
 public class Seeder_2024_02_25_15_00_Country : SeederBase

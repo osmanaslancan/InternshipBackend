@@ -1,4 +1,4 @@
-﻿namespace InternshipBackend.Data.Seeds;
+﻿namespace InternshipBackend.Core.Seed;
 
 public interface ISeeder
 {

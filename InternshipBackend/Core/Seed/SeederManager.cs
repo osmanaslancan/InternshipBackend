@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace InternshipBackend.Data.Seeds;
+namespace InternshipBackend.Core.Seed;
 
 public class SeederManager
 {
