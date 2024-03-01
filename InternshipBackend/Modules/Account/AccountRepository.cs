@@ -17,28 +17,28 @@ public class AccountRepository(InternshipDbContext context) : IRepository, IAcco
 {
     public async Task CreateAsync(User userInfo)
     {
-        await context.UserInfos.AddAsync(userInfo);
+        await context.Users.AddAsync(userInfo);
         await context.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(User userInfo)
     {
-        context.UserInfos.Update(userInfo);
+        context.Users.Update(userInfo);
         await context.SaveChangesAsync();
     }
 
     public Task<User?> GetBySupabaseIdAsync(Guid id)
     {
-        return context.UserInfos.FirstOrDefaultAsync(x => x.SupabaseId == id);
+        return context.Users.FirstOrDefaultAsync(x => x.SupabaseId == id);
     }
 
     public Task<bool> ExistsByEmail(string email)
     {
-        return context.UserInfos.AnyAsync(x => x.Email == email);
+        return context.Users.AnyAsync(x => x.Email == email);
     }
 
     public Task<bool> ExistsBySupabaseId(Guid supabaseId)
     {
-        return context.UserInfos.AnyAsync(x => x.SupabaseId == supabaseId);
+        return context.Users.AnyAsync(x => x.SupabaseId == supabaseId);
     }
 }

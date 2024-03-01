@@ -1,40 +1,42 @@
 ﻿using InternshipBackend.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternshipBackend.Core.Data;
 
-public abstract class GenericRepository<T>(InternshipDbContext dbContext) : BaseRepository
+public abstract class GenericRepository<T>(InternshipDbContext dbContext) : 
+    BaseRepository, IGenericRepository<T>, IRepository
     where T : class
 {
-    protected readonly InternshipDbContext dbContext = dbContext;
+    protected InternshipDbContext DbContext => dbContext;
 
     public virtual async Task CreateAsync(T record)
     {
-        await dbContext.AddAsync(record);
+        await DbContext.AddAsync(record);
     }
 
-    public virtual Task Update(T record)
+    public virtual Task UpdateAsync(T record)
     {
-        dbContext.Update(record);
+        DbContext.Update(record);
 
         return Task.CompletedTask;
     }
 
-    public virtual Task Delete(T record)
+    public virtual Task DeleteAsync(T record)
     {
-        dbContext.Remove(record);
+        DbContext.Remove(record);
 
         return Task.CompletedTask;
     }
 
-    public virtual async Task<T?> GetByIdOrDefaultAsync(int id)
+    public virtual async Task<T?> GetByIdOrDefaultAsync(object id)
     {
-        var result = await dbContext.FindAsync<T>(id);
+        var result = await DbContext.FindAsync<T>(id);
 
         return result;
     }
 
     public virtual Task SaveChangesAsync()
     {
-        return dbContext.SaveChangesAsync();
+        return DbContext.SaveChangesAsync();
     }
 }

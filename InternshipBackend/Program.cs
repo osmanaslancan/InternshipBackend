@@ -83,7 +83,7 @@ builder.Services.AddCors(o =>
 builder.Services.AddAutoMapper(o => 
 {
     o.CreateMap<UserInfoUpdateDTO, User>();
-
+   
 }, typeof(Program));
 
 builder.Services.AddControllers(o =>
@@ -131,7 +131,6 @@ app.Use(async (context, next) =>
 {
     try
     {
-        var test = app;
         await next();
     }
     catch (Exception ex)

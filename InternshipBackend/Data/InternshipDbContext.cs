@@ -4,7 +4,7 @@ namespace InternshipBackend.Data;
 
 public class InternshipDbContext : DbContext
 {
-    public DbSet<User> UserInfos { get; set; }
+    public DbSet<User> Users { get; set; }
     public DbSet<UserProject> UserProjects { get; set; }
     public DbSet<University> Universities { get; set; }
     public DbSet<DbSeed> DbSeeds { get; set; }
