@@ -1,18 +1,22 @@
-﻿namespace InternshipBackend.Modules;
+﻿using AutoMapper;
+using FluentValidation;
+using InternshipBackend.Data;
 
-public class UserInfoDTO
+namespace InternshipBackend.Modules;
+
+[AutoMap(typeof(User))]
+public class UserInfoUpdateDTO
 {
     public string? Name { get; set; }
     public string? Surname { get; set; }
-    public required string Email { get; set; }
-    public int? Age { get; set; }
-    public string? UniversityName { get; set; }
+    public string? ProfilePhotoUrl { get; set; }
 }
 
-public class UserInfoUpdateDTO
+public class UserInfoUpdateDTOValidator : AbstractValidator<UserInfoUpdateDTO>
 {
-    public required string Name { get; set; }
-    public required string Surname { get; set; }
-    public int? Age { get; set; }
-    public string? UniversityName { get; set; }
+    public UserInfoUpdateDTOValidator()
+    {
+        RuleFor(x => x.Name).NotEmpty();
+        RuleFor(x => x.Surname).NotEmpty();
+    }
 }

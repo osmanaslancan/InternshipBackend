@@ -8,23 +8,18 @@ namespace InternshipBackend.Modules;
 
 public interface IAccountService
 {
-    Task CreateAsync(CreateAccountDTO userInfo);
-    Task<UserInfoDTO> GetCurrentUserInfoDTOAsync();
     Task UpdateUserInfo(UserInfoUpdateDTO userInfo);
     Task<User?> GetCurrentUserInfoOrDefault();
 }
 
 public class AccountService(
-    IAccountRepository accountRepository, 
-    IHttpContextAccessor httpContextAccessor, 
-    IValidator<CreateAccountDTO> createAccountDtoValidator, 
+    IAccountRepository accountRepository,
+    IHttpContextAccessor httpContextAccessor,
     IValidator<UserInfoUpdateDTO> userInfoUpdateDtoValidator,
     IMapper mapper) : IService, IAccountService
 {
-    public async Task CreateAsync(CreateAccountDTO userInfoDTO)
+    public async Task CreateAsync(UserInfoUpdateDTO userInfoDTO)
     {
-        await createAccountDtoValidator.ValidateAndThrowAsync(userInfoDTO);
-
         var supabaseId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var tokenEmail = httpContextAccessor.HttpContext!.User.FindFirstValue("email");
 
@@ -62,34 +57,25 @@ public class AccountService(
         return user;
     }
 
-    private async Task<User> GetCurrentUserInfo()
-    {
-        var userId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    //private async Task<User> GetCurrentUserInfo()
+    //{
+    //    var userId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        var userInfo = await accountRepository.GetBySupabaseIdAsync(userId) ?? throw new ValidationException("UserInfo not found for current user");
-        return userInfo;
-    }
-
-    public async Task<UserInfoDTO> GetCurrentUserInfoDTOAsync()
-    {
-        var userInfo = await GetCurrentUserInfo();
-
-        return new UserInfoDTO()
-        {
-            Name = userInfo.Name,
-            Surname = userInfo.Surname,
-            Email = userInfo.Email,
-        };
-    }
+    //    var userInfo = await accountRepository.GetBySupabaseIdAsync(userId) ?? throw new ValidationException("UserInfo not found for current user");
+    //    return userInfo;
+    //}
 
     public async Task UpdateUserInfo(UserInfoUpdateDTO newUserInfo)
     {
-        var oldUserInfo = await GetCurrentUserInfo();
+        var oldUserInfo = await GetCurrentUserInfoOrDefault();
 
-        await userInfoUpdateDtoValidator.ValidateAndThrowAsync(newUserInfo);
+        if (oldUserInfo is null)
+        {
+            await userInfoUpdateDtoValidator.ValidateAndThrowAsync(newUserInfo);
+            var result = mapper.Map(newUserInfo, oldUserInfo)!;
+            await accountRepository.UpdateAsync(result);
+        }
 
-        var result = mapper.Map(newUserInfo, oldUserInfo);
-
-        await accountRepository.UpdateAsync(result);
+        await CreateAsync(newUserInfo);
     }
 }
