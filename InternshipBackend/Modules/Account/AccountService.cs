@@ -21,7 +21,7 @@ public class AccountService(
     public async Task CreateAsync(UserInfoUpdateDTO userInfoDTO)
     {
         var supabaseId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var tokenEmail = httpContextAccessor.HttpContext!.User.FindFirstValue("email");
+        var tokenEmail = httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.Email);
 
         if (string.IsNullOrEmpty(tokenEmail))
         {
@@ -69,7 +69,7 @@ public class AccountService(
     {
         var oldUserInfo = await GetCurrentUserInfoOrDefault();
 
-        if (oldUserInfo is null)
+        if (oldUserInfo is not null)
         {
             await userInfoUpdateDtoValidator.ValidateAndThrowAsync(newUserInfo);
             var result = mapper.Map(newUserInfo, oldUserInfo)!;

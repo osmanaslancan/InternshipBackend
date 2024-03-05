@@ -55,7 +55,6 @@ public abstract class GenericService<TCreate, TUpdate, TDelete, TData>
         var record = MapCreate(data);
         await BeforeCreate(record);
         await _repository.CreateAsync(record);
-        await _repository.SaveChangesAsync();
     }
 
     public virtual async Task UpdateAsync(TUpdate data)
@@ -64,7 +63,6 @@ public abstract class GenericService<TCreate, TUpdate, TDelete, TData>
         var record = MapUpdate(data);
         await BeforeUpdate(record);
         await _repository.UpdateAsync(record);
-        await _repository.SaveChangesAsync();
     }
 
     public virtual async Task DeleteAsync(TDelete data)
@@ -73,6 +71,5 @@ public abstract class GenericService<TCreate, TUpdate, TDelete, TData>
         var record = MapDelete(data);
         await BeforeDelete(record);
         await _repository.DeleteAsync(record);
-        await _repository.SaveChangesAsync();
     }
 }

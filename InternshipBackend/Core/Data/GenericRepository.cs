@@ -9,23 +9,33 @@ public abstract class GenericRepository<T>(InternshipDbContext dbContext) :
 {
     protected InternshipDbContext DbContext => dbContext;
 
-    public virtual async Task CreateAsync(T record)
+    public virtual async Task CreateAsync(T record, bool save = true)
     {
         await DbContext.AddAsync(record);
+        if (save)
+        {
+            await DbContext.SaveChangesAsync();
+        }
     }
 
-    public virtual Task UpdateAsync(T record)
+    public virtual async Task UpdateAsync(T record, bool save = true)
     {
         DbContext.Update(record);
 
-        return Task.CompletedTask;
+        if (save)
+        {
+            await DbContext.SaveChangesAsync();
+        }
     }
 
-    public virtual Task DeleteAsync(T record)
+    public virtual async Task DeleteAsync(T record, bool save = true)
     {
         DbContext.Remove(record);
 
-        return Task.CompletedTask;
+        if (save)
+        {
+            await DbContext.SaveChangesAsync();
+        }
     }
 
     public virtual async Task<T?> GetByIdOrDefaultAsync(object id)
