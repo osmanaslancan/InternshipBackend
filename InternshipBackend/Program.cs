@@ -6,10 +6,12 @@ using InternshipBackend.Data.Seeds;
 using InternshipBackend.Modules;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
@@ -130,6 +132,32 @@ builder.Services.AddHttpClient("Supabase", o =>
     o.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", builder.Configuration["SupabaseAdminKey"]);
 });
 
+builder.Services.AddRequestLocalization(o =>
+{
+    o.DefaultRequestCulture = new RequestCulture("tr-TR");
+    o.SupportedCultures =
+    [
+        new CultureInfo("en-US"),
+        new CultureInfo("tr-TR"),
+    ];
+    o.SupportedUICultures =
+    [
+        new CultureInfo("en-US"),
+        new CultureInfo("tr-TR"),
+    ];
+    o.RequestCultureProviders =
+    [
+        new QueryStringRequestCultureProvider(),
+        new CookieRequestCultureProvider() 
+        {
+            CookieName = "culture"
+        },
+        new AcceptLanguageHeaderRequestCultureProvider()
+    ];
+});
+
+builder.Services.AddLocalization();
+
 var app = builder.Build();
 
 app.Use(async (context, next) =>
@@ -190,7 +218,7 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
-
+app.UseRequestLocalization();
 app.UseCors();
 
 

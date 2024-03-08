@@ -7,7 +7,6 @@ using SixLabors.ImageSharp.Processing;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
-
 namespace InternshipBackend.Modules;
 
 public interface IAccountService
@@ -32,17 +31,17 @@ public class AccountService(
 
         if (string.IsNullOrEmpty(tokenEmail))
         {
-            throw new ValidationException("Email not found in token");
+            throw new ValidationException(ErrorCodes.EmailNotFound);
         }
 
         if (await accountRepository.ExistsByEmail(tokenEmail))
         {
-            throw new ValidationException("Email already exists");
+            throw new ValidationException(ErrorCodes.EmailExists);
         }
 
         if (await accountRepository.ExistsBySupabaseId(supabaseId))
         {
-            throw new ValidationException("User already exists");
+            throw new ValidationException(ErrorCodes.UserAlreadyExists);
         }
 
         var userInfo = new User()
@@ -88,7 +87,7 @@ public class AccountService(
 
     public async Task UpdateProfileImage(UpdateProfileImageRequest request)
     {
-        var user = await GetCurrentUserInfoOrDefault() ?? throw new ValidationException("User not found");
+        var user = await GetCurrentUserInfoOrDefault() ?? throw new ValidationException(ErrorCodes.UserNotFound);
 
         using var image = SixLabors.ImageSharp.Image.Load(request.Image.OpenReadStream());
         image.Mutate(x => x.Resize(256, 256));
