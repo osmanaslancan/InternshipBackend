@@ -10,7 +10,7 @@ public class UserDetailEndpoint(IUserDetailService userDetailService)
     : BaseEndpoint
 {
     [HttpPost]
-    public async Task<ServiceResponse> UpdateAsync(UserDetailDTO userDetailDTO)
+    public async Task<ServiceResponse> UpdateAsync([FromBody] UserDetailDTO userDetailDTO)
     {
         await userDetailService.UpdateAsync(userDetailDTO);
         return new EmptyResponse();

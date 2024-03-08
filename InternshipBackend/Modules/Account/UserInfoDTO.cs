@@ -9,7 +9,6 @@ public class UserInfoUpdateDTO
 {
     public string? Name { get; set; }
     public string? Surname { get; set; }
-    public string? ProfilePhotoUrl { get; set; }
     public string? PhoneNumber { get; set; }
 }
 

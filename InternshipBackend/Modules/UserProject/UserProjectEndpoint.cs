@@ -10,21 +10,21 @@ public class UserProjectEndpoint(IUserProjectService userProjectService)
     : BaseEndpoint
 {
     [HttpPost]
-    public async Task<ServiceResponse> CreateAsync(UserProjectDTO userProjectDTO)
+    public async Task<ServiceResponse> CreateAsync([FromBody] UserProjectDTO userProjectDTO)
     {
         await userProjectService.CreateAsync(userProjectDTO);
         return new EmptyResponse();
     }
 
     [HttpPost]
-    public async Task<ServiceResponse> UpdateAsync(UserProjectDTO userProjectDTO)
+    public async Task<ServiceResponse> UpdateAsync([FromBody] UserProjectDTO userProjectDTO)
     {
         await userProjectService.UpdateAsync(userProjectDTO);
         return new EmptyResponse();
     }
 
     [HttpPost]
-    public async Task<ServiceResponse> DeleteAsync(DeleteRequest deleteRequest)
+    public async Task<ServiceResponse> DeleteAsync([FromBody] DeleteRequest deleteRequest)
     {
         await userProjectService.DeleteAsync(deleteRequest);
         return new EmptyResponse();

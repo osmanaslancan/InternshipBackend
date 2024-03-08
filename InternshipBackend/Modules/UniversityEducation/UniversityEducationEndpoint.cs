@@ -10,21 +10,21 @@ public class UniversityEducationEndpoint(IUniversityEducationService userDetailS
     : BaseEndpoint
 {
     [HttpPost]
-    public async Task<ServiceResponse> CreateAsync(UniversityEducationDTO UniversityEducationDTO)
+    public async Task<ServiceResponse> CreateAsync([FromBody] UniversityEducationDTO universityEducationDTO)
     {
-        await userDetailService.CreateAsync(UniversityEducationDTO);
+        await userDetailService.CreateAsync(universityEducationDTO);
         return new EmptyResponse();
     }
 
     [HttpPost]
-    public async Task<ServiceResponse> UpdateAsync(UniversityEducationDTO UniversityEducationDTO)
+    public async Task<ServiceResponse> UpdateAsync([FromBody] UniversityEducationDTO universityEducationDTO)
     {
-        await userDetailService.UpdateAsync(UniversityEducationDTO);
+        await userDetailService.UpdateAsync(universityEducationDTO);
         return new EmptyResponse();
     }
 
     [HttpPost]
-    public async Task<ServiceResponse> DeleteAsync(DeleteRequest deleteRequest)
+    public async Task<ServiceResponse> DeleteAsync([FromBody] DeleteRequest deleteRequest)
     {
         await userDetailService.DeleteAsync(deleteRequest);
         return new EmptyResponse();

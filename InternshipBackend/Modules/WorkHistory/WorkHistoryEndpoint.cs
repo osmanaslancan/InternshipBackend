@@ -10,21 +10,21 @@ public class WorkHistoryEndpoint(IWorkHistoryService workHistoryService)
     : BaseEndpoint
 {
     [HttpPost]
-    public async Task<ServiceResponse> CreateAsync(WorkHistoryDTO workHistoryDTO)
+    public async Task<ServiceResponse> CreateAsync([FromBody] WorkHistoryDTO workHistoryDTO)
     {
         await workHistoryService.CreateAsync(workHistoryDTO);
         return new EmptyResponse();
     }
 
     [HttpPost]
-    public async Task<ServiceResponse> UpdateAsync(WorkHistoryDTO workHistoryDTO)
+    public async Task<ServiceResponse> UpdateAsync([FromBody] WorkHistoryDTO workHistoryDTO)
     {
         await workHistoryService.UpdateAsync(workHistoryDTO);
         return new EmptyResponse();
     }
 
     [HttpPost]
-    public async Task<ServiceResponse> DeleteAsync(DeleteRequest deleteRequest)
+    public async Task<ServiceResponse> DeleteAsync([FromBody] DeleteRequest deleteRequest)
     {
         await workHistoryService.DeleteAsync(deleteRequest);
         return new EmptyResponse();

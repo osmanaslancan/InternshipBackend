@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using InternshipBackend.Data.Supabase;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternshipBackend.Data;
 
@@ -16,6 +17,8 @@ public class InternshipDbContext : DbContext
     public DbSet<CompanyEmployee> CompanyEmployees { get; set; }
     public DbSet<Country> Countries { get; set; }
     public DbSet<City> Cities { get; set; }
+
+    public DbSet<StorageObject> SupabaseStorageObjects { get; set; }
 
     public InternshipDbContext()
     {
@@ -40,5 +43,7 @@ public class InternshipDbContext : DbContext
 
         modelBuilder.Entity<ForeignLanguage>()
             .HasKey(x => new { x.UserId, x.LanguageCode });
+
+        modelBuilder.Entity<StorageObject>().ToTable("storage.objects", (t) => t.ExcludeFromMigrations());
     }
 }

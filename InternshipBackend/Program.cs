@@ -125,6 +125,11 @@ builder.Services.AddSwaggerGen(o =>
 });
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddHttpClient("Supabase", o =>
+{
+    o.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", builder.Configuration["SupabaseAdminKey"]);
+});
+
 var app = builder.Build();
 
 app.Use(async (context, next) =>
@@ -156,6 +161,7 @@ context.Database.Migrate();
 
 var tableNames = context.Model.GetEntityTypes()
     .Select(t => t.GetTableName())
+    .Where(t => !t!.StartsWith("storage."))
     .Distinct()
     .ToList();
 var query = "";

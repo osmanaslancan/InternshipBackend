@@ -2,6 +2,10 @@
 using FluentValidation;
 using InternshipBackend.Core;
 using InternshipBackend.Data;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
+using System.Net.Http.Headers;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 
 namespace InternshipBackend.Modules;
@@ -10,12 +14,15 @@ public interface IAccountService
 {
     Task UpdateUserInfo(UserInfoUpdateDTO userInfo);
     Task<User?> GetCurrentUserInfoOrDefault();
+    Task UpdateProfileImage(UpdateProfileImageRequest request);
 }
 
 public class AccountService(
     IAccountRepository accountRepository,
     IHttpContextAccessor httpContextAccessor,
     IValidator<UserInfoUpdateDTO> userInfoUpdateDtoValidator,
+    IHttpClientFactory clientFactory,
+    IConfiguration configuration,
     IMapper mapper) : IService, IAccountService
 {
     public async Task CreateAsync(UserInfoUpdateDTO userInfoDTO)
@@ -77,5 +84,36 @@ public class AccountService(
         }
 
         await CreateAsync(newUserInfo);
+    }
+
+    public async Task UpdateProfileImage(UpdateProfileImageRequest request)
+    {
+        var user = await GetCurrentUserInfoOrDefault() ?? throw new ValidationException("User not found");
+
+        using var image = SixLabors.ImageSharp.Image.Load(request.Image.OpenReadStream());
+        image.Mutate(x => x.Resize(256, 256));
+        using var resultStream = new MemoryStream();
+        image.Save(resultStream, new PngEncoder());
+        
+        var content = new MultipartFormDataContent();
+        var streamContent = new ByteArrayContent(resultStream.ToArray());
+        streamContent.Headers.ContentType = new MediaTypeHeaderValue(request.Image.ContentType);
+        streamContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+        {
+            Name = request.Image.Name,
+            FileName = request.Image.FileName,
+        };
+        content.Add(streamContent);
+        content.Headers.Add("X-Upsert", "true");
+        using var client = clientFactory.CreateClient("Supabase");
+        var response = await client.PostAsync($"{configuration["SupabaseStorageBaseUrl"]}/PublicProfilePhoto/{user.SupabaseId}/ProfilePhoto", content);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new Exception("Failed to upload image");
+        }
+
+        user.ProfilePhotoUrl = $"{configuration["SupabaseStorageBaseUrl"]}/public/PublicProfilePhoto/{user.SupabaseId}/ProfilePhoto";
+        await accountRepository.UpdateAsync(user);
     }
 }

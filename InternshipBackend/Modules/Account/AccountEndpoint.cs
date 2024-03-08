@@ -3,6 +3,9 @@ using InternshipBackend.Core.Services;
 using InternshipBackend.Modules.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
+using System.Net.Http.Headers;
 
 namespace InternshipBackend.Modules;
 
@@ -10,7 +13,7 @@ namespace InternshipBackend.Modules;
 public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
 {
     [Authorize, HttpPost]
-    public async Task<ServiceResponse> UpdateUserInfo(UserInfoUpdateDTO userInfo)
+    public async Task<ServiceResponse> UpdateUserInfo([FromBody] UserInfoUpdateDTO userInfo)
     {
         await accountService.UpdateUserInfo(userInfo);
 
@@ -26,5 +29,12 @@ public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
         {
             IsRegistered = userInfo is not null,
         };
+    }
+    [Authorize, HttpPost]
+    public async Task<ServiceResponse> UpdateProfileImage([FromForm] UpdateProfileImageRequest request)
+    {
+        await accountService.UpdateProfileImage(request);
+
+        return new EmptyResponse();
     }
 }

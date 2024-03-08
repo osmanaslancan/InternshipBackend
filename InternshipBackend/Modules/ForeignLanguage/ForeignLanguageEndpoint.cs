@@ -10,21 +10,21 @@ public class ForeignLanguageEndpoint(IForeignLanguageService foreignLanguageServ
     : BaseEndpoint
 {
     [HttpPost]
-    public async Task<ServiceResponse> CreateAsync(ForeignLanguageDTO foreignLanguageDTO)
+    public async Task<ServiceResponse> CreateAsync([FromBody] ForeignLanguageDTO foreignLanguageDTO)
     {
         await foreignLanguageService.CreateAsync(foreignLanguageDTO);
         return new EmptyResponse();
     }
 
     [HttpPost]
-    public async Task<ServiceResponse> UpdateAsync(ForeignLanguageDTO foreignLanguageDTO)
+    public async Task<ServiceResponse> UpdateAsync([FromBody] ForeignLanguageDTO foreignLanguageDTO)
     {
         await foreignLanguageService.UpdateAsync(foreignLanguageDTO);
         return new EmptyResponse();
     }
 
     [HttpPost]
-    public async Task<ServiceResponse> DeleteAsync(DeleteRequest deleteRequest)
+    public async Task<ServiceResponse> DeleteAsync([FromBody] DeleteRequest deleteRequest)
     {
         await foreignLanguageService.DeleteAsync(deleteRequest);
         return new EmptyResponse();
