@@ -20,6 +20,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("appsettings.machine.json", true);
 
+builder.Configuration.AddEnvironmentVariables();
+
 builder.Services.AddDbContext<InternshipDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("Supabase")));
 
@@ -145,6 +147,7 @@ builder.Services.AddRequestLocalization(o =>
         new CultureInfo("en-US"),
         new CultureInfo("tr-TR"),
     ];
+    
     o.RequestCultureProviders =
     [
         new QueryStringRequestCultureProvider(),
@@ -214,10 +217,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHttpsRedirection();
 }
 
-
-app.UseHttpsRedirection();
 app.UseRequestLocalization();
 app.UseCors();
 
