@@ -4,13 +4,13 @@ using InternshipBackend.Core.Data;
 
 namespace InternshipBackend.Core.Services;
 
-public abstract class GenericService<TCreate, TUpdate, TDelete, TData>
-    (IServiceProvider serviceProvider) 
+public abstract class GenericService<TCreate, TUpdate, TDelete, TData>(IServiceProvider serviceProvider) 
     : BaseService, IGenericService<TCreate, TUpdate, TDelete, TData>, IService
-    where TData : class
+    where TData : class, IHasIdField
 {
     protected readonly IGenericRepository<TData> _repository = serviceProvider.GetRequiredService<IGenericRepository<TData>>();
     protected readonly IMapper mapper = serviceProvider.GetRequiredService<IMapper>();
+    protected readonly IUserRetriverService userRetriver = serviceProvider.GetRequiredService<IUserRetriverService>();
 
     protected virtual void ValidateCreate(TCreate data)
     {
@@ -22,11 +22,49 @@ public abstract class GenericService<TCreate, TUpdate, TDelete, TData>
         return mapper.Map<TData>(data);
     }
 
-    protected virtual Task BeforeCreate(TData data) { return Task.CompletedTask; }
+    protected virtual Task BeforeCreate(TData data) 
+    {
+        // Clear assignment of Id
+        data.Id = 0;
 
-    protected virtual Task BeforeUpdate(TData data) { return Task.CompletedTask; }
+        if (data is IHasUserIdField userField)
+        {
+            var user = userRetriver.GetCurrentUser();
+            userField.UserId = user.Id;
+        }
+
+        return Task.CompletedTask;
+    }
+
+    protected virtual Task BeforeUpdate(TData data, TData old) 
+    {
+        if (data is IHasUserIdField userField)
+        {
+            var oldUserField = (IHasUserIdField)old;
+            var user = userRetriver.GetCurrentUser();
+
+            if (oldUserField.UserId != userField.UserId || oldUserField.UserId != user.Id)
+            {
+                throw new Exception("You can't update other user's data");
+            }
+        }
+
+        return Task.CompletedTask;
+    }
     
-    protected virtual Task BeforeDelete(TData data) { return Task.CompletedTask; }
+    protected virtual Task BeforeDelete(TData data) 
+    {
+        if (data is IHasUserIdField userField)
+        {
+            var user = userRetriver.GetCurrentUser();
+
+            if (userField.UserId != user.Id)
+            {
+                throw new Exception("You can't delete other user's data");
+            }
+        }
+        return Task.CompletedTask;
+    }
 
     protected virtual void ValidateUpdate(TUpdate data)
     {
@@ -43,8 +81,19 @@ public abstract class GenericService<TCreate, TUpdate, TDelete, TData>
         serviceProvider.GetService<IValidator<TDelete>>()?.ValidateAndThrow(data);
     }
 
+    protected virtual async Task<TData> FindOld(TData data)
+    {
+        return await _repository.GetByIdOrDefaultAsync(data.Id) ?? throw new Exception("Record not found");
+    }
+
     protected virtual TData MapDelete(TDelete data)
     {
+        if (data is DeleteRequest deleteRequest)
+        {
+            var result = Activator.CreateInstance<TData>();
+            result.Id = (int)deleteRequest.Id;
+            return result;
+        }
         return mapper.Map<TData>(data);
     }
 
@@ -61,7 +110,8 @@ public abstract class GenericService<TCreate, TUpdate, TDelete, TData>
     {
         ValidateUpdate(data);
         var record = MapUpdate(data);
-        await BeforeUpdate(record);
+        var old = await FindOld(record);
+        await BeforeUpdate(record, old);
         await _repository.UpdateAsync(record);
     }
 

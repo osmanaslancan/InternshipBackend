@@ -1,7 +1,9 @@
-﻿namespace InternshipBackend.Data;
+﻿using InternshipBackend.Core;
 
-public class University
+namespace InternshipBackend.Data;
+
+public class University : IHasIdField
 {
-    public int UniversityId { get; set; }
+    public int Id { get; set; }
     public required string Name { get; set; }
 }

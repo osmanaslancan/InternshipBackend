@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InternshipBackend.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class SquashedInitial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,15 +16,16 @@ namespace InternshipBackend.Migrations
                 name: "Countries",
                 columns: table => new
                 {
-                    CountryId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Code = table.Column<string>(type: "text", nullable: true),
+                    Code3 = table.Column<string>(type: "text", nullable: true),
                     PhoneCode = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Countries", x => x.CountryId);
+                    table.PrimaryKey("PK_Countries", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -43,59 +44,97 @@ namespace InternshipBackend.Migrations
                 name: "Universities",
                 columns: table => new
                 {
-                    UniversityId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Universities", x => x.UniversityId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserInfos",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    SupabaseId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Email = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Surname = table.Column<string>(type: "text", nullable: true),
-                    ProfilePhotoUrl = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserInfos", x => x.UserId);
+                    table.PrimaryKey("PK_Universities", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Cities",
                 columns: table => new
                 {
-                    CityId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CountryId = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cities", x => x.CityId);
+                    table.PrimaryKey("PK_Cities", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Cities_Countries_CountryId",
                         column: x => x.CountryId,
                         principalTable: "Countries",
-                        principalColumn: "CountryId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserDetails",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Gender = table.Column<int>(type: "integer", nullable: false),
+                    DriverLicences = table.Column<string[]>(type: "text[]", nullable: false),
+                    MaritalStatus = table.Column<int>(type: "integer", nullable: false),
+                    MilitaryStatus = table.Column<int>(type: "integer", nullable: false),
+                    CountryId = table.Column<int>(type: "integer", nullable: true),
+                    CityId = table.Column<int>(type: "integer", nullable: true),
+                    District = table.Column<string>(type: "text", nullable: true),
+                    Address = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserDetails", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserDetails_Cities_CityId",
+                        column: x => x.CityId,
+                        principalTable: "Cities",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserDetails_Countries_CountryId",
+                        column: x => x.CountryId,
+                        principalTable: "Countries",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SupabaseId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Surname = table.Column<string>(type: "text", nullable: true),
+                    ProfilePhotoUrl = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    DetailId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Users_UserDetails_DetailId",
+                        column: x => x.DetailId,
+                        principalTable: "UserDetails",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Companies",
                 columns: table => new
                 {
-                    CompanyId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    AdminUserUserId = table.Column<int>(type: "integer", nullable: true),
+                    AdminUserId = table.Column<int>(type: "integer", nullable: true),
                     IsVertified = table.Column<bool>(type: "boolean", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     NumberOfWorkers = table.Column<int>(type: "integer", nullable: false),
@@ -103,12 +142,12 @@ namespace InternshipBackend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Companies", x => x.CompanyId);
+                    table.PrimaryKey("PK_Companies", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Companies_UserInfos_AdminUserUserId",
-                        column: x => x.AdminUserUserId,
-                        principalTable: "UserInfos",
-                        principalColumn: "UserId");
+                        name: "FK_Companies_Users_AdminUserId",
+                        column: x => x.AdminUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -117,16 +156,17 @@ namespace InternshipBackend.Migrations
                 {
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     LanguageCode = table.Column<string>(type: "text", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false),
                     Degree = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ForeignLanguages", x => new { x.UserId, x.LanguageCode });
                     table.ForeignKey(
-                        name: "FK_ForeignLanguages_UserInfos_UserId",
+                        name: "FK_ForeignLanguages_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "UserInfos",
-                        principalColumn: "UserId",
+                        principalTable: "Users",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -134,7 +174,7 @@ namespace InternshipBackend.Migrations
                 name: "UniversityEducations",
                 columns: table => new
                 {
-                    UniversityEducationId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     UniversityId = table.Column<int>(type: "integer", nullable: true),
@@ -149,12 +189,12 @@ namespace InternshipBackend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UniversityEducations", x => x.UniversityEducationId);
+                    table.PrimaryKey("PK_UniversityEducations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UniversityEducations_UserInfos_UserId",
+                        name: "FK_UniversityEducations_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "UserInfos",
-                        principalColumn: "UserId",
+                        principalTable: "Users",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -162,7 +202,7 @@ namespace InternshipBackend.Migrations
                 name: "UserProjects",
                 columns: table => new
                 {
-                    UserProjectId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     ProjectName = table.Column<string>(type: "text", nullable: false),
@@ -172,12 +212,12 @@ namespace InternshipBackend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserProjects", x => x.UserProjectId);
+                    table.PrimaryKey("PK_UserProjects", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserProjects_UserInfos_UserId",
+                        name: "FK_UserProjects_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "UserInfos",
-                        principalColumn: "UserId",
+                        principalTable: "Users",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -185,7 +225,7 @@ namespace InternshipBackend.Migrations
                 name: "WorkHistories",
                 columns: table => new
                 {
-                    WorkHistoryId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<int>(type: "integer", nullable: false),
                     Position = table.Column<string>(type: "text", nullable: false),
@@ -200,49 +240,12 @@ namespace InternshipBackend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkHistories", x => x.WorkHistoryId);
+                    table.PrimaryKey("PK_WorkHistories", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WorkHistories_UserInfos_UserId",
+                        name: "FK_WorkHistories_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "UserInfos",
-                        principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "UserDetails",
-                columns: table => new
-                {
-                    UserId = table.Column<int>(type: "integer", nullable: false),
-                    PhoneNumber = table.Column<string>(type: "text", nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Gender = table.Column<int>(type: "integer", nullable: false),
-                    DriverLicences = table.Column<string[]>(type: "text[]", nullable: false),
-                    MaritalStatus = table.Column<int>(type: "integer", nullable: false),
-                    MilitaryStatus = table.Column<int>(type: "integer", nullable: false),
-                    CountryId = table.Column<int>(type: "integer", nullable: true),
-                    CityId = table.Column<int>(type: "integer", nullable: true),
-                    District = table.Column<string>(type: "text", nullable: true),
-                    Address = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UserDetails", x => x.UserId);
-                    table.ForeignKey(
-                        name: "FK_UserDetails_Cities_CityId",
-                        column: x => x.CityId,
-                        principalTable: "Cities",
-                        principalColumn: "CityId");
-                    table.ForeignKey(
-                        name: "FK_UserDetails_Countries_CountryId",
-                        column: x => x.CountryId,
-                        principalTable: "Countries",
-                        principalColumn: "CountryId");
-                    table.ForeignKey(
-                        name: "FK_UserDetails_UserInfos_UserId",
-                        column: x => x.UserId,
-                        principalTable: "UserInfos",
-                        principalColumn: "UserId",
+                        principalTable: "Users",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -251,7 +254,8 @@ namespace InternshipBackend.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "integer", nullable: false),
-                    CompanyId = table.Column<int>(type: "integer", nullable: false)
+                    CompanyId = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -260,13 +264,13 @@ namespace InternshipBackend.Migrations
                         name: "FK_CompanyEmployees_Companies_CompanyId",
                         column: x => x.CompanyId,
                         principalTable: "Companies",
-                        principalColumn: "CompanyId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_CompanyEmployees_UserInfos_UserId",
+                        name: "FK_CompanyEmployees_Users_UserId",
                         column: x => x.UserId,
-                        principalTable: "UserInfos",
-                        principalColumn: "UserId",
+                        principalTable: "Users",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -276,9 +280,9 @@ namespace InternshipBackend.Migrations
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Companies_AdminUserUserId",
+                name: "IX_Companies_AdminUserId",
                 table: "Companies",
-                column: "AdminUserUserId");
+                column: "AdminUserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CompanyEmployees_CompanyId",
@@ -301,21 +305,26 @@ namespace InternshipBackend.Migrations
                 column: "CountryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserInfos_Email",
-                table: "UserInfos",
+                name: "IX_UserProjects_UserId",
+                table: "UserProjects",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_DetailId",
+                table: "Users",
+                column: "DetailId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
                 column: "Email",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserInfos_SupabaseId",
-                table: "UserInfos",
+                name: "IX_Users_SupabaseId",
+                table: "Users",
                 column: "SupabaseId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserProjects_UserId",
-                table: "UserProjects",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_WorkHistories_UserId",
@@ -342,9 +351,6 @@ namespace InternshipBackend.Migrations
                 name: "UniversityEducations");
 
             migrationBuilder.DropTable(
-                name: "UserDetails");
-
-            migrationBuilder.DropTable(
                 name: "UserProjects");
 
             migrationBuilder.DropTable(
@@ -354,10 +360,13 @@ namespace InternshipBackend.Migrations
                 name: "Companies");
 
             migrationBuilder.DropTable(
-                name: "Cities");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "UserInfos");
+                name: "UserDetails");
+
+            migrationBuilder.DropTable(
+                name: "Cities");
 
             migrationBuilder.DropTable(
                 name: "Countries");

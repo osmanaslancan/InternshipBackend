@@ -9,7 +9,7 @@ public interface IUserDetailService : IGenericService<UserDetailDTO, UserDetailD
 {
 }
 
-public class UserDetailService(IServiceProvider serviceProvider, IUserRetriverService userRetriver)
+public class UserDetailService(IServiceProvider serviceProvider)
     : GenericService<UserDetailDTO, UserDetailDTO, UserDetail, UserDetail>(serviceProvider), IUserDetailService
 {
     public override Task UpdateAsync(UserDetailDTO data)

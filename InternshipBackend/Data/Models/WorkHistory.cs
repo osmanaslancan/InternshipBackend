@@ -1,8 +1,10 @@
-﻿namespace InternshipBackend.Data;
+﻿using InternshipBackend.Core;
 
-public class WorkHistory
+namespace InternshipBackend.Data;
+
+public class WorkHistory : IHasUserIdField, IHasIdField
 {
-    public int WorkHistoryId { get; set; }
+    public int Id { get; set; }
     public int UserId { get; set; }
     public required string Position { get; set; }
     public required string CompanyName { get; set; }

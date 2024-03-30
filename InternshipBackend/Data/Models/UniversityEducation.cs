@@ -1,8 +1,10 @@
-﻿namespace InternshipBackend.Data;
+﻿using InternshipBackend.Core;
 
-public class UniversityEducation
+namespace InternshipBackend.Data;
+
+public class UniversityEducation : IHasUserIdField, IHasIdField
 {
-    public int UniversityEducationId { get; set; }
+    public int Id { get; set; }
     public int UserId { get; set; }
     public int? UniversityId { get; set; }
     public string? UniversityName { get; set; }

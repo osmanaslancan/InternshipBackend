@@ -1,7 +1,10 @@
-﻿namespace InternshipBackend.Data;
+﻿using InternshipBackend.Core;
 
-public class CompanyEmployee
+namespace InternshipBackend.Data;
+
+public class CompanyEmployee : IHasIdField
 {
+    public int Id { get; set; }
     public int UserId { get; set; }
     public required User User { get; set; }
     public int CompanyId { get; set; }

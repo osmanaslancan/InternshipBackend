@@ -1,8 +1,10 @@
-﻿namespace InternshipBackend.Data;
+﻿using InternshipBackend.Core;
 
-public class City
+namespace InternshipBackend.Data;
+
+public class City : IHasIdField
 {
-    public int CityId { get; set; }
+    public int Id { get; set; }
     public int CountryId { get; set; }
     public required Country Country { get; set; }
     public required string Name { get; set; }

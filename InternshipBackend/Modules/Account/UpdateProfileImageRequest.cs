@@ -1,6 +1,9 @@
-﻿namespace InternshipBackend.Modules;
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace InternshipBackend.Modules;
 
 public class UpdateProfileImageRequest
 {
-    public required IFormFile Image { get; set; }
+    [ModelBinder(Name = "file")]
+    public required IFormFile File { get; set; }
 }   

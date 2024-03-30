@@ -1,11 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using InternshipBackend.Core;
 
 namespace InternshipBackend.Data;
 
-public class UserDetail
+public class UserDetail : IHasIdField
 {
-    [Key]
-    public int UserId { get; set; }
+    public int Id { get; set; }
     public DateTime DateOfBirth { get; set; }
     public Gender Gender { get; set; }
     public ICollection<string> DriverLicences { get; set; } = [];

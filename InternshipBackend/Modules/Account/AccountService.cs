@@ -90,18 +90,18 @@ public class AccountService(
     {
         var user = await GetCurrentUserInfoOrDefault() ?? throw new ValidationException(ErrorCodes.UserNotFound);
 
-        using var image = SixLabors.ImageSharp.Image.Load(request.Image.OpenReadStream());
+        using var image = SixLabors.ImageSharp.Image.Load(request.File.OpenReadStream());
         image.Mutate(x => x.Resize(256, 256));
         using var resultStream = new MemoryStream();
         image.Save(resultStream, new PngEncoder());
         
         var content = new MultipartFormDataContent();
         var streamContent = new ByteArrayContent(resultStream.ToArray());
-        streamContent.Headers.ContentType = new MediaTypeHeaderValue(request.Image.ContentType);
+        streamContent.Headers.ContentType = new MediaTypeHeaderValue(request.File.ContentType);
         streamContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
         {
-            Name = request.Image.Name,
-            FileName = request.Image.FileName,
+            Name = request.File.Name,
+            FileName = request.File.FileName,
         };
         content.Add(streamContent);
         content.Headers.Add("X-Upsert", "true");

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InternshipBackend.Migrations
 {
     [DbContext(typeof(InternshipDbContext))]
-    [Migration("20240229090937_Users")]
-    partial class Users
+    [Migration("20240330135333_SquashedInitial")]
+    partial class SquashedInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,11 +27,11 @@ namespace InternshipBackend.Migrations
 
             modelBuilder.Entity("InternshipBackend.Data.City", b =>
                 {
-                    b.Property<int>("CityId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CityId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CountryId")
                         .HasColumnType("integer");
@@ -40,7 +40,7 @@ namespace InternshipBackend.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("CityId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CountryId");
 
@@ -49,13 +49,13 @@ namespace InternshipBackend.Migrations
 
             modelBuilder.Entity("InternshipBackend.Data.Company", b =>
                 {
-                    b.Property<int>("CompanyId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CompanyId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AdminUserUserId")
+                    b.Property<int?>("AdminUserId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Description")
@@ -72,9 +72,9 @@ namespace InternshipBackend.Migrations
                     b.Property<int>("NumberOfWorkers")
                         .HasColumnType("integer");
 
-                    b.HasKey("CompanyId");
+                    b.HasKey("Id");
 
-                    b.HasIndex("AdminUserUserId");
+                    b.HasIndex("AdminUserId");
 
                     b.ToTable("Companies");
                 });
@@ -87,6 +87,9 @@ namespace InternshipBackend.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
                     b.HasKey("UserId", "CompanyId");
 
                     b.HasIndex("CompanyId");
@@ -96,11 +99,11 @@ namespace InternshipBackend.Migrations
 
             modelBuilder.Entity("InternshipBackend.Data.Country", b =>
                 {
-                    b.Property<int>("CountryId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CountryId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .HasColumnType("text");
@@ -115,7 +118,7 @@ namespace InternshipBackend.Migrations
                     b.Property<string>("PhoneCode")
                         .HasColumnType("text");
 
-                    b.HasKey("CountryId");
+                    b.HasKey("Id");
 
                     b.ToTable("Countries");
                 });
@@ -144,35 +147,58 @@ namespace InternshipBackend.Migrations
                     b.Property<int>("Degree")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
                     b.HasKey("UserId", "LanguageCode");
 
                     b.ToTable("ForeignLanguages");
                 });
 
+            modelBuilder.Entity("InternshipBackend.Data.Supabase.StorageObject", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("BucketId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("storage.objects", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
             modelBuilder.Entity("InternshipBackend.Data.University", b =>
                 {
-                    b.Property<int>("UniversityId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UniversityId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("UniversityId");
+                    b.HasKey("Id");
 
                     b.ToTable("Universities");
                 });
 
             modelBuilder.Entity("InternshipBackend.Data.UniversityEducation", b =>
                 {
-                    b.Property<int>("UniversityEducationId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UniversityEducationId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Department")
                         .IsRequired()
@@ -205,7 +231,7 @@ namespace InternshipBackend.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.HasKey("UniversityEducationId");
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
@@ -214,17 +240,23 @@ namespace InternshipBackend.Migrations
 
             modelBuilder.Entity("InternshipBackend.Data.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("DetailId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PhoneNumber")
                         .HasColumnType("text");
 
                     b.Property<string>("ProfilePhotoUrl")
@@ -236,7 +268,9 @@ namespace InternshipBackend.Migrations
                     b.Property<string>("Surname")
                         .HasColumnType("text");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("DetailId");
 
                     b.HasIndex("Email")
                         .IsUnique();
@@ -249,8 +283,11 @@ namespace InternshipBackend.Migrations
 
             modelBuilder.Entity("InternshipBackend.Data.UserDetail", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
                         .HasColumnType("text");
@@ -280,11 +317,7 @@ namespace InternshipBackend.Migrations
                     b.Property<int>("MilitaryStatus")
                         .HasColumnType("integer");
 
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.HasIndex("CityId");
 
@@ -295,11 +328,11 @@ namespace InternshipBackend.Migrations
 
             modelBuilder.Entity("InternshipBackend.Data.UserProject", b =>
                 {
-                    b.Property<int>("UserProjectId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserProjectId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -319,7 +352,7 @@ namespace InternshipBackend.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
-                    b.HasKey("UserProjectId");
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
@@ -328,11 +361,11 @@ namespace InternshipBackend.Migrations
 
             modelBuilder.Entity("InternshipBackend.Data.WorkHistory", b =>
                 {
-                    b.Property<int>("WorkHistoryId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("WorkHistoryId"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CompanyName")
                         .IsRequired()
@@ -366,7 +399,7 @@ namespace InternshipBackend.Migrations
                     b.Property<int>("WorkType")
                         .HasColumnType("integer");
 
-                    b.HasKey("WorkHistoryId");
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
@@ -388,7 +421,7 @@ namespace InternshipBackend.Migrations
                 {
                     b.HasOne("InternshipBackend.Data.User", "AdminUser")
                         .WithMany()
-                        .HasForeignKey("AdminUserUserId");
+                        .HasForeignKey("AdminUserId");
 
                     b.Navigation("AdminUser");
                 });
@@ -430,6 +463,15 @@ namespace InternshipBackend.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("InternshipBackend.Data.User", b =>
+                {
+                    b.HasOne("InternshipBackend.Data.UserDetail", "Detail")
+                        .WithMany()
+                        .HasForeignKey("DetailId");
+
+                    b.Navigation("Detail");
+                });
+
             modelBuilder.Entity("InternshipBackend.Data.UserDetail", b =>
                 {
                     b.HasOne("InternshipBackend.Data.City", "City")
@@ -439,12 +481,6 @@ namespace InternshipBackend.Migrations
                     b.HasOne("InternshipBackend.Data.Country", "Country")
                         .WithMany()
                         .HasForeignKey("CountryId");
-
-                    b.HasOne("InternshipBackend.Data.User", null)
-                        .WithOne("Detail")
-                        .HasForeignKey("InternshipBackend.Data.UserDetail", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("City");
 
@@ -478,8 +514,6 @@ namespace InternshipBackend.Migrations
 
             modelBuilder.Entity("InternshipBackend.Data.User", b =>
                 {
-                    b.Navigation("Detail");
-
                     b.Navigation("ForeignLanguages");
 
                     b.Navigation("UniversityEducations");
