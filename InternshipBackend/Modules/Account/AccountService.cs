@@ -80,6 +80,7 @@ public class AccountService(
             await userInfoUpdateDtoValidator.ValidateAndThrowAsync(newUserInfo);
             var result = mapper.Map(newUserInfo, oldUserInfo)!;
             await accountRepository.UpdateAsync(result);
+            return;
         }
 
         await CreateAsync(newUserInfo);

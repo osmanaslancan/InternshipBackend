@@ -31,9 +31,9 @@ public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
         };
     }
     [Authorize, HttpPost]
-    public async Task<ServiceResponse> UpdateProfileImage([FromForm] UpdateProfileImageRequest request)
+    public async Task<ServiceResponse> UpdateProfileImage([FromForm] IFormFile file)
     {
-        await accountService.UpdateProfileImage(request);
+        await accountService.UpdateProfileImage(new UpdateProfileImageRequest() { Image = file });
 
         return new EmptyResponse();
     }
