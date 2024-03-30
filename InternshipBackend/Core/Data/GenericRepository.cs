@@ -5,13 +5,13 @@ namespace InternshipBackend.Core.Data;
 
 public abstract class GenericRepository<T>(InternshipDbContext dbContext) : 
     BaseRepository, IGenericRepository<T>, IRepository
-    where T : class
+    where T : class, IHasIdField
 {
     protected InternshipDbContext DbContext => dbContext;
 
     public virtual async Task CreateAsync(T record, bool save = true)
     {
-        await DbContext.AddAsync(record);
+        await DbContext.Set<T>().AddAsync(record);
         if (save)
         {
             await DbContext.SaveChangesAsync();
@@ -20,7 +20,11 @@ public abstract class GenericRepository<T>(InternshipDbContext dbContext) :
 
     public virtual async Task UpdateAsync(T record, bool save = true)
     {
-        DbContext.Update(record);
+        if (dbContext.Set<T>().Local.All(e => e != record))
+        {
+            dbContext.Set<T>().Attach(record);
+            dbContext.Update(record);
+        }
 
         if (save)
         {
@@ -30,17 +34,24 @@ public abstract class GenericRepository<T>(InternshipDbContext dbContext) :
 
     public virtual async Task DeleteAsync(T record, bool save = true)
     {
-        DbContext.Remove(record);
+        DbContext.Set<T>().Remove(record);
 
         if (save)
         {
             await DbContext.SaveChangesAsync();
         }
     }
-
-    public virtual async Task<T?> GetByIdOrDefaultAsync(object id)
+    
+    public virtual async Task<T?> GetByIdOrDefaultAsync(int id, bool changeTracking = true)
     {
-        var result = await DbContext.FindAsync<T>(id);
+        var queryable = DbContext.Set<T>().AsQueryable();
+
+        if (!changeTracking)
+        {
+            queryable = queryable.AsNoTracking();
+        }
+
+        var result = await queryable.FirstOrDefaultAsync(x => x.Id.Equals(id));
 
         return result;
     }

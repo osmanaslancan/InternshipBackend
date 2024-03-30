@@ -2,6 +2,7 @@ using FluentValidation;
 using InternshipBackend.Core;
 using InternshipBackend.Core.Seed;
 using InternshipBackend.Data;
+using InternshipBackend.Data.Models;
 using InternshipBackend.Data.Seeds;
 using InternshipBackend.Modules;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -15,6 +16,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,8 +88,9 @@ builder.Services.AddCors(o =>
 
 builder.Services.AddAutoMapper(o => 
 {
-    o.CreateMap<UserInfoUpdateDTO, User>();
-   
+    o.CreateMap<string, DriverLicense>()
+        .ForMember(x => x.License, x => x.MapFrom((src, dest) => src));
+
 }, typeof(Program));
 
 builder.Services.AddControllers(o =>
@@ -96,7 +99,10 @@ builder.Services.AddControllers(o =>
 }).AddJsonOptions(o =>
 {
     o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+    o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(o =>
@@ -126,6 +132,18 @@ builder.Services.AddSwaggerGen(o =>
         },
     });
 
+    // Add all xml doc files to swagger generator.
+    var xmlFiles = Directory.GetFiles(
+        AppContext.BaseDirectory,
+        "*.xml",
+        SearchOption.TopDirectoryOnly);
+
+    foreach (var xmlFile in xmlFiles)
+    {
+        o.IncludeXmlComments(xmlFile);
+    }
+
+    
 });
 builder.Services.AddHttpContextAccessor();
 

@@ -12,7 +12,7 @@ public class UserDetailEndpoint(IUserDetailService userDetailService)
     [HttpPost]
     public async Task<ServiceResponse> UpdateAsync([FromBody] UserDetailDTO userDetailDTO)
     {
-        await userDetailService.UpdateAsync(userDetailDTO);
+        await userDetailService.Upsert(userDetailDTO);
         return new EmptyResponse();
     }
 }

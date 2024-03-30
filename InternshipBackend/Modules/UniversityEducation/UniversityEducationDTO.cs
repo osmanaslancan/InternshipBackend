@@ -2,10 +2,9 @@
 
 namespace InternshipBackend.Data;
 
-[AutoMap(typeof(UniversityEducation))]
-public class UniversityEducationDTO
+[AutoMap(typeof(UniversityEducation), ReverseMap = true)]
+public class UniversityEducationDto
 {
-    public int Id { get; set; }
     public int? UniversityId { get; set; }
     public string? UniversityName { get; set; }
     public string? Faculty { get; set; }

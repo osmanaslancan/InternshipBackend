@@ -1,8 +1,10 @@
-﻿namespace InternshipBackend.Data;
+﻿using AutoMapper;
 
+namespace InternshipBackend.Data;
+
+[AutoMap(typeof(UserDetail), ReverseMap = true)]
 public class UserDetailDTO
 {
-    public required string PhoneNumber { get; set; }
     public DateTime DateOfBirth { get; set; }
     public Gender Gender { get; set; }
     public ICollection<string> DriverLicences { get; set; } = [];

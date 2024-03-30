@@ -2,6 +2,7 @@
 using FluentValidation;
 using InternshipBackend.Core;
 using InternshipBackend.Data;
+using InternshipBackend.Modules.Account;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 using System.Net.Http.Headers;
@@ -14,6 +15,7 @@ public interface IAccountService
     Task UpdateUserInfo(UserInfoUpdateDTO userInfo);
     Task<User?> GetCurrentUserInfoOrDefault();
     Task UpdateProfileImage(UpdateProfileImageRequest request);
+    Task<UserDTO> GetUser();
 }
 
 public class AccountService(
@@ -115,5 +117,11 @@ public class AccountService(
 
         user.ProfilePhotoUrl = $"{configuration["SupabaseStorageBaseUrl"]}/public/PublicProfilePhoto/{user.SupabaseId}/ProfilePhoto";
         await accountRepository.UpdateAsync(user);
+    }
+
+    public async Task<UserDTO> GetUser()
+    {
+        var user = await accountRepository.GetFullUser(httpContextAccessor.HttpContext!.User.GetSupabaseId()!);
+        return mapper.Map<UserDTO>(user);
     }
 }

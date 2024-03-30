@@ -4,29 +4,16 @@ using InternshipBackend.Core.Data;
 
 namespace InternshipBackend.Core.Services;
 
-public abstract class GenericService<TCreate, TUpdate, TDelete, TData>(IServiceProvider serviceProvider) 
-    : BaseService, IGenericService<TCreate, TUpdate, TDelete, TData>, IService
+public abstract class GenericService<TDto, TData>(IServiceProvider serviceProvider) 
+    : BaseService, IGenericService<TDto, TData>, IService
     where TData : class, IHasIdField
 {
     protected readonly IGenericRepository<TData> _repository = serviceProvider.GetRequiredService<IGenericRepository<TData>>();
     protected readonly IMapper mapper = serviceProvider.GetRequiredService<IMapper>();
     protected readonly IUserRetriverService userRetriver = serviceProvider.GetRequiredService<IUserRetriverService>();
-
-    protected virtual void ValidateCreate(TCreate data)
-    {
-        serviceProvider.GetService<IValidator<TCreate>>()?.ValidateAndThrow(data);
-    }
-
-    protected virtual TData MapCreate(TCreate data)
-    {
-        return mapper.Map<TData>(data);
-    }
-
+    
     protected virtual Task BeforeCreate(TData data) 
     {
-        // Clear assignment of Id
-        data.Id = 0;
-
         if (data is IHasUserIdField userField)
         {
             var user = userRetriver.GetCurrentUser();
@@ -66,60 +53,38 @@ public abstract class GenericService<TCreate, TUpdate, TDelete, TData>(IServiceP
         return Task.CompletedTask;
     }
 
-    protected virtual void ValidateUpdate(TUpdate data)
+    protected virtual void ValidateDto(TDto data)
     {
-        serviceProvider.GetService<IValidator<TUpdate>>()?.ValidateAndThrow(data);
+        serviceProvider.GetService<IValidator<TDto>>()?.ValidateAndThrow(data);
     }
 
-    protected virtual TData MapUpdate(TUpdate data)
+    protected virtual TData MapDto(TDto data)
     {
-        return mapper.Map<TData>(data);
+        return mapper.Map<TDto, TData>(data);
     }
 
-    protected virtual void ValidateDelete(TDelete data)
+    public virtual async Task CreateAsync(TDto data)
     {
-        serviceProvider.GetService<IValidator<TDelete>>()?.ValidateAndThrow(data);
-    }
-
-    protected virtual async Task<TData> FindOld(TData data)
-    {
-        return await _repository.GetByIdOrDefaultAsync(data.Id) ?? throw new Exception("Record not found");
-    }
-
-    protected virtual TData MapDelete(TDelete data)
-    {
-        if (data is DeleteRequest deleteRequest)
-        {
-            var result = Activator.CreateInstance<TData>();
-            result.Id = (int)deleteRequest.Id;
-            return result;
-        }
-        return mapper.Map<TData>(data);
-    }
-
-
-    public virtual async Task CreateAsync(TCreate data)
-    {
-        ValidateCreate(data);
-        var record = MapCreate(data);
+        ValidateDto(data);
+        var record = MapDto(data);
         await BeforeCreate(record);
         await _repository.CreateAsync(record);
     }
 
-    public virtual async Task UpdateAsync(TUpdate data)
+    public virtual async Task UpdateAsync(int id, TDto dto)
     {
-        ValidateUpdate(data);
-        var record = MapUpdate(data);
-        var old = await FindOld(record);
-        await BeforeUpdate(record, old);
-        await _repository.UpdateAsync(record);
+        ValidateDto(dto);
+        var newData = MapDto(dto);
+        newData.Id = id;
+        var old = await _repository.GetByIdOrDefaultAsync(id, changeTracking: false) ?? throw new Exception("Record not found");
+        await BeforeUpdate(newData, old);
+        await _repository.UpdateAsync(newData);
     }
 
-    public virtual async Task DeleteAsync(TDelete data)
+    public virtual async Task DeleteAsync(int id)
     {
-        ValidateDelete(data);
-        var record = MapDelete(data);
-        await BeforeDelete(record);
-        await _repository.DeleteAsync(record);
+        var data = await _repository.GetByIdOrDefaultAsync(id, changeTracking: false) ?? throw new Exception("Record not found");
+        await BeforeDelete(data);
+        await _repository.DeleteAsync(data);
     }
 }

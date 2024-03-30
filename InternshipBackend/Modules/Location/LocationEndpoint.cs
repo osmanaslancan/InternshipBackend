@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using InternshipBackend.Core.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq.Expressions;
 
 namespace InternshipBackend.Modules.Location;
 

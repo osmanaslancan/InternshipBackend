@@ -1,4 +1,5 @@
-﻿using InternshipBackend.Data.Supabase;
+﻿using InternshipBackend.Data.Models;
+using InternshipBackend.Data.Supabase;
 using Microsoft.EntityFrameworkCore;
 
 namespace InternshipBackend.Data;
@@ -16,6 +17,7 @@ public class InternshipDbContext : DbContext
     public DbSet<Company> Companies { get; set; }
     public DbSet<CompanyEmployee> CompanyEmployees { get; set; }
     public DbSet<Country> Countries { get; set; }
+    public DbSet<DriverLicense> DriverLicenses { get; set; }
     public DbSet<City> Cities { get; set; }
 
     public DbSet<StorageObject> SupabaseStorageObjects { get; set; }
@@ -38,12 +40,11 @@ public class InternshipDbContext : DbContext
             .HasIndex(x => x.Email)
             .IsUnique();
 
-        modelBuilder.Entity<CompanyEmployee>()
-            .HasKey(x => new { x.UserId, x.CompanyId });
-
-        modelBuilder.Entity<ForeignLanguage>()
-            .HasKey(x => new { x.UserId, x.LanguageCode });
-
         modelBuilder.Entity<StorageObject>().ToTable("storage.objects", (t) => t.ExcludeFromMigrations());
+
+        modelBuilder.Entity<User>()
+            .HasOne(x => x.Detail)
+            .WithOne(ud => ud.User)
+            .HasForeignKey<UserDetail>(x => x.Id);
     }
 }

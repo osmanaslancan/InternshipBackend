@@ -4,11 +4,11 @@ using InternshipBackend.Data;
 
 namespace InternshipBackend.Modules.AccountDetail;
 
-public interface IForeignLanguageService : IGenericService<ForeignLanguageDTO, ForeignLanguageDTO, DeleteRequest, ForeignLanguage>
+public interface IForeignLanguageService : IGenericService<ForeignLanguageDto, ForeignLanguage>
 {
 }
 
 public class ForeignLanguageService(IServiceProvider serviceProvider)
-    : GenericService<ForeignLanguageDTO, ForeignLanguageDTO, DeleteRequest, ForeignLanguage>(serviceProvider), IForeignLanguageService
+    : GenericService<ForeignLanguageDto, ForeignLanguage>(serviceProvider), IForeignLanguageService
 {
 }

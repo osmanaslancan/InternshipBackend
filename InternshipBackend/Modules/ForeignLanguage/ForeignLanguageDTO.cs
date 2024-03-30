@@ -2,10 +2,9 @@
 
 namespace InternshipBackend.Data;
 
-[AutoMap(typeof(ForeignLanguage))]
-public class ForeignLanguageDTO
+[AutoMap(typeof(ForeignLanguage), ReverseMap = true)]
+public class ForeignLanguageDto
 {
-    public int Id { get; set; }
     public required string LanguageCode { get; set; }
     public LanguageDegree Degree { get; set; }
 }

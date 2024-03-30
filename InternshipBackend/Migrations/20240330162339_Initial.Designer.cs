@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InternshipBackend.Migrations
 {
     [DbContext(typeof(InternshipDbContext))]
-    [Migration("20240330135333_SquashedInitial")]
-    partial class SquashedInitial
+    [Migration("20240330162339_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -155,6 +155,28 @@ namespace InternshipBackend.Migrations
                     b.ToTable("ForeignLanguages");
                 });
 
+            modelBuilder.Entity("InternshipBackend.Data.Models.DriverLicense", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("License")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("UserDetailId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserDetailId");
+
+                    b.ToTable("DriverLicenses");
+                });
+
             modelBuilder.Entity("InternshipBackend.Data.Supabase.StorageObject", b =>
                 {
                     b.Property<Guid>("Id")
@@ -246,11 +268,7 @@ namespace InternshipBackend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("DetailId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -270,8 +288,6 @@ namespace InternshipBackend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DetailId");
-
                     b.HasIndex("Email")
                         .IsUnique();
 
@@ -284,10 +300,7 @@ namespace InternshipBackend.Migrations
             modelBuilder.Entity("InternshipBackend.Data.UserDetail", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
                         .HasColumnType("text");
@@ -303,10 +316,6 @@ namespace InternshipBackend.Migrations
 
                     b.Property<string>("District")
                         .HasColumnType("text");
-
-                    b.Property<string[]>("DriverLicences")
-                        .IsRequired()
-                        .HasColumnType("text[]");
 
                     b.Property<int>("Gender")
                         .HasColumnType("integer");
@@ -454,6 +463,13 @@ namespace InternshipBackend.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("InternshipBackend.Data.Models.DriverLicense", b =>
+                {
+                    b.HasOne("InternshipBackend.Data.UserDetail", null)
+                        .WithMany("DriverLicences")
+                        .HasForeignKey("UserDetailId");
+                });
+
             modelBuilder.Entity("InternshipBackend.Data.UniversityEducation", b =>
                 {
                     b.HasOne("InternshipBackend.Data.User", null)
@@ -461,15 +477,6 @@ namespace InternshipBackend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("InternshipBackend.Data.User", b =>
-                {
-                    b.HasOne("InternshipBackend.Data.UserDetail", "Detail")
-                        .WithMany()
-                        .HasForeignKey("DetailId");
-
-                    b.Navigation("Detail");
                 });
 
             modelBuilder.Entity("InternshipBackend.Data.UserDetail", b =>
@@ -482,9 +489,17 @@ namespace InternshipBackend.Migrations
                         .WithMany()
                         .HasForeignKey("CountryId");
 
+                    b.HasOne("InternshipBackend.Data.User", "User")
+                        .WithOne("Detail")
+                        .HasForeignKey("InternshipBackend.Data.UserDetail", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("City");
 
                     b.Navigation("Country");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("InternshipBackend.Data.UserProject", b =>
@@ -514,6 +529,8 @@ namespace InternshipBackend.Migrations
 
             modelBuilder.Entity("InternshipBackend.Data.User", b =>
                 {
+                    b.Navigation("Detail");
+
                     b.Navigation("ForeignLanguages");
 
                     b.Navigation("UniversityEducations");
@@ -521,6 +538,11 @@ namespace InternshipBackend.Migrations
                     b.Navigation("UserProjects");
 
                     b.Navigation("Works");
+                });
+
+            modelBuilder.Entity("InternshipBackend.Data.UserDetail", b =>
+                {
+                    b.Navigation("DriverLicences");
                 });
 #pragma warning restore 612, 618
         }

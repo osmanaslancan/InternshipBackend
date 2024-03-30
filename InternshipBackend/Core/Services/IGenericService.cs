@@ -1,9 +1,9 @@
 ﻿namespace InternshipBackend.Core.Services;
 
-public interface IGenericService<TCreate, TUpdate, TDelete, TData>
+public interface IGenericService<TDto, TData>
     where TData : class
 {
-    Task CreateAsync(TCreate data);
-    Task UpdateAsync(TUpdate data);
-    Task DeleteAsync(TDelete data);
+    Task CreateAsync(TDto data);
+    Task UpdateAsync(int id, TDto data);
+    Task DeleteAsync(int id);
 }

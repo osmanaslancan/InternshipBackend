@@ -1,4 +1,5 @@
 ﻿using InternshipBackend.Data;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace InternshipBackend.Core;
@@ -12,18 +13,13 @@ public class UserRetriever(InternshipDbContext dbContext, IHttpContextAccessor h
 {
     public User GetCurrentUser(Func<IQueryable<User>, IQueryable<User>>? edit = null)
     {
-        var supabaseId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        IQueryable<User> queryable = dbContext.Users;
-        if (edit is not null)
-            queryable = edit.Invoke(queryable);
-
-        return queryable.FirstOrDefault(x => x.SupabaseId == supabaseId) ?? throw new Exception("User not found");
+        return GetCurrentUserOrDefault(edit) ?? throw new Exception("User not found");
     }
 
     public User? GetCurrentUserOrDefault(Func<IQueryable<User>, IQueryable<User>>? edit = null)
     {
         var supabaseId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        IQueryable<User> queryable = dbContext.Users;
+        IQueryable<User> queryable = dbContext.Users.AsNoTracking();
         if (edit is not null)
             queryable = edit.Invoke(queryable);
 
