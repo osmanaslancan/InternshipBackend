@@ -24,7 +24,7 @@ public class AccountService(
     IValidator<UserInfoUpdateDTO> userInfoUpdateDtoValidator,
     IHttpClientFactory clientFactory,
     IConfiguration configuration,
-    IMapper mapper) : IService, IAccountService
+    IMapper mapper) : IScopedService, IAccountService
 {
     public async Task CreateAsync(UserInfoUpdateDTO userInfoDTO)
     {

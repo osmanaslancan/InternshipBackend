@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InternshipBackend.Modules.AccountDetail;
 
-public interface IUserDetailService : IGenericService<UserDetailDTO, UserDetail>
+public interface IUserDetailService : IGenericEntityService<UserDetailDTO, UserDetail>
 {
     Task Upsert(UserDetailDTO data);
 }
 
 public class UserDetailService(IServiceProvider serviceProvider)
-    : GenericService<UserDetailDTO, UserDetail>(serviceProvider), IUserDetailService
+    : GenericEntityService<UserDetailDTO, UserDetail>(serviceProvider), IUserDetailService
 {
     public Task Upsert(UserDetailDTO data)
     {

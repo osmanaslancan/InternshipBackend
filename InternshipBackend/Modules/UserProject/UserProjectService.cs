@@ -3,11 +3,11 @@ using InternshipBackend.Data;
 
 namespace InternshipBackend.Modules.AccountDetail;
 
-public interface IUserProjectService : IGenericService<UserProjectDto, UserProject>
+public interface IUserProjectService : IGenericEntityService<UserProjectDto, UserProject>
 {
 }
 
 public class UserProjectService(IServiceProvider serviceProvider)
-    : GenericService<UserProjectDto, UserProject>(serviceProvider), IUserProjectService
+    : GenericEntityService<UserProjectDto, UserProject>(serviceProvider), IUserProjectService
 {
 }

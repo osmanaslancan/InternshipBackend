@@ -9,7 +9,7 @@ public interface IUserRetriverService
     User GetCurrentUser(Func<IQueryable<User>, IQueryable<User>>? edit = null);
     User? GetCurrentUserOrDefault(Func<IQueryable<User>, IQueryable<User>>? edit = null);
 }
-public class UserRetriever(InternshipDbContext dbContext, IHttpContextAccessor httpContextAccessor) : IUserRetriverService, IService
+public class UserRetriever(InternshipDbContext dbContext, IHttpContextAccessor httpContextAccessor) : IUserRetriverService, IScopedService
 {
     public User GetCurrentUser(Func<IQueryable<User>, IQueryable<User>>? edit = null)
     {

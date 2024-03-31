@@ -3,11 +3,11 @@ using InternshipBackend.Data;
 
 namespace InternshipBackend.Modules.AccountDetail;
 
-public interface IUniversityEducationService : IGenericService<UniversityEducationDto, UniversityEducation>
+public interface IUniversityEducationService : IGenericEntityService<UniversityEducationDto, UniversityEducation>
 {
 }
 
 public class UniversityEducationService(IServiceProvider serviceProvider)
-    : GenericService<UniversityEducationDto, UniversityEducation>(serviceProvider), IUniversityEducationService
+    : GenericEntityService<UniversityEducationDto, UniversityEducation>(serviceProvider), IUniversityEducationService
 {
 }

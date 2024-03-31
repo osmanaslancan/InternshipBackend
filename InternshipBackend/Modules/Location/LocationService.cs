@@ -4,7 +4,7 @@ using InternshipBackend.Data;
 
 namespace InternshipBackend.Modules.Location;
 
-public interface ILocationService : IService
+public interface ILocationService : IScopedService
 {
     Task<List<City>> ListCities(int countryId);
     Task<List<Country>> ListCountries();

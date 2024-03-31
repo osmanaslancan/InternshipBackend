@@ -4,8 +4,8 @@ using InternshipBackend.Core.Data;
 
 namespace InternshipBackend.Core.Services;
 
-public abstract class GenericService<TDto, TData>(IServiceProvider serviceProvider) 
-    : BaseService, IGenericService<TDto, TData>, IService
+public abstract class GenericEntityService<TDto, TData>(IServiceProvider serviceProvider) 
+    : BaseService, IGenericEntityService<TDto, TData>, IScopedService
     where TData : class, IHasIdField
 {
     protected readonly IGenericRepository<TData> _repository = serviceProvider.GetRequiredService<IGenericRepository<TData>>();

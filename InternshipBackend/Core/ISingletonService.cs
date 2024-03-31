@@ -1,5 +1,5 @@
 ﻿namespace InternshipBackend.Core;
 
-public interface IService
+public interface ISingletonService
 {
 }

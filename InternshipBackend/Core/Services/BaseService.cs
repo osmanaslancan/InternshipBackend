@@ -1,5 +1,5 @@
 ﻿namespace InternshipBackend.Core.Services;
 
-public abstract class BaseService : IService
+public abstract class BaseService : IScopedService
 {
 }

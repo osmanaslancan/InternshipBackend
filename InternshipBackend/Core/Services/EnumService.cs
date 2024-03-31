@@ -10,7 +10,7 @@ public interface IEnumService
     List<EnumDto>? GetEnumOrDefault(string key);
 }
 
-public class EnumService(IStringLocalizer<Enums> stringLocalizer) : IEnumService, IService
+public class EnumService(IStringLocalizer<Enums> stringLocalizer, ITypeSourceProvider typeSourceProvider) : IEnumService, ISingletonService
 {
     public List<EnumDto>? GetEnumOrDefault(string key)
     {
@@ -25,10 +25,12 @@ public class EnumService(IStringLocalizer<Enums> stringLocalizer) : IEnumService
 
         foreach (var item in Enum.GetValues(type))
         {
+            var candidate = stringLocalizer[$"{item.GetType().Name}.{item}"];
+
             result.Add(new EnumDto
             {
                 Id = item.ToString(),
-                Name = stringLocalizer.GetString($"{item.GetType().Name}.{item}") ?? GetDescription((Enum)item) ?? item.ToString()
+                Name = GetDescription((Enum)item) ?? (!candidate.ResourceNotFound ? candidate : item.ToString())
             });
         }
         return result;
@@ -38,20 +40,14 @@ public class EnumService(IStringLocalizer<Enums> stringLocalizer) : IEnumService
     {
         var field = value.GetType().GetField(value.ToString());
 
-        if (field is null)
-        {
-            return null;
-        }
-
-        var attribute = field.GetCustomAttribute(typeof(DescriptionAttribute)) as DescriptionAttribute;
+        var attribute = field?.GetCustomAttribute(typeof(DescriptionAttribute)) as DescriptionAttribute;
 
         return attribute?.Description;
     }
 
     private Type? FindEnumType(string key)
     {
-        var assembly = GetType().Assembly;
-        Type[] types = assembly.GetTypes();
+        var types = typeSourceProvider.Assemblies.SelectMany(x => x.GetTypes());
 
         foreach (Type type in types)
         {

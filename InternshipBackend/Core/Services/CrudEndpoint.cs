@@ -2,10 +2,10 @@
 
 namespace InternshipBackend.Core.Services;
 
-public class CrudEndpoint<TDto, TData>(IGenericService<TDto, TData> service) : BaseEndpoint
+public class CrudEndpoint<TDto, TData>(IGenericEntityService<TDto, TData> service) : BaseEndpoint
     where TData : class
 {
-    protected IGenericService<TDto, TData> Service { get; } = service;
+    protected IGenericEntityService<TDto, TData> Service { get; } = service;
 
     [HttpPost]
     public async Task<ServiceResponse> CreateAsync([FromBody] TDto Dto)

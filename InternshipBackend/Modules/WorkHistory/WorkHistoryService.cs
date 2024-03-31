@@ -3,11 +3,11 @@ using InternshipBackend.Data;
 
 namespace InternshipBackend.Modules.AccountDetail;
 
-public interface IWorkHistoryService : IGenericService<WorkHistoryDto, WorkHistory>
+public interface IWorkHistoryService : IGenericEntityService<WorkHistoryDto, WorkHistory>
 {
 }
 
 public class WorkHistoryService(IServiceProvider serviceProvider)
-    : GenericService<WorkHistoryDto, WorkHistory>(serviceProvider), IWorkHistoryService
+    : GenericEntityService<WorkHistoryDto, WorkHistory>(serviceProvider), IWorkHistoryService
 {
 }

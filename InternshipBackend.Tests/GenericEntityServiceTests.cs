@@ -11,7 +11,7 @@ using Xunit.Abstractions;
 
 namespace InternshipBackend.Tests
 {
-    public class GenericServiceTests
+    public class GenericEntityServiceTests
     {
         private record TestContext(InternshipDbContext Db, WebApplication Application, User CurrentUser, Action<User> ChangeCurrentUser) : IAsyncDisposable
         {

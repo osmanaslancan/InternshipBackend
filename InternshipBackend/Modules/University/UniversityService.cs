@@ -8,7 +8,7 @@ public interface IUniversityService
     Task<List<University>> ListAsync();
 }
 
-public class UniversityService(IUniversityRepository universityRepository) : IService, IUniversityService
+public class UniversityService(IUniversityRepository universityRepository) : IScopedService, IUniversityService
 {
     public Task<List<University>> ListAsync() => universityRepository.ListAsync();
 }

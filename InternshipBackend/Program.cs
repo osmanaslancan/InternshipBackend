@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using InternshipBackend.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,6 @@ builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<InternshipDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("Supabase")));
-
 
 builder.Services.AddAuthentication(o =>
     {
@@ -48,35 +48,20 @@ builder.Services.AddAuthentication(o =>
     });
 
 
+var typeSourceProvider = new TypeSourceProvider(typeof(Program).Assembly);
+
+builder.Services.AddSingleton<ITypeSourceProvider>(typeSourceProvider);
+
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
 
-var serviceTypes = Assembly.GetExecutingAssembly().GetTypes()
-    .Where(t => t.IsClass && !t.IsAbstract && typeof(IService).IsAssignableFrom(t))
-    .ToList();
+var serviceTypes = typeSourceProvider.FindTypesInheritedFrom<IScopedService>();
+builder.Services.RegisterForInterfacesAndSelf(ServiceLifetime.Scoped, serviceTypes, [typeof(IScopedService)]);
 
-foreach (var serviceType in serviceTypes)
-{
-    var interfaceTypes = serviceType.GetInterfaces().Where(x => x != typeof(IService));
-    foreach (var interfaceType in interfaceTypes)
-    {
-        builder.Services.AddScoped(interfaceType, serviceType);
-    }
-}
+serviceTypes = typeSourceProvider.FindTypesInheritedFrom<ISingletonService>();
+builder.Services.RegisterForInterfacesAndSelf(ServiceLifetime.Singleton, serviceTypes, [typeof(ISingletonService)]);
 
-
-var repositoryTypes = Assembly.GetExecutingAssembly().GetTypes()
-    .Where(t => t.IsClass && !t.IsAbstract && typeof(IRepository).IsAssignableFrom(t))
-    .ToList();
-
-foreach (var repositoryType in repositoryTypes)
-{
-    var interfaceTypes = repositoryType.GetInterfaces().Where(x => x != typeof(IRepository));
-    foreach (var interfaceType in interfaceTypes)
-    {
-        builder.Services.AddScoped(interfaceType, repositoryType);
-    }
-}
-
+var repositoryTypes = typeSourceProvider.FindTypesInheritedFrom<IRepository>();
+builder.Services.RegisterForInterfacesAndSelf(ServiceLifetime.Scoped, repositoryTypes, [typeof(IRepository)]);
 
 builder.Services.AddCors(o =>
 {

@@ -1,6 +1,6 @@
 ﻿namespace InternshipBackend.Core.Services;
 
-public interface IGenericService<TDto, TData>
+public interface IGenericEntityService<TDto, TData>
     where TData : class
 {
     Task<TData> CreateAsync(TDto data);
