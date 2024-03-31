@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
+using InternshipBackend.Resources.Enum;
+using Microsoft.Extensions.Localization;
 
 namespace InternshipBackend.Core.Services;
 
@@ -8,7 +10,7 @@ public interface IEnumService
     List<EnumDto>? GetEnumOrDefault(string key);
 }
 
-public class EnumService : IEnumService, IService
+public class EnumService(IStringLocalizer<Enums> stringLocalizer) : IEnumService, IService
 {
     public List<EnumDto>? GetEnumOrDefault(string key)
     {
@@ -26,7 +28,7 @@ public class EnumService : IEnumService, IService
             result.Add(new EnumDto
             {
                 Id = item.ToString(),
-                Name = GetDescription((Enum)item) ?? item.ToString()
+                Name = stringLocalizer.GetString($"{item.GetType().Name}.{item}") ?? GetDescription((Enum)item) ?? item.ToString()
             });
         }
         return result;

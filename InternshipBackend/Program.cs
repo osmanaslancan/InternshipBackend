@@ -169,10 +169,7 @@ builder.Services.AddRequestLocalization(o =>
     o.RequestCultureProviders =
     [
         new QueryStringRequestCultureProvider(),
-        new CookieRequestCultureProvider() 
-        {
-            CookieName = "culture"
-        },
+        new UserCultureProvider(),
         new AcceptLanguageHeaderRequestCultureProvider()
     ];
 });

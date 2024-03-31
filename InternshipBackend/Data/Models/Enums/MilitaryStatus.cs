@@ -3,6 +3,6 @@
 public enum MilitaryStatus
 {
     Done,
-    Deffered,
+    Deferred,
     Exempt,
 }
