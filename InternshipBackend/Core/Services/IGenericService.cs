@@ -3,7 +3,7 @@
 public interface IGenericService<TDto, TData>
     where TData : class
 {
-    Task CreateAsync(TDto data);
-    Task UpdateAsync(int id, TDto data);
-    Task DeleteAsync(int id);
+    Task<TData> CreateAsync(TDto data);
+    Task<TData> UpdateAsync(int id, TDto data);
+    Task<TData> DeleteAsync(int id);
 }

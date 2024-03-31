@@ -29,11 +29,13 @@ public abstract class GenericService<TDto, TData>(IServiceProvider serviceProvid
         {
             var oldUserField = (IHasUserIdField)old;
             var user = userRetriver.GetCurrentUser();
-
-            if (oldUserField.UserId != userField.UserId || oldUserField.UserId != user.Id)
+            
+            if (oldUserField.UserId != user.Id)
             {
                 throw new Exception("You can't update other user's data");
             }
+            
+            userField.UserId = oldUserField.UserId;
         }
 
         return Task.CompletedTask;
@@ -63,28 +65,28 @@ public abstract class GenericService<TDto, TData>(IServiceProvider serviceProvid
         return mapper.Map<TDto, TData>(data);
     }
 
-    public virtual async Task CreateAsync(TDto data)
+    public virtual async Task<TData> CreateAsync(TDto data)
     {
         ValidateDto(data);
         var record = MapDto(data);
         await BeforeCreate(record);
-        await _repository.CreateAsync(record);
+        return await _repository.CreateAsync(record);
     }
 
-    public virtual async Task UpdateAsync(int id, TDto dto)
+    public virtual async Task<TData> UpdateAsync(int id, TDto dto)
     {
         ValidateDto(dto);
         var newData = MapDto(dto);
         newData.Id = id;
         var old = await _repository.GetByIdOrDefaultAsync(id, changeTracking: false) ?? throw new Exception("Record not found");
         await BeforeUpdate(newData, old);
-        await _repository.UpdateAsync(newData);
+        return await _repository.UpdateAsync(newData);
     }
 
-    public virtual async Task DeleteAsync(int id)
+    public virtual async Task<TData> DeleteAsync(int id)
     {
         var data = await _repository.GetByIdOrDefaultAsync(id, changeTracking: false) ?? throw new Exception("Record not found");
         await BeforeDelete(data);
-        await _repository.DeleteAsync(data);
+        return await _repository.DeleteAsync(data);
     }
 }
