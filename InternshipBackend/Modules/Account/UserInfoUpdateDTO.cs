@@ -4,7 +4,7 @@ using InternshipBackend.Data;
 
 namespace InternshipBackend.Modules;
 
-[AutoMap(typeof(User))]
+[AutoMap(typeof(User), ReverseMap = true)]
 public class UserInfoUpdateDTO
 {
     public string? Name { get; set; }
