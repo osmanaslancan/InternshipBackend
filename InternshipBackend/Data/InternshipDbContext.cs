@@ -1,5 +1,5 @@
 ﻿using InternshipBackend.Data.Models;
-using InternshipBackend.Data.Supabase;
+using InternshipBackend.Data.Models.Supabase;
 using Microsoft.EntityFrameworkCore;
 
 namespace InternshipBackend.Data;

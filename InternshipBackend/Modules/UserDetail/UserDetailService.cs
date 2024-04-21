@@ -1,16 +1,15 @@
 ﻿using InternshipBackend.Core.Services;
-using InternshipBackend.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace InternshipBackend.Modules.AccountDetail;
+namespace InternshipBackend.Modules.UserDetail;
 
-public interface IUserDetailService : IGenericEntityService<UserDetailDTO, UserDetail>
+public interface IUserDetailService : IGenericEntityService<UserDetailDTO, Data.Models.UserDetail>
 {
     Task Upsert(UserDetailDTO data);
 }
 
 public class UserDetailService(IServiceProvider serviceProvider)
-    : GenericEntityService<UserDetailDTO, UserDetail>(serviceProvider), IUserDetailService
+    : GenericEntityService<UserDetailDTO, Data.Models.UserDetail>(serviceProvider), IUserDetailService
 {
     public Task Upsert(UserDetailDTO data)
     {

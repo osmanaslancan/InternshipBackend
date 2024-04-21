@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace InternshipBackend.Data;
+namespace InternshipBackend.Data.Models;
 
 public class DbSeed
 {

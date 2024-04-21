@@ -3,7 +3,6 @@ using InternshipBackend.Data;
 
 namespace InternshipBackend.Modules.Location;
 
-[AutoMap(typeof(Country))]
 public class CountryDTO
 {
     public int Id { get; set; }

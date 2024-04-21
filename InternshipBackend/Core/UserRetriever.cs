@@ -1,6 +1,7 @@
 ﻿using InternshipBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using InternshipBackend.Data.Models;
 
 namespace InternshipBackend.Core;
 

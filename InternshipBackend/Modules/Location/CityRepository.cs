@@ -1,5 +1,6 @@
 ﻿using InternshipBackend.Core.Data;
 using InternshipBackend.Data;
+using InternshipBackend.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace InternshipBackend.Modules.Location;

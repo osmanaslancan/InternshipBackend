@@ -1,9 +1,8 @@
 ﻿using InternshipBackend.Core;
 
-namespace InternshipBackend.Data;
+namespace InternshipBackend.Data.Models;
 
-public class University : IHasIdField
+public class University : Entity
 {
-    public int Id { get; set; }
     public required string Name { get; set; }
 }

@@ -2,7 +2,8 @@ using FluentValidation;
 using InternshipBackend.Core;
 using InternshipBackend.Core.Data;
 using InternshipBackend.Data;
-using InternshipBackend.Modules.AccountDetail;
+using InternshipBackend.Data.Models;
+using InternshipBackend.Modules.UniversityEducations;
 using InternshipBackend.Tests.Mocks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -69,7 +70,7 @@ namespace InternshipBackend.Tests
             
             var service = new UniversityEducationService(scope.ServiceProvider);
             
-            await service.CreateAsync(new UniversityEducationDto
+            await service.CreateAsync(new UniversityEducationModifyDto
             {
                 Department = "Computer Science",
                 StartDate = DateTime.Now,
@@ -91,7 +92,7 @@ namespace InternshipBackend.Tests
             
             var service = new UniversityEducationService(scope.ServiceProvider);
 
-            var data = new UniversityEducationDto
+            var data = new UniversityEducationModifyDto
             {
                 Department = "Computer Science",
             };
@@ -102,7 +103,7 @@ namespace InternshipBackend.Tests
 
             var exp = await Assert.ThrowsAsync<Exception>(async () =>
             {
-                await service.UpdateAsync(createdRecord.Id, new UniversityEducationDto()
+                await service.UpdateAsync(createdRecord.Id, new UniversityEducationModifyDto()
                 {
                     Department = "Changed Department",
                 });
@@ -121,7 +122,7 @@ namespace InternshipBackend.Tests
             
             var service = new UniversityEducationService(scope.ServiceProvider);
 
-            var data = new UniversityEducationDto
+            var data = new UniversityEducationModifyDto
             {
                 Department = "Computer Science",
             };
@@ -143,16 +144,16 @@ namespace InternshipBackend.Tests
         {
             await using var testContext = await CreateApplication(builder =>
             {
-                var validator = new MockValidator<UniversityEducationDto>();
+                var validator = new MockValidator<UniversityEducationModifyDto>();
                 validator.RuleFor(x => x.Department).MaximumLength(5);
-                builder.Services.AddSingleton<IValidator<UniversityEducationDto>>(validator);
+                builder.Services.AddSingleton<IValidator<UniversityEducationModifyDto>>(validator);
             });
             
             using var scope = testContext.Application.Services.CreateScope();
             
             var service = new UniversityEducationService(scope.ServiceProvider);
             
-            var data = new UniversityEducationDto
+            var data = new UniversityEducationModifyDto
             {
                 Department = "Length More than 5",
             };
@@ -170,7 +171,7 @@ namespace InternshipBackend.Tests
             
             var service = new UniversityEducationService(scope.ServiceProvider);
             
-            var data = new UniversityEducationDto
+            var data = new UniversityEducationModifyDto
             {
                 Department = "Computer Science",
             };
@@ -200,7 +201,7 @@ namespace InternshipBackend.Tests
             
             old.State = EntityState.Detached;
             
-            var data = new UniversityEducationDto
+            var data = new UniversityEducationModifyDto
             {
                 Department = "Computer Science",
             };

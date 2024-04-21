@@ -1,9 +1,6 @@
-﻿using AutoMapper;
+﻿namespace InternshipBackend.Modules.UserProject;
 
-namespace InternshipBackend.Data;
-
-[AutoMap(typeof(UserProject), ReverseMap = true)]
-public class UserProjectDto
+public class UserProjectModifyDto
 {
     public required string ProjectName { get; set; }
     public required string Description { get; set; }

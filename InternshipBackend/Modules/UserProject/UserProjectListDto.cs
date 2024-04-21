@@ -1,9 +1,6 @@
-﻿using AutoMapper;
+﻿namespace InternshipBackend.Modules.UserProject;
 
-namespace InternshipBackend.Data;
-
-[AutoMap(typeof(UserProject))]
-public class UserProjectDtoListDto : UserProjectDto
+public class UserProjectListDto : UserProjectModifyDto
 {
     public int Id { get; set; }
 }

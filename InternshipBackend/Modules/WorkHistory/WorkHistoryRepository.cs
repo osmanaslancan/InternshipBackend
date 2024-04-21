@@ -1,10 +1,10 @@
 ﻿using InternshipBackend.Core.Data;
 using InternshipBackend.Data;
 
-namespace InternshipBackend.Modules.AccountDetail;
+namespace InternshipBackend.Modules.WorkHistory;
 
 public class WorkHistoryRepository(InternshipDbContext dbContext) 
-    : GenericRepository<WorkHistory>(dbContext), 
-    IGenericRepository<WorkHistory>
+    : GenericRepository<Data.Models.WorkHistory>(dbContext), 
+    IGenericRepository<Data.Models.WorkHistory>
 {
 }

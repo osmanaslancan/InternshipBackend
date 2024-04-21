@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace InternshipBackend.Modules;
+namespace InternshipBackend.Modules.Account;
 
 public class UpdateProfileImageRequest
 {

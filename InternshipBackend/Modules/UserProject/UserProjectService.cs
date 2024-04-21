@@ -1,13 +1,12 @@
 ﻿using InternshipBackend.Core.Services;
-using InternshipBackend.Data;
 
-namespace InternshipBackend.Modules.AccountDetail;
+namespace InternshipBackend.Modules.UserProject;
 
-public interface IUserProjectService : IGenericEntityService<UserProjectDto, UserProject>
+public interface IUserProjectService : IGenericEntityService<UserProjectModifyDto, Data.Models.UserProject>
 {
 }
 
 public class UserProjectService(IServiceProvider serviceProvider)
-    : GenericEntityService<UserProjectDto, UserProject>(serviceProvider), IUserProjectService
+    : GenericEntityService<UserProjectModifyDto, Data.Models.UserProject>(serviceProvider), IUserProjectService
 {
 }

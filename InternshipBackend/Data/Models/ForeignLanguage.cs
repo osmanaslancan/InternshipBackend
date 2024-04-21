@@ -1,11 +1,10 @@
 ﻿using InternshipBackend.Core;
+using InternshipBackend.Data.Models.Enums;
 
-namespace InternshipBackend.Data;
+namespace InternshipBackend.Data.Models;
 
-public class ForeignLanguage : IHasUserIdField, IHasIdField
+public class ForeignLanguage : UserOwnedEntity
 {
-    public int Id { get; set; }
-    public int UserId { get; set; }
     public required string LanguageCode { get; set; }
     public LanguageDegree Degree { get; set; }
 }

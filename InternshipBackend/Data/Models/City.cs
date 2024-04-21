@@ -1,10 +1,9 @@
 ﻿using InternshipBackend.Core;
 
-namespace InternshipBackend.Data;
+namespace InternshipBackend.Data.Models;
 
-public class City : IHasIdField
+public class City : Entity  
 {
-    public int Id { get; set; }
     public int CountryId { get; set; }
     public required Country Country { get; set; }
     public required string Name { get; set; }

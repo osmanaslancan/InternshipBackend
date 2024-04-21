@@ -1,13 +1,12 @@
 ﻿using InternshipBackend.Core.Services;
-using InternshipBackend.Data;
 
-namespace InternshipBackend.Modules.AccountDetail;
+namespace InternshipBackend.Modules.WorkHistory;
 
-public interface IWorkHistoryService : IGenericEntityService<WorkHistoryDto, WorkHistory>
+public interface IWorkHistoryService : IGenericEntityService<WorkHistoryModifyDto, Data.Models.WorkHistory>
 {
 }
 
 public class WorkHistoryService(IServiceProvider serviceProvider)
-    : GenericEntityService<WorkHistoryDto, WorkHistory>(serviceProvider), IWorkHistoryService
+    : GenericEntityService<WorkHistoryModifyDto, Data.Models.WorkHistory>(serviceProvider), IWorkHistoryService
 {
 }

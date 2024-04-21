@@ -1,8 +1,7 @@
-﻿using AutoMapper;
+﻿using InternshipBackend.Data.Models.Enums;
 
-namespace InternshipBackend.Data;
+namespace InternshipBackend.Modules.UserDetail;
 
-[AutoMap(typeof(UserDetail), ReverseMap = true)]
 public class UserDetailDTO
 {
     public DateTime DateOfBirth { get; set; }

@@ -1,6 +1,7 @@
 ﻿using InternshipBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using InternshipBackend.Data.Models;
 
 namespace InternshipBackend.Core.Seed;
 

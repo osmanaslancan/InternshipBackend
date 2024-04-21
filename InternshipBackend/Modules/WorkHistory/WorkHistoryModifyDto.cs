@@ -1,9 +1,8 @@
-﻿using AutoMapper;
+﻿using InternshipBackend.Data.Models.Enums;
 
-namespace InternshipBackend.Data;
+namespace InternshipBackend.Modules.WorkHistory;
 
-[AutoMap(typeof(WorkHistory), ReverseMap = true)]
-public class WorkHistoryDto
+public class WorkHistoryModifyDto
 {
     public required string Position { get; set; }
     public required string CompanyName { get; set; }

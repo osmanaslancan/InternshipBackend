@@ -1,6 +1,7 @@
 ﻿using InternshipBackend.Core;
 using InternshipBackend.Core.Services;
 using InternshipBackend.Data;
+using InternshipBackend.Data.Models;
 
 namespace InternshipBackend.Modules.Location;
 

@@ -1,4 +1,5 @@
 ﻿using InternshipBackend.Core.Seed;
+using InternshipBackend.Data.Models;
 
 namespace InternshipBackend.Data.Seeds;
 

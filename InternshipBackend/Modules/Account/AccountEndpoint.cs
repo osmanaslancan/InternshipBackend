@@ -1,9 +1,8 @@
 ﻿using InternshipBackend.Core;
 using InternshipBackend.Core.Services;
-using InternshipBackend.Modules.Account;
 using Microsoft.AspNetCore.Mvc;
 
-namespace InternshipBackend.Modules;
+namespace InternshipBackend.Modules.Account;
 
 [Route("Account/[action]")]
 public class AccountEndpoint(IAccountService accountService) : BaseEndpoint

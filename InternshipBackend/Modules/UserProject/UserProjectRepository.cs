@@ -1,10 +1,10 @@
 ﻿using InternshipBackend.Core.Data;
 using InternshipBackend.Data;
 
-namespace InternshipBackend.Modules.AccountDetail;
+namespace InternshipBackend.Modules.UserProject;
 
 public class UserProjectRepository(InternshipDbContext dbContext) 
-    : GenericRepository<UserProject>(dbContext), 
-    IGenericRepository<UserProject>
+    : GenericRepository<Data.Models.UserProject>(dbContext), 
+    IGenericRepository<Data.Models.UserProject>
 {
 }

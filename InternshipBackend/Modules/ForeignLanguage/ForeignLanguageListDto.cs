@@ -1,9 +1,6 @@
-﻿using AutoMapper;
+﻿namespace InternshipBackend.Modules.ForeignLanguage;
 
-namespace InternshipBackend.Data;
-
-[AutoMap(typeof(ForeignLanguage))]
-public class ForeignLanguageListDto : ForeignLanguageDto
+public class ForeignLanguageListDto : ForeignLanguageModifyDto
 {
     public int Id { get; set; }
 }

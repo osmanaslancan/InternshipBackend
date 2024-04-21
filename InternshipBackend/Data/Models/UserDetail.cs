@@ -1,11 +1,10 @@
 ﻿using InternshipBackend.Core;
-using InternshipBackend.Data.Models;
+using InternshipBackend.Data.Models.Enums;
 
-namespace InternshipBackend.Data;
+namespace InternshipBackend.Data.Models;
 
-public class UserDetail : IHasIdField, IHasUserIdField
+public class UserDetail : Entity, IHasUserIdField
 {
-    public int Id { get; set; }
     public required User User { get; set; }
     public DateTime DateOfBirth { get; set; }
     public Gender Gender { get; set; }

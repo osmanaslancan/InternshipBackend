@@ -1,11 +1,10 @@
 ﻿using InternshipBackend.Core.Services;
-using InternshipBackend.Data;
 using Microsoft.AspNetCore.Mvc;
 
-namespace InternshipBackend.Modules.AccountDetail;
+namespace InternshipBackend.Modules.ForeignLanguage;
 
 [Route("ForeignLanguage/[action]")]
 public class ForeignLanguageEndpoint(IForeignLanguageService foreignLanguageService) 
-    : CrudEndpoint<ForeignLanguageDto, ForeignLanguage>(foreignLanguageService)
+    : CrudEndpoint<ForeignLanguageModifyDto, Data.Models.ForeignLanguage>(foreignLanguageService)
 {
 }

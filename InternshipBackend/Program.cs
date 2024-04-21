@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using InternshipBackend;
 using InternshipBackend.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -73,9 +74,7 @@ builder.Services.AddCors(o =>
 
 builder.Services.AddAutoMapper(o => 
 {
-    o.CreateMap<string, DriverLicense>()
-        .ForMember(x => x.License, x => x.MapFrom((src, dest) => src));
-
+    o.AddProfile<InternshipBackendAutoMapperProfile>();
 }, typeof(Program));
 
 builder.Services.AddControllers(o =>

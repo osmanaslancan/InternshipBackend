@@ -1,14 +1,12 @@
-﻿using InternshipBackend.Core;
-using InternshipBackend.Core.Services;
-using InternshipBackend.Data;
+﻿using InternshipBackend.Core.Services;
 
-namespace InternshipBackend.Modules.AccountDetail;
+namespace InternshipBackend.Modules.ForeignLanguage;
 
-public interface IForeignLanguageService : IGenericEntityService<ForeignLanguageDto, ForeignLanguage>
+public interface IForeignLanguageService : IGenericEntityService<ForeignLanguageModifyDto, Data.Models.ForeignLanguage>
 {
 }
 
 public class ForeignLanguageService(IServiceProvider serviceProvider)
-    : GenericEntityService<ForeignLanguageDto, ForeignLanguage>(serviceProvider), IForeignLanguageService
+    : GenericEntityService<ForeignLanguageModifyDto, Data.Models.ForeignLanguage>(serviceProvider), IForeignLanguageService
 {
 }

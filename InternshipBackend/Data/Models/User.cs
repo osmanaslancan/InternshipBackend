@@ -1,9 +1,9 @@
 ﻿#nullable disable
 using InternshipBackend.Core;
 
-namespace InternshipBackend.Data;
+namespace InternshipBackend.Data.Models;
 
-public class User : IHasIdField
+public class User : Entity
 {
     public int Id { get; set; }
     public Guid SupabaseId { get; set; }

@@ -1,9 +1,9 @@
-﻿using InternshipBackend.Core;
-using InternshipBackend.Core.Data;
+﻿using InternshipBackend.Core.Data;
 using InternshipBackend.Data;
+using InternshipBackend.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace InternshipBackend.Modules;
+namespace InternshipBackend.Modules.Account;
 
 public interface IAccountRepository : IGenericRepository<User>
 {

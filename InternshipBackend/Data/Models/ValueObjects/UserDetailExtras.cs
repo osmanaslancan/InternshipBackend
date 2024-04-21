@@ -1,4 +1,4 @@
-﻿namespace InternshipBackend.Data;
+﻿namespace InternshipBackend.Data.Models.ValueObjects;
 
 public class UserDetailExtras
 {

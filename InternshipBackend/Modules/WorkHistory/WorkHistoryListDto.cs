@@ -1,9 +1,6 @@
-﻿using AutoMapper;
+﻿namespace InternshipBackend.Modules.WorkHistory;
 
-namespace InternshipBackend.Data;
-
-[AutoMap(typeof(WorkHistory))]
-public class WorkHistoryListDto : WorkHistoryDto
+public class WorkHistoryListDto : WorkHistoryModifyDto
 {
     public int Id { get; set; }
 }

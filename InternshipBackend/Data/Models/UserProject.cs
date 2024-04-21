@@ -1,11 +1,9 @@
 ﻿using InternshipBackend.Core;
 
-namespace InternshipBackend.Data;
+namespace InternshipBackend.Data.Models;
 
-public class UserProject : IHasUserIdField, IHasIdField
+public class UserProject : UserOwnedEntity
 {
-    public int Id { get; set; }
-    public int UserId { get; set; }
     public required User User { get; set; }
     public required string ProjectName { get; set; }
     public required string Description { get; set; }

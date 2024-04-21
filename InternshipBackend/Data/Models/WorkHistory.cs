@@ -1,11 +1,10 @@
 ﻿using InternshipBackend.Core;
+using InternshipBackend.Data.Models.Enums;
 
-namespace InternshipBackend.Data;
+namespace InternshipBackend.Data.Models;
 
-public class WorkHistory : IHasUserIdField, IHasIdField
+public class WorkHistory : UserOwnedEntity
 {
-    public int Id { get; set; }
-    public int UserId { get; set; }
     public required string Position { get; set; }
     public required string CompanyName { get; set; }
     public required DateTime StartDate { get; set; }

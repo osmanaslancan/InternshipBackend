@@ -1,14 +1,13 @@
-﻿using AutoMapper;
+﻿using System.Net.Http.Headers;
+using System.Security.Claims;
+using AutoMapper;
 using FluentValidation;
 using InternshipBackend.Core;
-using InternshipBackend.Data;
-using InternshipBackend.Modules.Account;
+using InternshipBackend.Data.Models;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
-using System.Net.Http.Headers;
-using System.Runtime.InteropServices;
-using System.Security.Claims;
-namespace InternshipBackend.Modules;
+
+namespace InternshipBackend.Modules.Account;
 
 public interface IAccountService
 {

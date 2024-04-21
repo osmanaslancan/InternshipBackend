@@ -2,16 +2,16 @@
 using InternshipBackend.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace InternshipBackend.Modules;
+namespace InternshipBackend.Modules.University;
 
 public interface IUniversityRepository
 {
-    Task<List<University>> ListAsync();
+    Task<List<Data.Models.University>> ListAsync();
 }
 
 public class UniversityRepository(InternshipDbContext context) : IRepository, IUniversityRepository
 {
-    public async Task<List<University>> ListAsync()
+    public async Task<List<Data.Models.University>> ListAsync()
     {
         return await context.Universities.ToListAsync();
     }

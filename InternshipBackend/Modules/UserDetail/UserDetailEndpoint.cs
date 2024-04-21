@@ -1,9 +1,8 @@
 ﻿using InternshipBackend.Core;
 using InternshipBackend.Core.Services;
-using InternshipBackend.Data;
 using Microsoft.AspNetCore.Mvc;
 
-namespace InternshipBackend.Modules.AccountDetail;
+namespace InternshipBackend.Modules.UserDetail;
 
 [Route("UserDetail/[action]")]
 public class UserDetailEndpoint(IUserDetailService userDetailService) 

@@ -1,10 +1,14 @@
 ﻿#nullable disable
 using AutoMapper;
 using InternshipBackend.Data;
+using InternshipBackend.Modules.ForeignLanguage;
+using InternshipBackend.Modules.UniversityEducations;
+using InternshipBackend.Modules.UserDetail;
+using InternshipBackend.Modules.UserProject;
+using InternshipBackend.Modules.WorkHistory;
 
 namespace InternshipBackend.Modules.Account;
 
-[AutoMap(typeof(User))]
 public class UserDTO
 {
     public int Id { get; set; }
@@ -14,9 +18,9 @@ public class UserDTO
     public string ProfilePhotoUrl { get; set; }
     public string PhoneNumber { get; set; }
 
-    public IEnumerable<ForeignLanguageListDto> ForeignLanguages { get; set; } = [];
-    public IEnumerable<UniversityEducationListDto> UniversityEducations { get; set; } = [];
-    public IEnumerable<WorkHistoryListDto> Works { get; set; } = [];
-    public IEnumerable<UserProjectDtoListDto> UserProjects { get; set; } = [];
+    public ICollection<ForeignLanguageListDto> ForeignLanguages { get; set; } = [];
+    public ICollection<UniversityEducationListDto> UniversityEducations { get; set; } = [];
+    public ICollection<WorkHistoryListDto> Works { get; set; } = [];
+    public ICollection<UserProjectListDto> UserProjects { get; set; } = [];
     public UserDetailDTO Detail { get; set; }
 }

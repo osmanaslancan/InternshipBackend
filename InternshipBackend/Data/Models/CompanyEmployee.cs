@@ -1,10 +1,9 @@
 ﻿using InternshipBackend.Core;
 
-namespace InternshipBackend.Data;
+namespace InternshipBackend.Data.Models;
 
-public class CompanyEmployee : IHasIdField
+public class CompanyEmployee : Entity
 {
-    public int Id { get; set; }
     public int UserId { get; set; }
     public required User User { get; set; }
     public int CompanyId { get; set; }

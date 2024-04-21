@@ -1,7 +1,8 @@
-﻿namespace InternshipBackend.Data.Models;
+﻿using InternshipBackend.Core;
 
-public class DriverLicense
+namespace InternshipBackend.Data.Models;
+
+public class DriverLicense : Entity
 {
-    public int Id { get; set; }
     public required string License { get; set; }
 }

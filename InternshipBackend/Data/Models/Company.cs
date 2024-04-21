@@ -1,11 +1,10 @@
 ﻿
 using InternshipBackend.Core;
 
-namespace InternshipBackend.Data;
+namespace InternshipBackend.Data.Models;
 
-public class Company : IHasIdField
+public class Company : Entity
 {
-    public int Id { get; set; }
     public User? AdminUser { get; set; }
     public bool IsVertified { get; set; }
     public required string Name { get; set; }

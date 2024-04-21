@@ -1,10 +1,7 @@
-﻿using AutoMapper;
-using FluentValidation;
-using InternshipBackend.Data;
+﻿using FluentValidation;
 
-namespace InternshipBackend.Modules;
+namespace InternshipBackend.Modules.Account;
 
-[AutoMap(typeof(User), ReverseMap = true)]
 public class UserInfoUpdateDTO
 {
     public string? Name { get; set; }
@@ -12,9 +9,9 @@ public class UserInfoUpdateDTO
     public string? PhoneNumber { get; set; }
 }
 
-public class UserInfoUpdateDTOValidator : AbstractValidator<UserInfoUpdateDTO>
+public class UserInfoUpdateDtoValidator : AbstractValidator<UserInfoUpdateDTO>
 {
-    public UserInfoUpdateDTOValidator()
+    public UserInfoUpdateDtoValidator()
     {
         RuleFor(x => x.Name).NotEmpty();
         RuleFor(x => x.Surname).NotEmpty();

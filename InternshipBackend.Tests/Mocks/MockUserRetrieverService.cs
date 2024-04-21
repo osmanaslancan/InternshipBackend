@@ -1,5 +1,6 @@
 using InternshipBackend.Core;
 using InternshipBackend.Data;
+using InternshipBackend.Data.Models;
 
 namespace InternshipBackend.Tests.Mocks
 {

@@ -1,5 +1,5 @@
 ﻿
-namespace InternshipBackend.Data.Supabase;
+namespace InternshipBackend.Data.Models.Supabase;
 
 
 public class StorageObject
