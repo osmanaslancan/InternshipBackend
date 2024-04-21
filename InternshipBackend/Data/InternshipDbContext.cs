@@ -31,6 +31,13 @@ public class InternshipDbContext : DbContext
     {
     }
 
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+        
+        configurationBuilder.Properties<string>().HaveMaxLength(255);
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<User>()
@@ -46,5 +53,11 @@ public class InternshipDbContext : DbContext
             .HasOne(x => x.Detail)
             .WithOne(ud => ud.User)
             .HasForeignKey<UserDetail>(x => x.Id);
+
+
+        modelBuilder.Entity<UniversityEducation>(b =>
+        {
+            b.Property(x => x.Description).HasMaxLength(1000);
+        });
     }
 }

@@ -8,7 +8,7 @@ namespace InternshipBackend.Modules.Account;
 public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
 {
     [HttpPost]
-    public async Task<ServiceResponse> UpdateUserInfo([FromBody] UserInfoUpdateDTO userInfo)
+    public async Task<ServiceResponse> UpdateUserInfo([FromBody] UserInfoUpdateDto userInfo)
     {
         await accountService.UpdateUserInfo(userInfo);
 

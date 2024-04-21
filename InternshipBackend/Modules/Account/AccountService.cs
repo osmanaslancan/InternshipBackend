@@ -11,7 +11,7 @@ namespace InternshipBackend.Modules.Account;
 
 public interface IAccountService
 {
-    Task UpdateUserInfo(UserInfoUpdateDTO userInfo);
+    Task UpdateUserInfo(UserInfoUpdateDto userInfo);
     Task<User?> GetCurrentUserInfoOrDefault();
     Task UpdateProfileImage(UpdateProfileImageRequest request);
     Task<UserDTO> GetUser();
@@ -20,12 +20,12 @@ public interface IAccountService
 public class AccountService(
     IAccountRepository accountRepository,
     IHttpContextAccessor httpContextAccessor,
-    IValidator<UserInfoUpdateDTO> userInfoUpdateDtoValidator,
+    IValidator<UserInfoUpdateDto> userInfoUpdateDtoValidator,
     IHttpClientFactory clientFactory,
     IConfiguration configuration,
     IMapper mapper) : IScopedService, IAccountService
 {
-    public async Task CreateAsync(UserInfoUpdateDTO userInfoDTO)
+    public async Task CreateAsync(UserInfoUpdateDto userInfoDTO)
     {
         var supabaseId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var tokenEmail = httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.Email);
@@ -50,7 +50,8 @@ public class AccountService(
             Name = userInfoDTO.Name,
             Email = tokenEmail,
             Surname = userInfoDTO.Surname,
-            SupabaseId = supabaseId
+            SupabaseId = supabaseId,
+            PhoneNumber = userInfoDTO.PhoneNumber
         };
 
         await accountRepository.CreateAsync(userInfo);
@@ -72,7 +73,7 @@ public class AccountService(
     //    return userInfo;
     //}
 
-    public async Task UpdateUserInfo(UserInfoUpdateDTO newUserInfo)
+    public async Task UpdateUserInfo(UserInfoUpdateDto newUserInfo)
     {
         var oldUserInfo = await GetCurrentUserInfoOrDefault();
 

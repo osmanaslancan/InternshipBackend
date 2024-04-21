@@ -2,14 +2,14 @@
 
 namespace InternshipBackend.Modules.Account;
 
-public class UserInfoUpdateDTO
+public class UserInfoUpdateDto
 {
     public string? Name { get; set; }
     public string? Surname { get; set; }
     public string? PhoneNumber { get; set; }
 }
 
-public class UserInfoUpdateDtoValidator : AbstractValidator<UserInfoUpdateDTO>
+public class UserInfoUpdateDtoValidator : AbstractValidator<UserInfoUpdateDto>
 {
     public UserInfoUpdateDtoValidator()
     {
