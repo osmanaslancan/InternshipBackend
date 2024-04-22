@@ -1,4 +1,5 @@
-﻿using InternshipBackend.Core;
+﻿using System.ComponentModel.DataAnnotations;
+using InternshipBackend.Core;
 using InternshipBackend.Data.Models.Enums;
 
 namespace InternshipBackend.Data.Models;
@@ -6,6 +7,7 @@ namespace InternshipBackend.Data.Models;
 public class UserDetail : Entity, IHasUserIdField
 {
     public required User User { get; set; }
+    [DataType(DataType.Date)]
     public DateTime DateOfBirth { get; set; }
     public Gender Gender { get; set; }
     public ICollection<DriverLicense> DriverLicences { get; set; } = [];

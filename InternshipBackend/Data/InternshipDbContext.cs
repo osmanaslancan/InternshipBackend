@@ -58,6 +58,13 @@ public class InternshipDbContext : DbContext
         modelBuilder.Entity<UniversityEducation>(b =>
         {
             b.Property(x => x.Description).HasMaxLength(1000);
+            b.Property(x => x.StartDate).HasColumnType("date");
+            b.Property(x => x.EndDate).HasColumnType("date");
+        });
+
+        modelBuilder.Entity<UserDetail>(b =>
+        {
+            b.Property(x => x.DateOfBirth).HasColumnType("date");
         });
     }
 }

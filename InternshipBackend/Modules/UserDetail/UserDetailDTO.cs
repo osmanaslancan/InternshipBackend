@@ -1,9 +1,12 @@
-﻿using InternshipBackend.Data.Models.Enums;
+﻿using System.ComponentModel.DataAnnotations;
+using InternshipBackend.Data.Models.Enums;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace InternshipBackend.Modules.UserDetail;
 
 public class UserDetailDTO
 {
+    [DataType(DataType.Date)]
     public DateTime DateOfBirth { get; set; }
     public Gender Gender { get; set; }
     public ICollection<string> DriverLicences { get; set; } = [];

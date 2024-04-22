@@ -3,6 +3,7 @@ using System;
 using InternshipBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InternshipBackend.Migrations
 {
     [DbContext(typeof(InternshipDbContext))]
-    partial class InternshipDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240422073010_ChangeDateTimeToDate")]
+    partial class ChangeDateTimeToDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -346,7 +349,7 @@ namespace InternshipBackend.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("date");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("District")
                         .HasMaxLength(255)

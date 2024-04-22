@@ -1,4 +1,5 @@
 ﻿#nullable disable
+using System.ComponentModel.DataAnnotations;
 using InternshipBackend.Core;
 
 namespace InternshipBackend.Data.Models;
@@ -7,10 +8,13 @@ public class User : Entity
 {
     public int Id { get; set; }
     public Guid SupabaseId { get; set; }
+    [DataType(DataType.EmailAddress)]
     public required string Email { get; set; }
     public string Name { get; set; }
     public string Surname { get; set; }
+    [DataType(DataType.ImageUrl)]
     public string ProfilePhotoUrl { get; set; }
+    [DataType(DataType.PhoneNumber)]
     public string PhoneNumber { get; set; }
 
     public ICollection<ForeignLanguage> ForeignLanguages { get; set; } = [];
