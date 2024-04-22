@@ -36,4 +36,70 @@ public class UniversityEducationServiceTests : TestBase
         Assert.False(universityEducation.IsGraduated);
         Assert.Equal(dto.StartDate, universityEducation.StartDate);
     }
+    
+    [Fact]
+    public async Task Updates_Record_With_Valid_Input()
+    {
+        await using var application = await CreateApplication(x =>
+        {
+            x.Services.AddTransient<IUniversityEducationService, UniversityEducationService>();
+        });
+
+        var service = application.Services.GetRequiredService<IUniversityEducationService>();
+
+        var createDto = new UniversityEducationModifyDto()
+        {
+            Faculty = "Test",
+            Department = "Test",
+            StartDate = DateTime.Now.Date,
+            IsGraduated = false,
+        };
+
+        var createdRecord = await service.CreateAsync(createDto);
+        application.Db.ChangeTracker.Clear();
+
+        var updateDto = new UniversityEducationModifyDto()
+        {
+            Faculty = "Updated",
+            Department = "Updated",
+            StartDate = DateTime.Now.Date,
+            IsGraduated = true,
+        };
+
+        await service.UpdateAsync(createdRecord.Id, updateDto);
+        application.Db.ChangeTracker.Clear();
+
+        var updatedRecord = application.Db.UniversityEducations.First();
+        Assert.Equal("Updated", updatedRecord.Faculty);
+        Assert.Equal("Updated", updatedRecord.Department);
+        Assert.True(updatedRecord.IsGraduated);
+        Assert.Equal(updateDto.StartDate, updatedRecord.StartDate);
+    }
+
+    [Fact]
+    public async Task Deletes_Record_With_Valid_Id()
+    {
+        await using var application = await CreateApplication(x =>
+        {
+            x.Services.AddTransient<IUniversityEducationService, UniversityEducationService>();
+        });
+
+        var service = application.Services.GetRequiredService<IUniversityEducationService>();
+
+        var createDto = new UniversityEducationModifyDto()
+        {
+            Faculty = "Test",
+            Department = "Test",
+            StartDate = DateTime.Now.Date,
+            IsGraduated = false,
+        };
+
+        var createdRecord = await service.CreateAsync(createDto);
+        application.Db.ChangeTracker.Clear();
+
+        await service.DeleteAsync(createdRecord.Id);
+        application.Db.ChangeTracker.Clear();
+
+        Assert.Empty(application.Db.UniversityEducations);
+    }
 }
