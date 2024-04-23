@@ -27,7 +27,7 @@ public class AccountService(
 {
     public async Task CreateAsync(UserInfoUpdateDto userInfoDTO)
     {
-        var supabaseId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var supabaseId = httpContextAccessor.HttpContext!.User.GetSupabaseId()!;
         var tokenEmail = httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.Email);
 
         if (string.IsNullOrEmpty(tokenEmail))
@@ -59,7 +59,7 @@ public class AccountService(
 
     public async Task<User?> GetCurrentUserInfoOrDefault()
     {
-        var userId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var userId = httpContextAccessor.HttpContext!.User.GetSupabaseId()!;
         var user = await accountRepository.GetBySupabaseIdAsync(userId);
 
         return user;
@@ -122,6 +122,6 @@ public class AccountService(
     public async Task<UserDTO> GetUser()
     {
         var user = await accountRepository.GetFullUser(httpContextAccessor.HttpContext!.User.GetSupabaseId()!);
-        return mapper.Map<UserDTO>(user);
+        return mapper.Map<UserDTO>(user!);
     }
 }

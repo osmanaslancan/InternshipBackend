@@ -21,5 +21,6 @@ public class User : Entity
     public ICollection<UniversityEducation> UniversityEducations { get; set; } = [];
     public ICollection<WorkHistory> Works { get; set; } = [];
     public ICollection<UserProject> UserProjects { get; set; } = [];
+    public ICollection<UserPermission> UserPermissions { get; set; } = [];
     public UserDetail Detail { get; set; }
 }

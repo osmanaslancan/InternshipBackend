@@ -11,6 +11,7 @@ public interface IAccountRepository : IGenericRepository<User>
     Task<bool> ExistsByEmail(string email);
     Task<bool> ExistsBySupabaseId(Guid supabaseId);
     Task<User> GetFullUser(Guid supabaseId);
+    Task<bool> HasPermissionWithSupabaseId(Guid supabaseId, string permission);
 }
 
 public class AccountRepository(InternshipDbContext context) : GenericRepository<User>(context), IAccountRepository
@@ -18,6 +19,12 @@ public class AccountRepository(InternshipDbContext context) : GenericRepository<
     public Task<User?> GetBySupabaseIdAsync(Guid id)
     {
         return DbContext.Users.FirstOrDefaultAsync(x => x.SupabaseId == id);
+    }
+
+    public Task<bool> HasPermissionWithSupabaseId(Guid supabaseId, string permission)
+    {
+        return DbContext.Users.AnyAsync(user =>
+            user.SupabaseId == supabaseId && user.UserPermissions.Any(userPermission => userPermission.Permission == permission));
     }
 
     public Task<bool> ExistsByEmail(string email)

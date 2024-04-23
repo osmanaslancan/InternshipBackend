@@ -1,5 +1,7 @@
 ﻿using InternshipBackend.Core;
 using InternshipBackend.Core.Services;
+using InternshipBackend.Modules.Account.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InternshipBackend.Modules.Account;

@@ -14,11 +14,15 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Globalization;
 using System.Reflection;
+using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using InternshipBackend;
+using InternshipBackend.Core.Authorization;
 using InternshipBackend.Core.Services;
+using InternshipBackend.Modules.Account.Authorization;
+using Microsoft.AspNetCore.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +51,11 @@ builder.Services.AddAuthentication(o =>
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
         };
     });
+
+builder.Services.AddTransient<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
+builder.Services.AddTransient<IPermissionDefinitionManager, PermissionDefinitionManager>();
+builder.Services.AddTransient<IPermissionDefinitionProvider, PermissionDefinitionProvider>();
+builder.Services.AddTransient<IAuthorizationHandler, PermissionRequirementHandler>();
 
 
 var typeSourceProvider = new TypeSourceProvider(typeof(Program).Assembly);
@@ -222,7 +231,7 @@ if (app.Environment.IsDevelopment())
 app.UseRequestLocalization();
 app.UseCors();
 
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

@@ -66,5 +66,10 @@ public class InternshipDbContext : DbContext
         {
             b.Property(x => x.DateOfBirth).HasColumnType("date");
         });
+
+        modelBuilder.Entity<UserPermission>(b =>
+        {
+            b.HasKey(x => new { x.UserId, x.Permission });
+        });
     }
 }
