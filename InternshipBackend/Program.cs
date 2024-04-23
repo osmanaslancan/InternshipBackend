@@ -77,7 +77,9 @@ builder.Services.AddCors(o =>
 {
     o.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
+        policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        // policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
+        
     });
 });
 
@@ -150,13 +152,17 @@ builder.Services.AddRequestLocalization(o =>
     o.DefaultRequestCulture = new RequestCulture("tr-TR");
     o.SupportedCultures =
     [
-        new CultureInfo("en-US"),
+        new CultureInfo("tr"),
         new CultureInfo("tr-TR"),
+        new CultureInfo("en"),
+        new CultureInfo("en-US"),
     ];
     o.SupportedUICultures =
     [
-        new CultureInfo("en-US"),
+        new CultureInfo("tr"),
         new CultureInfo("tr-TR"),
+        new CultureInfo("en"),
+        new CultureInfo("en-US"),
     ];
     
     o.RequestCultureProviders =
