@@ -16,7 +16,7 @@ public class UniversityEducationModifyDto
     [DataType(DataType.Date)]
     public DateTime? EndDate { get; set; }
     
-    public int EducationYear { get; set; }
+    public int? EducationYear { get; set; }
     public bool IsGraduated { get; set; }
     public double GPA { get; set; }
     public string? Description { get; set; }
