@@ -8,13 +8,15 @@ public class UniversitiyEducationModifyDtoValidator : AbstractValidator<Universi
     public UniversitiyEducationModifyDtoValidator()
     {
         RuleFor(x => x.Department).NotNull();
-        RuleFor(x => x.EducationYear).NotNull().LessThanOrEqualTo(6);
+        
         RuleFor(x => x.StartDate).NotNull();
         When(x => x.IsGraduated == true, () =>
         {
             RuleFor(x => x.EndDate).NotNull().GreaterThan(x => x.StartDate);
+            RuleFor(x => x.EducationYear).Null();
         }).Otherwise(() =>
         {
+            RuleFor(x => x.EducationYear).NotNull().LessThanOrEqualTo(6).GreaterThanOrEqualTo(0);
             RuleFor(x => x.EndDate).Null();
         });
         
