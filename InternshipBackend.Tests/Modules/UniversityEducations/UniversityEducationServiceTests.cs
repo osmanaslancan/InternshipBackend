@@ -25,6 +25,7 @@ public class UniversityEducationServiceTests : TestBase
             Department = "Test",
             StartDate = DateTime.Now.Date,
             IsGraduated = false,
+            UniversityName = "test",
         };
         
         await service.CreateAsync(dto);
@@ -53,6 +54,7 @@ public class UniversityEducationServiceTests : TestBase
             Department = "Test",
             StartDate = DateTime.Now.Date,
             IsGraduated = false,
+            UniversityName = "test",
         };
 
         var createdRecord = await service.CreateAsync(createDto);
@@ -63,7 +65,9 @@ public class UniversityEducationServiceTests : TestBase
             Faculty = "Updated",
             Department = "Updated",
             StartDate = DateTime.Now.Date,
+            EndDate = DateTime.Now.Date.Add(TimeSpan.FromDays(22)),
             IsGraduated = true,
+            UniversityName = "test",
         };
 
         await service.UpdateAsync(createdRecord.Id, updateDto);
@@ -92,6 +96,7 @@ public class UniversityEducationServiceTests : TestBase
             Department = "Test",
             StartDate = DateTime.Now.Date,
             IsGraduated = false,
+            UniversityName = "test",
         };
 
         var createdRecord = await service.CreateAsync(createDto);

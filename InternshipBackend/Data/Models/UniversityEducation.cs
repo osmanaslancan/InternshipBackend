@@ -6,6 +6,7 @@ namespace InternshipBackend.Data.Models;
 public class UniversityEducation : UserOwnedEntity
 {
     public int? UniversityId { get; set; }
+    public University? University { get; set; }
     public string? UniversityName { get; set; }
     public string? Faculty { get; set; }
     public required string Department { get; set; }

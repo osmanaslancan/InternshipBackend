@@ -122,6 +122,10 @@ public class AccountService(
     public async Task<UserDTO> GetUser()
     {
         var user = await accountRepository.GetFullUser(httpContextAccessor.HttpContext!.User.GetSupabaseId()!);
+        foreach (var education in user.UniversityEducations)
+        {
+            education.UniversityName ??= education.University?.Name;
+        }
         return mapper.Map<UserDTO>(user!);
     }
 }
