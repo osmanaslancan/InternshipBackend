@@ -60,6 +60,7 @@ public class InternshipDbContext : DbContext
             b.Property(x => x.Description).HasMaxLength(1000);
             b.Property(x => x.StartDate).HasColumnType("date");
             b.Property(x => x.EndDate).HasColumnType("date");
+            b.HasOne(x => x.University).WithMany().HasForeignKey(x => x.UniversityId);
         });
 
         modelBuilder.Entity<UserDetail>(b =>
@@ -71,5 +72,6 @@ public class InternshipDbContext : DbContext
         {
             b.HasKey(x => new { x.UserId, x.Permission });
         });
+        
     }
 }
