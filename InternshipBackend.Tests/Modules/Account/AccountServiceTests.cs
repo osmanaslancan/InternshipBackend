@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using FluentValidation;
 using InternshipBackend.Data.Models;
+using InternshipBackend.Data.Models.Enums;
 using InternshipBackend.Modules.Account;
 using InternshipBackend.Resources.Error;
 using JetBrains.Annotations;
@@ -14,7 +15,7 @@ namespace InternshipBackend.Tests.Modules.Account;
 public class AccountServiceTests : TestBase
 {
     [Fact]
-    public async Task Creates_Valid_Account()
+    public async Task Creates_Valid_Intern_Account()
     {
         await using var application = await CreateApplication(x =>
         {
@@ -30,10 +31,43 @@ public class AccountServiceTests : TestBase
         {
             Name = "Test",
             Surname = "Test",
-            PhoneNumber = "123456789"
+            PhoneNumber = "123456789",
+            AccountType = AccountType.Intern
         };
 
-        await service.CreateAsync(dto);
+        await service.UpdateUserInfo(dto);
+
+        var users = await application.Db.Users.ToListAsync();
+
+        Assert.Single(users);
+        var user = users.First();
+        Assert.Equal(dto.Name, user.Name);
+        Assert.Equal(dto.Surname, user.Surname);
+        Assert.Equal(dto.PhoneNumber, user.PhoneNumber);
+    }
+    
+    [Fact]
+    public async Task Creates_Valid_CompanyOwner_Account()
+    {
+        await using var application = await CreateApplication(x =>
+        {
+            x.Services.AddTransient<IAccountRepository, AccountRepository>();
+        });
+
+        application.Db.Users.Remove(application.CurrentUser);
+        await application.Db.SaveChangesAsync();
+
+        var service = ActivatorUtilities.CreateInstance<AccountService>(application.Services);
+
+        var dto = new UserInfoUpdateDto()
+        {
+            Name = "Test",
+            Surname = "Test",
+            PhoneNumber = "123456789",
+            AccountType = AccountType.CompanyOwner
+        };
+
+        await service.UpdateUserInfo(dto);
 
         var users = await application.Db.Users.ToListAsync();
 
@@ -53,7 +87,7 @@ public class AccountServiceTests : TestBase
         });
 
         application.Services.GetRequiredService<IHttpContextAccessor>()!.HttpContext!.User = new ClaimsPrincipal(
-            new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, application.CurrentUser.SupabaseId.ToString("N"))]));
+            new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString("N"))]));
 
         var service = ActivatorUtilities.CreateInstance<AccountService>(application.Services);
 
@@ -61,11 +95,36 @@ public class AccountServiceTests : TestBase
         {
             Name = "Test",
             Surname = "Test",
-            PhoneNumber = "123456789"
+            PhoneNumber = "123456789",
+            AccountType = AccountType.Intern
         };
 
-        var exception = await Assert.ThrowsAsync<ValidationException>(async () => await service.CreateAsync(dto));
+        var exception = await Assert.ThrowsAsync<ValidationException>(async () => await service.UpdateUserInfo(dto));
         Assert.Equal(ErrorCodes.EmailNotFound, exception.Message);
+    }
+    
+    [Fact]
+    public async Task Create_Throws_If_AccountType_Not_Found()
+    {
+        await using var application = await CreateApplication(x =>
+        {
+            x.Services.AddTransient<IAccountRepository, AccountRepository>();
+        });
+
+        application.Services.GetRequiredService<IHttpContextAccessor>()!.HttpContext!.User = new ClaimsPrincipal(
+            new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString("N"))]));
+
+        var service = ActivatorUtilities.CreateInstance<AccountService>(application.Services);
+
+        var dto = new UserInfoUpdateDto()
+        {
+            Name = "Test",
+            Surname = "Test",
+            PhoneNumber = "123456789",
+        };
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(async () => await service.UpdateUserInfo(dto));
+        Assert.Contains("Account Type", exception.Message);
     }
     
     [Fact]
@@ -75,32 +134,11 @@ public class AccountServiceTests : TestBase
         {
             x.Services.AddTransient<IAccountRepository, AccountRepository>();
         });
-
-        var service = ActivatorUtilities.CreateInstance<AccountService>(application.Services);
-
-        var dto = new UserInfoUpdateDto()
-        {
-            Name = "Test",
-            Surname = "Test",
-            PhoneNumber = "123456789"
-        };
-
-        var exception = await Assert.ThrowsAsync<ValidationException>(async () => await service.CreateAsync(dto));
-        Assert.Equal(ErrorCodes.EmailExists, exception.Message);
-    }
-    
-    [Fact]
-    public async Task Create_Throws_If_User_Exists()
-    {
-        await using var application = await CreateApplication(x =>
-        {
-            x.Services.AddTransient<IAccountRepository, AccountRepository>();
-        });
-
+        
         application.Services.GetRequiredService<IHttpContextAccessor>()!.HttpContext!.User = new ClaimsPrincipal(
             new ClaimsIdentity([
-                new Claim(ClaimTypes.NameIdentifier, application.CurrentUser.SupabaseId.ToString("N")),
-                new Claim(ClaimTypes.Email, "notthesame@internship.backend")
+                new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString("N")),
+                new Claim(ClaimTypes.Email, application.CurrentUser.Email)
             ]));
         
         var service = ActivatorUtilities.CreateInstance<AccountService>(application.Services);
@@ -109,11 +147,12 @@ public class AccountServiceTests : TestBase
         {
             Name = "Test",
             Surname = "Test",
-            PhoneNumber = "123456789"
+            PhoneNumber = "123456789",
+            AccountType = AccountType.Intern
         };
 
-        var exception = await Assert.ThrowsAsync<ValidationException>(async () => await service.CreateAsync(dto));
-        Assert.Equal(ErrorCodes.UserAlreadyExists, exception.Message);
+        var exception = await Assert.ThrowsAsync<ValidationException>(async () => await service.UpdateUserInfo(dto));
+        Assert.Equal(ErrorCodes.EmailExists, exception.Message);
     }
     
     [Fact]

@@ -1,6 +1,7 @@
 ﻿using InternshipBackend.Core.Data;
 using InternshipBackend.Data;
 using InternshipBackend.Data.Models;
+using InternshipBackend.Data.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace InternshipBackend.Modules.Account;
@@ -12,6 +13,7 @@ public interface IAccountRepository : IGenericRepository<User>
     Task<bool> ExistsBySupabaseId(Guid supabaseId);
     Task<User> GetFullUser(Guid supabaseId);
     Task<bool> HasPermissionWithSupabaseId(Guid supabaseId, string permission);
+    Task<bool> HasTypeWithSupabaseId(Guid supabaseId, AccountType accountType);
 }
 
 public class AccountRepository(InternshipDbContext context) : GenericRepository<User>(context), IAccountRepository
@@ -25,6 +27,12 @@ public class AccountRepository(InternshipDbContext context) : GenericRepository<
     {
         return DbContext.Users.AnyAsync(user =>
             user.SupabaseId == supabaseId && user.UserPermissions.Any(userPermission => userPermission.Permission == permission));
+    }
+    
+    public Task<bool> HasTypeWithSupabaseId(Guid supabaseId, AccountType accountType)
+    {
+        return DbContext.Users.AnyAsync(user =>
+            user.SupabaseId == supabaseId && user.AccountType == accountType);
     }
 
     public Task<bool> ExistsByEmail(string email)

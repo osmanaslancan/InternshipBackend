@@ -10,9 +10,9 @@ public class MockHttpMessageHandlerBuilder : HttpMessageHandlerBuilder
         throw new NotImplementedException();
     }
 
-    public override IList<DelegatingHandler> AdditionalHandlers { get; }
+    public override IList<DelegatingHandler>? AdditionalHandlers { get; }
     public override string? Name { get; set; }
-    public override HttpMessageHandler PrimaryHandler { get; set; }
+    public override HttpMessageHandler? PrimaryHandler { get; set; }
 }
 
 public class MockHttpMessageHandler : HttpMessageHandler

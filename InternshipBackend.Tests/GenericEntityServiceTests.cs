@@ -27,6 +27,8 @@ public class GenericEntityServiceTests : TestBase
             Department = "Computer Science",
             StartDate = DateTime.Now,
             UniversityId = null,
+            UniversityName = "test",
+            EducationYear = 1,
         });
             
         var record = testContext.Db.UniversityEducations.FirstOrDefault(x => x.Department == "Computer Science");
@@ -47,6 +49,9 @@ public class GenericEntityServiceTests : TestBase
         var data = new UniversityEducationModifyDto
         {
             Department = "Computer Science",
+            UniversityName = "test",
+            EducationYear = 2,
+            StartDate = DateTime.Now,
         };
             
         var createdRecord = await service.CreateAsync(data);
@@ -58,6 +63,9 @@ public class GenericEntityServiceTests : TestBase
             await service.UpdateAsync(createdRecord.Id, new UniversityEducationModifyDto()
             {
                 Department = "Changed Department",
+                UniversityName = "test",
+                EducationYear = 2,
+                StartDate = DateTime.Now,
             });
         });
             
@@ -77,6 +85,9 @@ public class GenericEntityServiceTests : TestBase
         var data = new UniversityEducationModifyDto
         {
             Department = "Computer Science",
+            UniversityName = "test",
+            EducationYear = 2,
+            StartDate = DateTime.Now,
         };
             
         var createdRecord = await service.CreateAsync(data);
@@ -126,6 +137,10 @@ public class GenericEntityServiceTests : TestBase
         var data = new UniversityEducationModifyDto
         {
             Department = "Computer Science",
+            StartDate = DateTime.Now,
+            UniversityId = null,
+            UniversityName = "test",
+            EducationYear = 1,
         };
 
         await service.CreateAsync(data);
@@ -156,6 +171,9 @@ public class GenericEntityServiceTests : TestBase
         var data = new UniversityEducationModifyDto
         {
             Department = "Computer Science",
+            UniversityName = "test",
+            EducationYear = 2,
+            StartDate = DateTime.Now,
         };
 
         await service.UpdateAsync(old.Entity.Id, data);

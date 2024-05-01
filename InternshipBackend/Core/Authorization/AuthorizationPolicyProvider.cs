@@ -28,7 +28,12 @@ public class AuthorizationPolicyProvider : DefaultAuthorizationPolicyProvider, I
         if (permission != null)
         {
             var policyBuilder = new AuthorizationPolicyBuilder(Array.Empty<string>());
-            policyBuilder.Requirements.Add(new PermissionRequirement(policyName));
+            
+            if (permission.Type == PermissionRequirementType.Database)
+                policyBuilder.Requirements.Add(new PermissionRequirement(policyName));
+            else if (permission.Type == PermissionRequirementType.UserType)
+                policyBuilder.Requirements.Add(new UserTypeRequirement(policyName));
+            
             return policyBuilder.Build();
         }
 

@@ -6,7 +6,8 @@ public class PermissionDefinitionProvider : IPermissionDefinitionProvider
 {
     private readonly Dictionary<string, PermissionDefinition> _permissionDefinitions = new()
     {
-        { PermissionKeys.CompanyManagement, new PermissionDefinition(PermissionKeys.CompanyManagement) }
+        { PermissionKeys.CompanyOwner, new PermissionDefinition(PermissionKeys.CompanyOwner, PermissionRequirementType.UserType) },
+        { PermissionKeys.Intern, new PermissionDefinition(PermissionKeys.Intern, PermissionRequirementType.UserType) }
     };
 
     public Task<PermissionDefinition?> GetPermissionAsync(string permissionName)

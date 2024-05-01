@@ -1,12 +1,12 @@
 ﻿#nullable disable
 using System.ComponentModel.DataAnnotations;
 using InternshipBackend.Core;
+using InternshipBackend.Data.Models.Enums;
 
 namespace InternshipBackend.Data.Models;
 
 public class User : Entity
 {
-    public int Id { get; set; }
     public Guid SupabaseId { get; set; }
     [DataType(DataType.EmailAddress)]
     public required string Email { get; set; }
@@ -16,6 +16,8 @@ public class User : Entity
     public string ProfilePhotoUrl { get; set; }
     [DataType(DataType.PhoneNumber)]
     public string PhoneNumber { get; set; }
+
+    public AccountType AccountType { get; set; }
 
     public ICollection<ForeignLanguage> ForeignLanguages { get; set; } = [];
     public ICollection<UniversityEducation> UniversityEducations { get; set; } = [];

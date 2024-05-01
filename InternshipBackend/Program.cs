@@ -56,6 +56,7 @@ builder.Services.AddTransient<IAuthorizationPolicyProvider, AuthorizationPolicyP
 builder.Services.AddTransient<IPermissionDefinitionManager, PermissionDefinitionManager>();
 builder.Services.AddTransient<IPermissionDefinitionProvider, PermissionDefinitionProvider>();
 builder.Services.AddTransient<IAuthorizationHandler, PermissionRequirementHandler>();
+builder.Services.AddTransient<IAuthorizationHandler, UserTypeRequirementHandler>();
 
 
 var typeSourceProvider = new TypeSourceProvider(typeof(Program).Assembly);

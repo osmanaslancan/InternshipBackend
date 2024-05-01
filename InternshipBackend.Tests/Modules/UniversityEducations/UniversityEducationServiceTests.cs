@@ -24,6 +24,7 @@ public class UniversityEducationServiceTests : TestBase
             Faculty = "Test",
             Department = "Test",
             StartDate = DateTime.Now.Date,
+            EducationYear = 2,
             IsGraduated = false,
             UniversityName = "test",
         };
@@ -54,6 +55,7 @@ public class UniversityEducationServiceTests : TestBase
             Department = "Test",
             StartDate = DateTime.Now.Date,
             IsGraduated = false,
+            EducationYear = 2,
             UniversityName = "test",
         };
 
@@ -96,6 +98,7 @@ public class UniversityEducationServiceTests : TestBase
             Department = "Test",
             StartDate = DateTime.Now.Date,
             IsGraduated = false,
+            EducationYear = 2,
             UniversityName = "test",
         };
 

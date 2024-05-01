@@ -2,8 +2,10 @@
 using System.Security.Claims;
 using AutoMapper;
 using FluentValidation;
+using FluentValidation.Validators;
 using InternshipBackend.Core;
 using InternshipBackend.Data.Models;
+using InternshipBackend.Data.Models.Enums;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 
@@ -11,7 +13,7 @@ namespace InternshipBackend.Modules.Account;
 
 public interface IAccountService
 {
-    Task UpdateUserInfo(UserInfoUpdateDto userInfo);
+    Task UpdateUserInfo(UserInfoUpdateDto dto);
     Task<User?> GetCurrentUserInfoOrDefault();
     Task UpdateProfileImage(UpdateProfileImageRequest request);
     Task<UserDTO> GetUser();
@@ -25,17 +27,17 @@ public class AccountService(
     IConfiguration configuration,
     IMapper mapper) : IScopedService, IAccountService
 {
-    public async Task CreateAsync(UserInfoUpdateDto userInfoDTO)
+    private async Task<(Guid supabaseId, string email)> GetSupabaseIdAndEmail()
     {
         var supabaseId = httpContextAccessor.HttpContext!.User.GetSupabaseId()!;
-        var tokenEmail = httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.Email);
-
-        if (string.IsNullOrEmpty(tokenEmail))
+        var email = httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.Email)!;
+        
+        if (string.IsNullOrEmpty(email))
         {
             throw new ValidationException(ErrorCodes.EmailNotFound);
         }
 
-        if (await accountRepository.ExistsByEmail(tokenEmail))
+        if (await accountRepository.ExistsByEmail(email))
         {
             throw new ValidationException(ErrorCodes.EmailExists);
         }
@@ -44,14 +46,21 @@ public class AccountService(
         {
             throw new ValidationException(ErrorCodes.UserAlreadyExists);
         }
+        
+        return (supabaseId, email);
+    }
+    private async Task CreateAsync(UserInfoUpdateDto userInfoDto)
+    {
+        var (supabaseId, tokenEmail) = await GetSupabaseIdAndEmail(); 
 
         var userInfo = new User()
         {
-            Name = userInfoDTO.Name,
+            Name = userInfoDto.Name,
             Email = tokenEmail,
-            Surname = userInfoDTO.Surname,
+            Surname = userInfoDto.Surname,
             SupabaseId = supabaseId,
-            PhoneNumber = userInfoDTO.PhoneNumber
+            PhoneNumber = userInfoDto.PhoneNumber,
+            AccountType = userInfoDto.AccountType!.Value,
         };
 
         await accountRepository.CreateAsync(userInfo);
@@ -65,27 +74,29 @@ public class AccountService(
         return user;
     }
 
-    //private async Task<User> GetCurrentUserInfo()
-    //{
-    //    var userId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-    //    var userInfo = await accountRepository.GetBySupabaseIdAsync(userId) ?? throw new ValidationException("UserInfo not found for current user");
-    //    return userInfo;
-    //}
-
-    public async Task UpdateUserInfo(UserInfoUpdateDto newUserInfo)
+    public async Task UpdateUserInfo(UserInfoUpdateDto dto)
     {
-        var oldUserInfo = await GetCurrentUserInfoOrDefault();
+        var currentUserInfo = await GetCurrentUserInfoOrDefault();
 
-        if (oldUserInfo is not null)
+        await userInfoUpdateDtoValidator.ValidateAndThrowAsync(dto);
+        
+        if (currentUserInfo is not null)
         {
-            await userInfoUpdateDtoValidator.ValidateAndThrowAsync(newUserInfo);
-            var result = mapper.Map(newUserInfo, oldUserInfo)!;
-            await accountRepository.UpdateAsync(result);
+            currentUserInfo.Name = dto.Name;
+            currentUserInfo.Surname = dto.Surname;
+            currentUserInfo.PhoneNumber = dto.PhoneNumber;
+            
+            await accountRepository.UpdateAsync(currentUserInfo);
             return;
         }
+        
+        await userInfoUpdateDtoValidator.ValidateAsync(dto, o =>
+        {
+            o.ThrowOnFailures();
+            o.IncludeRuleSets("Create");
+        });
 
-        await CreateAsync(newUserInfo);
+        await CreateAsync(dto);
     }
 
     public async Task UpdateProfileImage(UpdateProfileImageRequest request)

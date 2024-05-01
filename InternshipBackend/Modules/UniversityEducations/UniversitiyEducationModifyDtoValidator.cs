@@ -9,7 +9,7 @@ public class UniversitiyEducationModifyDtoValidator : AbstractValidator<Universi
     {
         RuleFor(x => x.Department).NotNull();
         
-        RuleFor(x => x.StartDate).NotNull();
+        RuleFor(x => x.StartDate).NotEmpty();
         When(x => x.IsGraduated == true, () =>
         {
             RuleFor(x => x.EndDate).NotNull().GreaterThan(x => x.StartDate);

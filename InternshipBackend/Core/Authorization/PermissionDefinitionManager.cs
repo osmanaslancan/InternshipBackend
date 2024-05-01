@@ -2,7 +2,7 @@ namespace InternshipBackend.Core.Authorization;
 
 public interface IPermissionDefinitionManager
 {
-    Task<string?> GetPermissionNameForPolicyOrNullAsync(string policy);
+    Task<PermissionDefinition?> GetPermissionNameForPolicyOrNullAsync(string policy);
 }
 
 public class PermissionDefinitionManager : IPermissionDefinitionManager
@@ -14,7 +14,7 @@ public class PermissionDefinitionManager : IPermissionDefinitionManager
         this.serviceProvider = serviceProvider;
     }
 
-    public async Task<string?> GetPermissionNameForPolicyOrNullAsync(string policy)
+    public async Task<PermissionDefinition?> GetPermissionNameForPolicyOrNullAsync(string policy)
     {
         var providers = serviceProvider.GetRequiredService<IEnumerable<IPermissionDefinitionProvider>>();
         foreach (var provider in providers)
@@ -22,7 +22,7 @@ public class PermissionDefinitionManager : IPermissionDefinitionManager
             var definition = await provider.GetPermissionAsync(policy);
             if (definition is not null)
             {
-                return definition.Name;
+                return definition;
             }
         }
 
