@@ -64,6 +64,14 @@ public class InternshipDbContext : DbContext
             b.Property(x => x.EndDate).HasColumnType("date");
             b.HasOne(x => x.University).WithMany().HasForeignKey(x => x.UniversityId);
         });
+        
+        modelBuilder.Entity<UserProject>(b =>
+        {
+            b.Property(x => x.ProjectName).HasMaxLength(255);
+            b.Property(x => x.Description).HasMaxLength(1000);
+            b.Property(x => x.ProjectThumbnail).HasMaxLength(255);
+            b.Property(x => x.ProjectLink).HasMaxLength(255);
+        });
 
         modelBuilder.Entity<WorkHistory>(b =>
         {
