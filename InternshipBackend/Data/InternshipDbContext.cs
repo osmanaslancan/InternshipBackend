@@ -40,6 +40,8 @@ public class InternshipDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema("public");
+        
         modelBuilder.Entity<User>()
             .HasIndex(x => x.SupabaseId)
             .IsUnique();
@@ -65,7 +67,7 @@ public class InternshipDbContext : DbContext
 
         modelBuilder.Entity<WorkHistory>(b =>
         {
-            b.Property(x => x.StartDate).HasColumnType("date");
+            b.Property(x => x.StartDate).IsRequired().HasColumnType("date");
             b.Property(x => x.EndDate).HasColumnType("date");
             b.Property(x => x.Description).HasMaxLength(1000);
         });
