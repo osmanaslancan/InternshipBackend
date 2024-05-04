@@ -12,6 +12,9 @@ public class WorkHistoryModifyDtoValidator : AbstractValidator<WorkHistoryModify
         When(x => !x.IsWorkingNow, () =>
         {
             RuleFor(x => x.EndDate).NotEmpty();
+        }).Otherwise(() =>
+        {
+            RuleFor(x => x.EndDate).Null();
         });
         RuleFor(x => x.IsWorkingNow).NotNull();
         RuleFor(x => x.Description).MaximumLength(1000);
