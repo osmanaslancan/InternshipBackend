@@ -9,7 +9,7 @@ public class WorkHistoryModifyDtoValidator : AbstractValidator<WorkHistoryModify
         RuleFor(x => x.Position).NotEmpty();
         RuleFor(x => x.CompanyName).NotEmpty();
         RuleFor(x => x.StartDate).NotEmpty();
-        When(x => x.IsWorkingNow, () =>
+        When(x => !x.IsWorkingNow, () =>
         {
             RuleFor(x => x.EndDate).NotEmpty();
         });
