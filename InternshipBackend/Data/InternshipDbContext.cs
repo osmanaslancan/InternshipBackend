@@ -63,6 +63,13 @@ public class InternshipDbContext : DbContext
             b.HasOne(x => x.University).WithMany().HasForeignKey(x => x.UniversityId);
         });
 
+        modelBuilder.Entity<WorkHistory>(b =>
+        {
+            b.Property(x => x.StartDate).HasColumnType("date");
+            b.Property(x => x.EndDate).HasColumnType("date");
+            b.Property(x => x.Description).HasMaxLength(1000);
+        });
+        
         modelBuilder.Entity<UserDetail>(b =>
         {
             b.Property(x => x.DateOfBirth).HasColumnType("date");
