@@ -218,6 +218,24 @@ foreach (var tableName in tableNames)
 
 query += "alter table" + "\"__EFMigrationsHistory\"" + " enable row level security;\n";
 
+query += """
+         DO $$
+         BEGIN
+           IF NOT EXISTS (
+              select 1 from pg_policies 
+              where policyname = 'Enable access for supabase auth admin'
+           ) THEN
+             -- Apply the policy
+             CREATE POLICY "Enable access for supabase auth admin"
+             ON "public"."Users"
+             AS PERMISSIVE
+             FOR SELECT
+             TO supabase_auth_admin
+             USING (true);
+           END IF;
+         END$$;
+         """;
+
 context.Database.ExecuteSqlRaw(query);
 
 scope.Dispose();
