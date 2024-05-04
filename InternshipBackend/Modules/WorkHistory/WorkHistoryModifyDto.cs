@@ -10,7 +10,7 @@ public class WorkHistoryModifyDto
     [DataType(DataType.Date)]
     public required DateTime StartDate { get; set; }
     [DataType(DataType.Date)]
-    public DateTime EndDate { get; set; }
+    public DateTime? EndDate { get; set; }
     public bool IsWorkingNow { get; set; }
     public string? Description { get; set; }
     public string? Duties { get; set; }
