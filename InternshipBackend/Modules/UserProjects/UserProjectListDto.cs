@@ -1,4 +1,4 @@
-﻿namespace InternshipBackend.Modules.UserProject;
+﻿namespace InternshipBackend.Modules.UserProjects;
 
 public class UserProjectListDto : UserProjectModifyDto
 {

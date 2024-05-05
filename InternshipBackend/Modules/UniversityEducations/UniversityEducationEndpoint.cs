@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InternshipBackend.Modules.UniversityEducations;
 
-[Route("UniversityEducation/[action]")]
+[Route("UniversityEducation")]
 public class UniversityEducationEndpoint(IUniversityEducationService userDetailService) 
     : CrudEndpoint<UniversityEducationModifyDto, UniversityEducation>(userDetailService)
 {

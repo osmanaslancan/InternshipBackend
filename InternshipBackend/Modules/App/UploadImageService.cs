@@ -14,7 +14,8 @@ public class UploadImageService(
 {
     public async Task<UploadImageResponse> UploadImage(UploadImageRequest request)
     {
-        ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);;
+        ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);
+        ArgumentNullException.ThrowIfNull(request.File);
         
         var userSupabaseId = httpContextAccessor.HttpContext.User.GetSupabaseId();
 

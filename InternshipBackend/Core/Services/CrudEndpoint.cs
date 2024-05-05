@@ -7,21 +7,21 @@ public class CrudEndpoint<TDto, TData>(IGenericEntityService<TDto, TData> servic
 {
     protected IGenericEntityService<TDto, TData> Service { get; } = service;
 
-    [HttpPost]
+    [HttpPost("Create")]
     public async Task<ServiceResponse> CreateAsync([FromBody] TDto dto)
     {
         await Service.CreateAsync(dto);
         return new EmptyResponse();
     }
 
-    [HttpPost("{id:int}")]
+    [HttpPost("Update/{id:int}")]
     public async Task<ServiceResponse> UpdateAsync([FromRoute] int id, [FromBody] TDto dto)
     {
         await Service.UpdateAsync(id, dto);
         return new EmptyResponse();
     }
 
-    [HttpPost("{id:int}")]
+    [HttpPost("Delete/{id:int}")]
     public async Task<ServiceResponse> DeleteAsync([FromRoute] int id)
     {
         await Service.DeleteAsync(id);

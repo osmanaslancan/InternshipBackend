@@ -23,17 +23,25 @@ public abstract class GenericEntityService<TDto, TData>(IServiceProvider service
         return Task.CompletedTask;
     }
 
+    protected virtual Task ValidateOwnedByCurrentUser(IHasUserIdField data)
+    {
+        var user = userRetriver.GetCurrentUser();
+            
+        if (data.UserId != user.Id)
+        {
+            throw new Exception("You can't update other user's data");
+        }
+
+        return Task.CompletedTask;
+    }
+    
     protected virtual Task BeforeUpdate(TData data, TData old) 
     {
         if (data is IHasUserIdField userField)
         {
             var oldUserField = (IHasUserIdField)old;
-            var user = userRetriver.GetCurrentUser();
             
-            if (oldUserField.UserId != user.Id)
-            {
-                throw new Exception("You can't update other user's data");
-            }
+            ValidateOwnedByCurrentUser(oldUserField);
             
             userField.UserId = oldUserField.UserId;
         }
@@ -45,12 +53,7 @@ public abstract class GenericEntityService<TDto, TData>(IServiceProvider service
     {
         if (data is IHasUserIdField userField)
         {
-            var user = userRetriver.GetCurrentUser();
-
-            if (userField.UserId != user.Id)
-            {
-                throw new Exception("You can't delete other user's data");
-            }
+            ValidateOwnedByCurrentUser(userField);
         }
         return Task.CompletedTask;
     }

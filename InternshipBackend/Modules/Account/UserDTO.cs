@@ -4,7 +4,7 @@ using InternshipBackend.Data;
 using InternshipBackend.Modules.ForeignLanguage;
 using InternshipBackend.Modules.UniversityEducations;
 using InternshipBackend.Modules.UserDetail;
-using InternshipBackend.Modules.UserProject;
+using InternshipBackend.Modules.UserProjects;
 using InternshipBackend.Modules.WorkHistory;
 
 namespace InternshipBackend.Modules.Account;
