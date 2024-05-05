@@ -1,9 +1,10 @@
 ﻿#nullable disable
 using AutoMapper;
 using InternshipBackend.Data;
+using InternshipBackend.Data.Models;
 using InternshipBackend.Modules.ForeignLanguage;
 using InternshipBackend.Modules.UniversityEducations;
-using InternshipBackend.Modules.UserDetail;
+using InternshipBackend.Modules.UserDetails;
 using InternshipBackend.Modules.UserProjects;
 using InternshipBackend.Modules.WorkHistory;
 
@@ -22,5 +23,6 @@ public class UserDTO
     public ICollection<UniversityEducationListDto> UniversityEducations { get; set; } = [];
     public ICollection<WorkHistoryListDto> Works { get; set; } = [];
     public ICollection<UserProjectListDto> UserProjects { get; set; } = [];
-    public UserDetailDto Detail { get; set; }
+    public ICollection<UserReference> References { get; set; } = [];
+    public UserDetailListDto Detail { get; set; }
 }

@@ -83,11 +83,17 @@ public class InternshipDbContext : DbContext
         modelBuilder.Entity<UserDetail>(b =>
         {
             b.Property(x => x.DateOfBirth).HasColumnType("date");
+            b.Property(x => x.Extras).HasColumnType("jsonb");
         });
 
         modelBuilder.Entity<UserPermission>(b =>
         {
             b.HasKey(x => new { x.UserId, x.Permission });
+        });
+        
+        modelBuilder.Entity<UserReference>(b =>
+        {
+            b.Property(x => x.Description).HasMaxLength(500);
         });
         
     }

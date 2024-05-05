@@ -6,7 +6,7 @@ using InternshipBackend.Modules.Account;
 using InternshipBackend.Modules.ForeignLanguage;
 using InternshipBackend.Modules.Location;
 using InternshipBackend.Modules.UniversityEducations;
-using InternshipBackend.Modules.UserDetail;
+using InternshipBackend.Modules.UserDetails;
 using InternshipBackend.Modules.UserProjects;
 using InternshipBackend.Modules.WorkHistory;
 
@@ -27,9 +27,11 @@ public class InternshipBackendAutoMapperProfile : Profile
         CreateMap<WorkHistory, WorkHistoryListDto>();
         CreateMap<WorkHistoryModifyDto, WorkHistory>();
         CreateMap<UserDetailDto, UserDetail>();
-        CreateMap<UserDetail, UserDetailDto>();
+        CreateMap<UserDetail, UserDetailListDto>();
         CreateMap<UserProject, UserProjectListDto>();
         CreateMap<UserProjectModifyDto, UserProject>();
+        CreateMap<UserReferenceModifyDto, UserReference>();
+        CreateMap<UserReference, UserReferenceListDto>();
         CreateMap<string, DriverLicense>()
             .ForMember(x => x.License, x => x.MapFrom((src, dest) => src));
     }

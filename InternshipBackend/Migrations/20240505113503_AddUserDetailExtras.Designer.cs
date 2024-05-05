@@ -4,6 +4,7 @@ using InternshipBackend.Data;
 using InternshipBackend.Data.Models.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InternshipBackend.Migrations
 {
     [DbContext(typeof(InternshipDbContext))]
-    partial class InternshipDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240505113503_AddUserDetailExtras")]
+    partial class AddUserDetailExtras
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -430,59 +433,6 @@ namespace InternshipBackend.Migrations
                     b.ToTable("UserProjects", "public");
                 });
 
-            modelBuilder.Entity("InternshipBackend.Data.Models.UserReference", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Company")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("Duty")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)");
-
-                    b.Property<int?>("UserDetailId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserDetailId");
-
-                    b.ToTable("UserReference", "public");
-                });
-
             modelBuilder.Entity("InternshipBackend.Data.Models.WorkHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -648,13 +598,6 @@ namespace InternshipBackend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("InternshipBackend.Data.Models.UserReference", b =>
-                {
-                    b.HasOne("InternshipBackend.Data.Models.UserDetail", null)
-                        .WithMany("UserReferences")
-                        .HasForeignKey("UserDetailId");
-                });
-
             modelBuilder.Entity("InternshipBackend.Data.Models.WorkHistory", b =>
                 {
                     b.HasOne("InternshipBackend.Data.Models.User", null)
@@ -687,8 +630,6 @@ namespace InternshipBackend.Migrations
             modelBuilder.Entity("InternshipBackend.Data.Models.UserDetail", b =>
                 {
                     b.Navigation("DriverLicences");
-
-                    b.Navigation("UserReferences");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using InternshipBackend.Data.Models.Enums;
 
-namespace InternshipBackend.Modules.UserDetail;
+namespace InternshipBackend.Modules.UserDetails;
 
 public class UserDetailDto
 {

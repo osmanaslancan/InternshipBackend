@@ -1,7 +1,7 @@
 ﻿using InternshipBackend.Core.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace InternshipBackend.Modules.UserDetail;
+namespace InternshipBackend.Modules.UserDetails;
 
 public interface IUserDetailService : IGenericEntityService<UserDetailDto, Data.Models.UserDetail>
 {
