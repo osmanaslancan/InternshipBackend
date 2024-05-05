@@ -22,5 +22,5 @@ public class UserDTO
     public ICollection<UniversityEducationListDto> UniversityEducations { get; set; } = [];
     public ICollection<WorkHistoryListDto> Works { get; set; } = [];
     public ICollection<UserProjectListDto> UserProjects { get; set; } = [];
-    public UserDetailDTO Detail { get; set; }
+    public UserDetailDto Detail { get; set; }
 }

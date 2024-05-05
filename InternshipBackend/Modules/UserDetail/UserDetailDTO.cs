@@ -1,17 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using InternshipBackend.Data.Models.Enums;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace InternshipBackend.Modules.UserDetail;
 
-public class UserDetailDTO
+public class UserDetailDto
 {
     [DataType(DataType.Date)]
-    public DateTime DateOfBirth { get; set; }
-    public Gender Gender { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+    public Gender? Gender { get; set; }
     public ICollection<string> DriverLicences { get; set; } = [];
-    public MaritalStatus MaritalStatus { get; set; }
-    public MilitaryStatus MilitaryStatus { get; set; }
+    public MaritalStatus? MaritalStatus { get; set; }
+    public MilitaryStatus? MilitaryStatus { get; set; }
     public int? CountryId { get; set; }
     public int? CityId { get; set; }
     public string? District { get; set; }

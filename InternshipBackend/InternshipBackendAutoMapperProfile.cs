@@ -26,8 +26,8 @@ public class InternshipBackendAutoMapperProfile : Profile
         CreateMap<UniversityEducation, UniversityEducationListDto>();
         CreateMap<WorkHistory, WorkHistoryListDto>();
         CreateMap<WorkHistoryModifyDto, WorkHistory>();
-        CreateMap<UserDetailDTO, UserDetail>();
-        CreateMap<UserDetail, UserDetailDTO>();
+        CreateMap<UserDetailDto, UserDetail>();
+        CreateMap<UserDetail, UserDetailDto>();
         CreateMap<UserProject, UserProjectListDto>();
         CreateMap<UserProjectModifyDto, UserProject>();
         CreateMap<string, DriverLicense>()
