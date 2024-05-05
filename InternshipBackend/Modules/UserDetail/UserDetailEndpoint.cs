@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InternshipBackend.Modules.UserDetail;
 
-[Route("UserDetail/[action]")]
+[Route("UserDetail")]
 public class UserDetailEndpoint(IUserDetailService userDetailService) 
     : BaseEndpoint
 {
-    [HttpPost]
-    public async Task<ServiceResponse> UpdateAsync([FromBody] UserDetailDTO userDetailDTO)
+    [HttpPost("Update")]
+    public async Task<ServiceResponse> UpdateAsync([FromBody] UserDetailDto userDetailDto)
     {
-        await userDetailService.Upsert(userDetailDTO);
+        await userDetailService.Upsert(userDetailDto);
         return new EmptyResponse();
     }
 }

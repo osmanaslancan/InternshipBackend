@@ -7,13 +7,13 @@ namespace InternshipBackend.Modules.UserProjects;
 
 public interface IUserProjectService : IGenericEntityService<UserProjectModifyDto, UserProject>
 {
-    Task<UserProject> UpdateImage(int id, string? url);
+    Task<UserProject> UpdateThumbnail(int id, string? url);
 }
 
 public class UserProjectService(IServiceProvider serviceProvider, IHttpContextAccessor contextAccessor, IConfiguration configuration)
     : GenericEntityService<UserProjectModifyDto, Data.Models.UserProject>(serviceProvider), IUserProjectService
 {
-    public async Task<UserProject> UpdateImage(int id, string? url)
+    public async Task<UserProject> UpdateThumbnail(int id, string? url)
     {
         var old = await _repository.GetByIdOrDefaultAsync(id, changeTracking: false) ?? throw new Exception("Record not found");
         await ValidateOwnedByCurrentUser(old);
