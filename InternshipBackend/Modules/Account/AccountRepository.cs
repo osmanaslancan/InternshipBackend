@@ -54,7 +54,7 @@ public class AccountRepository(InternshipDbContext context) : GenericRepository<
             .Include(x => x.UserProjects)
             .Include(x => x.Detail)
             .Include("UniversityEducations.University")
-            .Include(x => x.Detail.UserReferences)
+            .Include(x => x.UserReferences)
             .FirstAsync(x => x.SupabaseId == supabaseId);
 
         return result;
