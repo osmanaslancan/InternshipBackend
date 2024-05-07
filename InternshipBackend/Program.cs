@@ -31,7 +31,10 @@ builder.Configuration.AddJsonFile("appsettings.machine.json", true);
 builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<InternshipDbContext>(options =>
-            options.UseNpgsql(builder.Configuration.GetConnectionString("Supabase")));
+{
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Supabase"));
+    options.EnableDetailedErrors();
+});
 
 builder.Services.AddAuthentication(o =>
     {
