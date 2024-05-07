@@ -32,7 +32,5 @@ public class InternshipBackendAutoMapperProfile : Profile
         CreateMap<UserProjectModifyDto, UserProject>();
         CreateMap<UserReferenceModifyDto, UserReference>();
         CreateMap<UserReference, UserReferenceListDto>();
-        CreateMap<string, DriverLicense>()
-            .ForMember(x => x.License, x => x.MapFrom((src, dest) => src));
     }
 }

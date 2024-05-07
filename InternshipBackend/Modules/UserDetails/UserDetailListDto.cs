@@ -8,7 +8,7 @@ public class UserDetailListDto
     [DataType(DataType.Date)]
     public DateTime? DateOfBirth { get; set; }
     public Gender? Gender { get; set; }
-    public ICollection<string> DriverLicences { get; set; } = [];
+    public ICollection<DriverLicense> DriverLicenses { get; set; } = [];
     public ICollection<UserReferenceListDto> UserReferences { get; set; } = [];
     public MaritalStatus? MaritalStatus { get; set; }
     public MilitaryStatus? MilitaryStatus { get; set; }

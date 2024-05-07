@@ -1,4 +1,6 @@
 ﻿using InternshipBackend.Core.Services;
+using InternshipBackend.Data.Models;
+using InternshipBackend.Data.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace InternshipBackend.Modules.UserDetails;
@@ -21,5 +23,11 @@ public class UserDetailService(IServiceProvider serviceProvider)
         }
 
         return base.UpdateAsync(user.Id, data);
+    }
+
+    protected override UserDetail MapDto(UserDetailDto data)
+    {
+        data.DriverLicenses = data.DriverLicenses.Where(x => x != DriverLicense.None).ToList();
+        return base.MapDto(data);
     }
 }

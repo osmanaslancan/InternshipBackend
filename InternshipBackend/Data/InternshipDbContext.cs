@@ -17,7 +17,6 @@ public class InternshipDbContext : DbContext
     public DbSet<Company> Companies { get; set; }
     public DbSet<CompanyEmployee> CompanyEmployees { get; set; }
     public DbSet<Country> Countries { get; set; }
-    public DbSet<DriverLicense> DriverLicenses { get; set; }
     public DbSet<City> Cities { get; set; }
 
     public DbSet<StorageObject> SupabaseStorageObjects { get; set; }
@@ -84,6 +83,7 @@ public class InternshipDbContext : DbContext
         {
             b.Property(x => x.DateOfBirth).HasColumnType("date");
             b.Property(x => x.Extras).HasColumnType("jsonb");
+            b.Property(x => x.DriverLicenses).HasColumnType("text[]");
         });
 
         modelBuilder.Entity<UserPermission>(b =>
