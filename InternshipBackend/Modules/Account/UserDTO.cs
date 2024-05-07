@@ -22,7 +22,7 @@ public class UserDTO
     public ICollection<ForeignLanguageListDto> ForeignLanguages { get; set; } = [];
     public ICollection<UniversityEducationListDto> UniversityEducations { get; set; } = [];
     public ICollection<WorkHistoryListDto> Works { get; set; } = [];
-    public ICollection<UserProjectListDto> UserProjects { get; set; } = [];
-    public ICollection<UserReferenceListDto> UserReferences { get; set; } = [];
+    public ICollection<UserProjectListDto> Projects { get; set; } = [];
+    public ICollection<UserReferenceListDto> References { get; set; } = [];
     public UserDetailListDto Detail { get; set; }
 }

@@ -22,8 +22,8 @@ public class User : Entity
     public ICollection<ForeignLanguage> ForeignLanguages { get; set; } = [];
     public ICollection<UniversityEducation> UniversityEducations { get; set; } = [];
     public ICollection<WorkHistory> Works { get; set; } = [];
-    public ICollection<UserProject> UserProjects { get; set; } = [];
+    public ICollection<UserProject> Projects { get; set; } = [];
     public ICollection<UserPermission> UserPermissions { get; set; } = [];
-    public ICollection<UserReference> UserReferences { get; set; } = [];
+    public ICollection<UserReference> References { get; set; } = [];
     public UserDetail Detail { get; set; }
 }
