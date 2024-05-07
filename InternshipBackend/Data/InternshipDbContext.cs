@@ -94,6 +94,8 @@ public class InternshipDbContext : DbContext
         modelBuilder.Entity<UserReference>(b =>
         {
             b.Property(x => x.Description).HasMaxLength(500);
+            b.HasOne<UserDetail>().WithMany(x => x.UserReferences).HasForeignKey(x => x.UserId);
+            b.HasOne<User>().WithMany().HasForeignKey(x => x.UserId);
         });
         
     }
