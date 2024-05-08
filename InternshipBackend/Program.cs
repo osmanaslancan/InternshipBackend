@@ -15,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using System.Globalization;
 using System.Reflection;
 using System.Security;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -53,6 +54,28 @@ builder.Services.AddAuthentication(o =>
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signingKey)),
         };
+
+        o.Events = new JwtBearerEvents()
+        {
+            OnTokenValidated = (context) =>
+            {
+                var data = context.Principal?.FindFirstValue("app_metadata");
+                if (data is null)
+                {
+                    context.Fail("Unauthorized missing claims");
+                    return Task.CompletedTask;
+                }
+
+                var appMetadata = JsonSerializer.Deserialize<Dictionary<string, object>>(data);
+                if (appMetadata?.GetValueOrDefault("user_type") is null)
+                {
+                    context.Fail("Unauthorized missing claims");
+                    return Task.CompletedTask;
+                }
+
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddTransient<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
@@ -81,7 +104,8 @@ builder.Services.AddCors(o =>
 {
     o.AddDefaultPolicy(policy =>
     {
-        policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "localhost").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        policy.SetIsOriginAllowed(origin => new Uri(origin).Host is "localhost" or "stajbuldum.osman.tech").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        // policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
         // policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
         
     });

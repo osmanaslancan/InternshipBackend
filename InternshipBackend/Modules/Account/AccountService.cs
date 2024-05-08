@@ -78,10 +78,15 @@ public class AccountService(
     {
         var currentUserInfo = await GetCurrentUserInfoOrDefault();
 
-        await userInfoUpdateDtoValidator.ValidateAndThrowAsync(dto);
+        
         
         if (currentUserInfo is not null)
         {
+            await userInfoUpdateDtoValidator.ValidateAsync(dto, o =>
+            {
+                o.ThrowOnFailures();
+                o.IncludeRuleSets("Update");
+            });
             currentUserInfo.Name = dto.Name;
             currentUserInfo.Surname = dto.Surname;
             currentUserInfo.PhoneNumber = dto.PhoneNumber;
