@@ -1,10 +1,13 @@
 ﻿using InternshipBackend.Core;
 using InternshipBackend.Core.Services;
+using InternshipBackend.Modules.Account.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InternshipBackend.Modules.UserDetails;
 
 [Route("UserDetail")]
+[Authorize(PermissionKeys.Intern)]
 public class UserDetailEndpoint(IUserDetailService userDetailService, IUserReferenceService userReferenceService) 
     : BaseEndpoint
 {

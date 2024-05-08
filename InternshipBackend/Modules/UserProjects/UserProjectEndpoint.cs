@@ -1,10 +1,13 @@
 ﻿using InternshipBackend.Core.Services;
+using InternshipBackend.Modules.Account.Authorization;
 using InternshipBackend.Modules.App;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InternshipBackend.Modules.UserProjects;
 
 [Route("UserProject")]
+[Authorize(PermissionKeys.Intern)]
 public class UserProjectEndpoint(IUserProjectService userProjectService, IUploadImageService uploadImageService)
     : CrudEndpoint<UserProjectModifyDto, Data.Models.UserProject>(userProjectService)
 {
