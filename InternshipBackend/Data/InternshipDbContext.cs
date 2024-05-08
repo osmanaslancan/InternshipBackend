@@ -97,6 +97,29 @@ public class InternshipDbContext : DbContext
             b.HasOne<UserDetail>().WithMany(x => x.References).HasForeignKey(x => x.UserId);
             b.HasOne<User>().WithMany(x => x.References).HasForeignKey(x => x.UserId);
         });
+
+        modelBuilder.Entity<Company>(b =>
+        {
+            b.Property(x => x.Description).HasMaxLength(2000);
+            b.Property(x => x.ShortDescription).HasMaxLength(75);
+            b.HasOne<Country>().WithMany().HasForeignKey(x => x.CountryId);
+            b.HasOne<City>().WithMany().HasForeignKey(x => x.CityId);
+            b.HasOne<User>(x => x.AdminUser).WithOne().HasForeignKey<Company>(x => x.AdminUserId);
+        });
         
+        modelBuilder.Entity<InternshipPosting>(b =>
+        {
+            b.HasOne<Company>().WithMany().HasForeignKey(x => x.CompanyId);
+            b.Property(x => x.Description).HasMaxLength(2000);
+            b.HasMany<InternshipApplication>(x => x.Applications).WithOne().HasForeignKey(x => x.InternshipPostingId);
+            b.HasOne<Country>().WithMany().HasForeignKey(x => x.CountryId);
+            b.HasOne<City>().WithMany().HasForeignKey(x => x.CityId);
+        });
+        
+        modelBuilder.Entity<InternshipApplication>(b =>
+        {
+            b.HasOne<User>().WithMany().HasForeignKey(x => x.UserId);
+        });
+
     }
 }
