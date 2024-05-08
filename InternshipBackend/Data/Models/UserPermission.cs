@@ -5,5 +5,5 @@ namespace InternshipBackend.Data.Models;
 public class UserPermission
 {
     public int UserId { get; set; }
-    public string Permission { get; set; }
+    public required string Permission { get; set; }
 }

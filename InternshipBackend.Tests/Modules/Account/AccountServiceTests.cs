@@ -168,7 +168,7 @@ public class AccountServiceTests : TestBase
 
         var user = await service.GetCurrentUserInfoOrDefault();
         
-        Assert.Equal(application.CurrentUser.Id, user.Id);
+        Assert.Equal(application.CurrentUser.Id, user!.Id);
         Assert.Equal(application.CurrentUser.Name, user.Name);
         Assert.Equal(application.CurrentUser.Surname, user.Surname);
         Assert.Equal(application.CurrentUser.PhoneNumber, user.PhoneNumber);

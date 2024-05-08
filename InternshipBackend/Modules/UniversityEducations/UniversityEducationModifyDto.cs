@@ -1,4 +1,4 @@
-﻿#nullable disable
+﻿
 using System.ComponentModel.DataAnnotations;
 using AutoMapper;
 using InternshipBackend.Data;
@@ -10,7 +10,7 @@ public class UniversityEducationModifyDto
     public int? UniversityId { get; set; }
     public string? UniversityName { get; set; }
     public string? Faculty { get; set; }
-    public string Department { get; set; }
+    public required string Department { get; set; }
     [DataType(DataType.Date)]
     public DateTime StartDate { get; set; }
     [DataType(DataType.Date)]

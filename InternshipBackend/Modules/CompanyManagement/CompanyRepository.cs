@@ -16,7 +16,7 @@ public class CompanyRepository(InternshipDbContext dbContext)
 {
     public async Task<int?> GetIdByUserIdOrDefaultAsync(int userId)
     {
-        var result = await dbContext.Companies
+        var result = await DbContext.Companies
             .Where(c => c.AdminUserId == userId)
             .FirstOrDefaultAsync();
 
