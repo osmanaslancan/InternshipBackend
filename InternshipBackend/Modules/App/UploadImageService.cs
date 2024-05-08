@@ -12,6 +12,13 @@ public class UploadImageService(
     IHttpClientFactory clientFactory,
     IConfiguration configuration) : BaseService, IUploadImageService 
 {
+    public bool IsOwnedByCurrentUser(string url)
+    {
+        ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);
+        
+        var supabaseId = httpContextAccessor.HttpContext.User.GetSupabaseId();
+        return url.StartsWith($"{configuration["SupabaseStorageBaseUrl"]}/public/PublicImages/{supabaseId}/");
+    }
     public async Task<UploadImageResponse> UploadImage(UploadImageRequest request)
     {
         ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);

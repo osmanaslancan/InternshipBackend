@@ -5,12 +5,12 @@ using InternshipBackend.Data.Models;
 
 namespace InternshipBackend.Core;
 
-public interface IUserRetriverService
+public interface IUserRetrieverService
 {
     User GetCurrentUser(Func<IQueryable<User>, IQueryable<User>>? edit = null);
     User? GetCurrentUserOrDefault(Func<IQueryable<User>, IQueryable<User>>? edit = null);
 }
-public class UserRetriever(InternshipDbContext dbContext, IHttpContextAccessor httpContextAccessor) : IUserRetriverService, IScopedService
+public class UserRetriever(InternshipDbContext dbContext, IHttpContextAccessor httpContextAccessor) : IUserRetrieverService, IScopedService
 {
     public User GetCurrentUser(Func<IQueryable<User>, IQueryable<User>>? edit = null)
     {

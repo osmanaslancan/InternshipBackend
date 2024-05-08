@@ -15,7 +15,7 @@ public class UserDetailService(IServiceProvider serviceProvider)
 {
     public Task Upsert(UserDetailDto data)
     {
-        var user = userRetriver.GetCurrentUser(x => x.Include(y => y.Detail)) ?? throw new Exception("User not found");
+        var user = UserRetriever.GetCurrentUser(x => x.Include(y => y.Detail)) ?? throw new Exception("User not found");
 
         if (user.Detail is null)
         {

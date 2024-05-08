@@ -63,7 +63,7 @@ public class TestBase
         {
             user = newUser;
         };
-        builder.Services.AddScoped<IUserRetriverService>((services) => new MockUserRetrieverService()
+        builder.Services.AddScoped<IUserRetrieverService>((services) => new MockUserRetrieverService()
         {
             GetCurrentUserOrDefaultAction = (edit) => user
         });

@@ -10,13 +10,13 @@ public abstract class GenericEntityService<TDto, TData>(IServiceProvider service
 {
     protected readonly IGenericRepository<TData> _repository = serviceProvider.GetRequiredService<IGenericRepository<TData>>();
     protected readonly IMapper mapper = serviceProvider.GetRequiredService<IMapper>();
-    protected readonly IUserRetriverService userRetriver = serviceProvider.GetRequiredService<IUserRetriverService>();
+    protected readonly IUserRetrieverService UserRetriever = serviceProvider.GetRequiredService<IUserRetrieverService>();
     
     protected virtual Task BeforeCreate(TData data) 
     {
         if (data is IHasUserIdField userField)
         {
-            var user = userRetriver.GetCurrentUser();
+            var user = UserRetriever.GetCurrentUser();
             userField.UserId = user.Id;
         }
 
@@ -25,7 +25,7 @@ public abstract class GenericEntityService<TDto, TData>(IServiceProvider service
 
     protected virtual Task ValidateOwnedByCurrentUser(IHasUserIdField data)
     {
-        var user = userRetriver.GetCurrentUser();
+        var user = UserRetriever.GetCurrentUser();
             
         if (data.UserId != user.Id)
         {

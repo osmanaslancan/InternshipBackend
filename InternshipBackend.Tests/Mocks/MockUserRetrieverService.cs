@@ -4,7 +4,7 @@ using InternshipBackend.Data.Models;
 
 namespace InternshipBackend.Tests.Mocks
 {
-    public class MockUserRetrieverService : IUserRetriverService
+    public class MockUserRetrieverService : IUserRetrieverService
     {
         public Func<Func<IQueryable<User>, IQueryable<User>>?, User?>? GetCurrentUserOrDefaultAction { get; set; }
 
