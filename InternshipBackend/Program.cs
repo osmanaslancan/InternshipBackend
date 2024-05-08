@@ -69,7 +69,7 @@ builder.Services.AddAuthentication(o =>
                 var appMetadata = JsonSerializer.Deserialize<Dictionary<string, object>>(data);
                 if (appMetadata?.GetValueOrDefault("user_type") is null)
                 {
-                    if (context.Request.Path.Value == "/Account/UpdateUserInfo")
+                    if (context.Request.Path.Value is "/Account/UpdateUserInfo" or "/Accounts/IsUserRegistered")
                         return Task.CompletedTask;
                     
                     context.Fail("Unauthorized missing claims");
