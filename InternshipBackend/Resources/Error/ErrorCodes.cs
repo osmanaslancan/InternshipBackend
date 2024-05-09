@@ -7,4 +7,5 @@ public static class ErrorCodes
     public const string EmailExists = nameof(EmailExists);
     public const string UserAlreadyExists = nameof(UserAlreadyExists);
     public const string InsufficientPermission = nameof(InsufficientPermission);
+    public const string InvalidPhoto = nameof(InvalidPhoto);
 }

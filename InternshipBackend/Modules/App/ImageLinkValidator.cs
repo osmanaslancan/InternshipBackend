@@ -22,6 +22,6 @@ public class ImageLinkValidator<T>(IServiceProvider serviceProvider) : PropertyV
     protected override string GetDefaultMessageTemplate(string errorCode)
     {
         var stringLocalizer = serviceProvider.GetRequiredService<IStringLocalizer<ErrorCodeResource>>();
-        return stringLocalizer[errorCode];
+        return stringLocalizer[ErrorCodes.InvalidPhoto];
     }
 }

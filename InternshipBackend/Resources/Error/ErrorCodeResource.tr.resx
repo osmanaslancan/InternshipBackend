@@ -132,4 +132,7 @@
   <data name="UserNotFound" xml:space="preserve">
     <value>Kullanıcı Bulunamadı!</value>
   </data>
+  <data name="InvalidPhoto" xml:space="preserve">
+    <value>Geçersiz Fotoğraf Yolu!</value>
+  </data>
 </root>

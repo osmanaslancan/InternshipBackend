@@ -3,6 +3,7 @@ using InternshipBackend.Data;
 using InternshipBackend.Data.Models;
 using InternshipBackend.Modules;
 using InternshipBackend.Modules.Account;
+using InternshipBackend.Modules.CompanyManagement;
 using InternshipBackend.Modules.ForeignLanguage;
 using InternshipBackend.Modules.Location;
 using InternshipBackend.Modules.UniversityEducations;
@@ -22,6 +23,7 @@ public class InternshipBackendAutoMapperProfile : Profile
         CreateMap<ForeignLanguage, ForeignLanguageListDto>();
         CreateMap<City, CityDTO>();
         CreateMap<Country, CountryDTO>();
+        CreateMap<CompanyModifyDto, Company>();
         CreateMap<UniversityEducationModifyDto, UniversityEducation>();
         CreateMap<UniversityEducation, UniversityEducationListDto>();
         CreateMap<WorkHistory, WorkHistoryListDto>();

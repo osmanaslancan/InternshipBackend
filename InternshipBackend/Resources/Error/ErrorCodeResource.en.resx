@@ -132,4 +132,7 @@
   <data name="UserNotFound" xml:space="preserve">
     <value>User Not Found!</value>
   </data>
+  <data name="InvalidPhoto" xml:space="preserve">
+    <value>Invalid Photo Path!</value>
+  </data>
 </root>
