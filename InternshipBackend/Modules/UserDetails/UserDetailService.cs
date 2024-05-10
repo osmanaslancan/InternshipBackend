@@ -1,6 +1,7 @@
 ﻿using InternshipBackend.Core.Services;
 using InternshipBackend.Data.Models;
 using InternshipBackend.Data.Models.Enums;
+using InternshipBackend.Data.Models.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace InternshipBackend.Modules.UserDetails;
@@ -8,6 +9,7 @@ namespace InternshipBackend.Modules.UserDetails;
 public interface IUserDetailService : IGenericEntityService<UserDetailDto, Data.Models.UserDetail>
 {
     Task Upsert(UserDetailDto data);
+    Task AddCvToCurrentUser(string filename, string cvUrl);
 }
 
 public class UserDetailService(IServiceProvider serviceProvider)
@@ -29,5 +31,22 @@ public class UserDetailService(IServiceProvider serviceProvider)
     {
         data.DriverLicenses = data.DriverLicenses.Where(x => x != DriverLicense.None).ToList();
         return base.MapDto(data);
+    }
+
+    public async Task AddCvToCurrentUser(string filename, string cvUrl)
+    {
+        var user = UserRetriever.GetCurrentUser(x => x.Include(y => y.Detail)) ?? throw new Exception("User not found");
+        user.Detail ??= new UserDetail()
+        {
+            User = user,
+        };
+        
+        user.Detail.Cvs.Add(new UserCv()
+        {
+            FileUrl = cvUrl,
+            FileName = filename,
+        });
+        
+        await _repository.UpdateAsync(user.Detail);
     }
 }

@@ -12,12 +12,12 @@ public class UserProjectEndpoint(IUserProjectService userProjectService, IUpload
     : CrudEndpoint<UserProjectModifyDto, Data.Models.UserProject>(userProjectService)
 {
     [HttpPut("UpdateThumbnail/{id:int}")]
-    public async Task<UploadImageResponse> UpdateThumbnailAsync([FromRoute] int id, UploadImageRequest request)
+    public async Task<UploadResponse> UpdateThumbnailAsync([FromRoute] int id, UploadImageRequest request)
     {
         if (request.File is null)
         {
             await userProjectService.UpdateThumbnail(id, null);
-            return new UploadImageResponse()
+            return new UploadResponse()
             {
                 Url = null
             };

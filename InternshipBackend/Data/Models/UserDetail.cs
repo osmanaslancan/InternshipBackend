@@ -12,6 +12,7 @@ public class UserDetail : Entity, IHasUserIdField
     public DateTime? DateOfBirth { get; set; }
     public Gender? Gender { get; set; }
     public List<DriverLicense> DriverLicenses { get; set; } = [];
+    public List<UserCv> Cvs { get; set; } = [];
     public ICollection<UserReference> References { get; set; } = [];
     public MaritalStatus? MaritalStatus { get; set; }
     public MilitaryStatus? MilitaryStatus { get; set; }

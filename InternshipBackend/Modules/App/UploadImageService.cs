@@ -10,21 +10,15 @@ namespace InternshipBackend.Modules.App;
 public class UploadImageService(
     IHttpContextAccessor httpContextAccessor,
     IHttpClientFactory clientFactory,
-    IConfiguration configuration) : BaseService, IUploadImageService 
+    IConfiguration configuration) : UploadServiceBase(httpContextAccessor, clientFactory, configuration), IUploadImageService 
 {
-    public bool IsOwnedByCurrentUser(string url)
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
+    private readonly IConfiguration _configuration = configuration;
+    protected override string Bucket => "PublicImages";
+    
+    public async Task<UploadResponse> UploadImage(UploadImageRequest request)
     {
-        ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);
-        
-        var supabaseId = httpContextAccessor.HttpContext.User.GetSupabaseId();
-        return url.StartsWith($"{configuration["SupabaseStorageBaseUrl"]}/public/PublicImages/{supabaseId}/");
-    }
-    public async Task<UploadImageResponse> UploadImage(UploadImageRequest request)
-    {
-        ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);
         ArgumentNullException.ThrowIfNull(request.File);
-        
-        var userSupabaseId = httpContextAccessor.HttpContext.User.GetSupabaseId();
 
         using var image = await SixLabors.ImageSharp.Image.LoadAsync(request.File.OpenReadStream());
         if (request.Type == UploadImageRequest.ImageType.Background)
@@ -38,29 +32,7 @@ public class UploadImageService(
         using var resultStream = new MemoryStream();
         await image.SaveAsync(resultStream, new PngEncoder());
         
-        var content = new MultipartFormDataContent();
-        var streamContent = new ByteArrayContent(resultStream.ToArray());
-        streamContent.Headers.ContentType = new MediaTypeHeaderValue(request.File.ContentType);
-        streamContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
-        {
-            Name = request.File.Name,
-            FileName = request.File.FileName,
-        };
-        content.Add(streamContent);
-        content.Headers.Add("X-Upsert", "true");
-        using var client = clientFactory.CreateClient("Supabase");
-        var guid = Guid.NewGuid();
-        var url = $"{configuration["SupabaseStorageBaseUrl"]}/PublicImages/{userSupabaseId}/{guid}";
-        var response = await client.PostAsync(url, content);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            throw new Exception("Failed to upload image");
-        }
-
-        return new UploadImageResponse()
-        {
-            Url = $"{configuration["SupabaseStorageBaseUrl"]}/public/PublicImages/{userSupabaseId}/{guid}"
-        };
+        return await Upload(resultStream.ToArray(), request.File.Name, request.File.FileName, request.File.ContentType);
     }
+
 }

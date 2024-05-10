@@ -12,6 +12,7 @@ public interface IInternshipPostingRepository : IGenericRepository<InternshipPos
 {
     Task<List<InternshipPosting>> ListCompanyPostingsAsync(int? companyId, int from);
     Task<int> CountCompanyPostingsAsync(int? companyId);
+    Task<InternshipPosting?> GetDetailedByIdOrDefaultAsync(int id, bool changeTracking = true);
 }
 
 public class InternshipPostingRepository(InternshipDbContext dbContext) 
@@ -33,5 +34,17 @@ public class InternshipPostingRepository(InternshipDbContext dbContext)
         return await DbContext.InternshipPostings
             .WhereIf(companyId != null, x => x.CompanyId == companyId)
             .CountAsync();
+    }
+    
+    public async Task<InternshipPosting?> GetDetailedByIdOrDefaultAsync(int id, bool changeTracking = true)
+    {
+        var queryable = DbContext.InternshipPostings.AsQueryable();
+        
+        if (!changeTracking)
+        {
+            queryable = queryable.AsNoTracking();
+        }
+
+        return await queryable.Include(x => x.Applications).FirstOrDefaultAsync(x => x.Id.Equals(id));
     }
 }

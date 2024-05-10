@@ -16,7 +16,6 @@ public class User : Entity
     public string ProfilePhotoUrl { get; set; }
     [DataType(DataType.PhoneNumber)]
     public string PhoneNumber { get; set; }
-
     public AccountType AccountType { get; set; }
 
     public ICollection<ForeignLanguage> ForeignLanguages { get; set; } = [];

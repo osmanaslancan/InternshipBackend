@@ -28,7 +28,7 @@ public class CompanyEndpoint(ICompanyService companyService, IInternshipPostingS
     }
    
     [HttpGet("InternshipPosting/List")]
-    [Authorize(PermissionKeys.Common)]
+    [AllowAnonymous]
     public async Task<ServiceResponse<PagedListDto<InternshipPostingListDto>>> ListInternshipPostingAsync([FromQuery] int? companyId, [FromQuery] int from)
     {
         var result = await internshipPostingService.ListAsync(companyId, from);
@@ -58,4 +58,5 @@ public class CompanyEndpoint(ICompanyService companyService, IInternshipPostingS
         await internshipPostingService.EndPostingAsync(id);
         return new EmptyResponse();
     }
+   
 }
