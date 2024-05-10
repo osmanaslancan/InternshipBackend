@@ -135,4 +135,7 @@
   <data name="InvalidPhoto" xml:space="preserve">
     <value>Invalid Photo Path!</value>
   </data>
+  <data name="CompanyNotFound" xml:space="preserve">
+    <value>Company is Not Created By this User!</value>
+  </data>
 </root>

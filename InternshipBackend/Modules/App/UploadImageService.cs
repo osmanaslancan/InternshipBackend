@@ -27,7 +27,14 @@ public class UploadImageService(
         var userSupabaseId = httpContextAccessor.HttpContext.User.GetSupabaseId();
 
         using var image = await SixLabors.ImageSharp.Image.LoadAsync(request.File.OpenReadStream());
-        image.Mutate(x => x.Resize(512, 512));
+        if (request.Type == UploadImageRequest.ImageType.Background)
+        {
+            image.Mutate(x => x.Resize(1920, 1080));
+        }
+        else
+        {
+            image.Mutate(x => x.Resize(512, 512));
+        }
         using var resultStream = new MemoryStream();
         await image.SaveAsync(resultStream, new PngEncoder());
         

@@ -24,6 +24,9 @@ public class InternshipBackendAutoMapperProfile : Profile
         CreateMap<City, CityDTO>();
         CreateMap<Country, CountryDTO>();
         CreateMap<CompanyModifyDto, Company>();
+        CreateMap<Company, CompanyDto>();
+        CreateMap<InternshipPostingModifyDto, InternshipPosting>();
+        CreateMap<InternshipPosting, InternshipPostingListDto>();
         CreateMap<UniversityEducationModifyDto, UniversityEducation>();
         CreateMap<UniversityEducation, UniversityEducationListDto>();
         CreateMap<WorkHistory, WorkHistoryListDto>();

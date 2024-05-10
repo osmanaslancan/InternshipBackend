@@ -1,30 +1,75 @@
-﻿using InternshipBackend.Core;
+﻿using FluentValidation;
+using InternshipBackend.Core;
 using InternshipBackend.Core.Services;
 using InternshipBackend.Data.Models;
+using Microsoft.Extensions.Localization;
 
 namespace InternshipBackend.Modules.CompanyManagement;
 
 public interface ICompanyService : IGenericEntityService<CompanyModifyDto, Data.Models.Company>
 {
     Task<Company> Upsert(CompanyModifyDto dto);
+    Task<int> GetCurrentUserCompanyId();
+    Task<CompanyDto?> GetCurrentUsersCompany();
 }
 
 public class CompanyService(IServiceProvider serviceProvider, 
     ICompanyRepository companyRepository,
+    IStringLocalizer<ErrorCodeResource> stringLocalizer,
     IUserRetrieverService userRetrieverService)
     : GenericEntityService<CompanyModifyDto, Data.Models.Company>(serviceProvider), ICompanyService
 {
+    protected override Task BeforeCreate(Company data)
+    {
+        var user = userRetrieverService.GetCurrentUser();
+        
+        data.AdminUserId = user.Id;
+        
+        return base.BeforeCreate(data);
+    }
+
+    protected override Task BeforeUpdate(Company data, Company old)
+    {
+        data.AdminUserId = old.AdminUserId;
+        
+        return base.BeforeUpdate(data, old);
+    }
+
     public async Task<Company> Upsert(CompanyModifyDto dto)
     {
         var user = userRetrieverService.GetCurrentUser();
 
-        var id = await companyRepository.GetIdByUserIdOrDefaultAsync(user.Id);
+        var company = await companyRepository.GetByUserIdOrDefaultAsync(user.Id);
 
-        if (id is not null)
+        if (company is not null)
         {
-            return await UpdateAsync(id.Value, dto);
+            return await UpdateAsync(company.Id, dto);
         }
 
         return await CreateAsync(dto);
+    }
+
+    public async Task<int> GetCurrentUserCompanyId()
+    {
+        var user = userRetrieverService.GetCurrentUser();
+
+        var company = await companyRepository.GetByUserIdOrDefaultAsync(user.Id);
+
+        if (company is null)
+        {
+            throw new ValidationException(stringLocalizer[ErrorCodes.CompanyNotFound]);
+        }
+        
+        
+        return company.Id;
+    }
+
+    public async Task<CompanyDto?> GetCurrentUsersCompany()
+    {
+        var user = userRetrieverService.GetCurrentUser();
+
+        var company = await companyRepository.GetByUserIdOrDefaultAsync(user.Id);
+        
+        return mapper.Map<CompanyDto?>(company);
     }
 }

@@ -135,4 +135,7 @@
   <data name="InvalidPhoto" xml:space="preserve">
     <value>Geçersiz Fotoğraf Yolu!</value>
   </data>
+  <data name="CompanyNotFound" xml:space="preserve">
+    <value>Kullanıcıya ait şirket bulunamadı!</value>
+  </data>
 </root>

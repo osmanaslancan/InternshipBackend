@@ -9,6 +9,12 @@ public class PermissionRequirementHandler(IAccountRepository accountRepository)
     protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context,
         PermissionRequirement requirement)
     {
+        if (!(context.User.Identity?.IsAuthenticated ?? false))
+        {
+            context.Fail();
+            return;
+        }
+        
         if (await accountRepository.HasPermissionWithSupabaseId(context.User.GetSupabaseId(),
                 requirement.PermissionName))
         {
