@@ -1,5 +1,6 @@
 ﻿using InternshipBackend.Data.Models;
 using InternshipBackend.Data.Models.Supabase;
+using InternshipBackend.Data.Models.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace InternshipBackend.Data;
@@ -119,6 +120,10 @@ public class InternshipDbContext : DbContext
             b.HasMany<InternshipApplication>(x => x.Applications).WithOne().HasForeignKey(x => x.InternshipPostingId);
             b.HasOne<Country>().WithMany().HasForeignKey(x => x.CountryId);
             b.HasOne<City>().WithMany().HasForeignKey(x => x.CityId);
+            b.OwnsMany(x => x.Comments, d =>
+            {
+                d.ToJson();
+            });
         });
         
         modelBuilder.Entity<InternshipApplication>(b =>
