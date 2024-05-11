@@ -6,7 +6,7 @@ using InternshipBackend.Data;
 using InternshipBackend.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace InternshipBackend.Modules.CompanyManagement;
+namespace InternshipBackend.Modules.Internship;
 
 public interface IInternshipPostingRepository : IGenericRepository<InternshipPosting>
 {

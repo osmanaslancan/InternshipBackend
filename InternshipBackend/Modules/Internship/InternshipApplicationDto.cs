@@ -1,4 +1,4 @@
-namespace InternshipBackend.Modules.CompanyManagement;
+namespace InternshipBackend.Modules.Internship;
 
 public class InternshipApplicationDto
 {

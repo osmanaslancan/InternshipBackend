@@ -5,6 +5,7 @@ using InternshipBackend.Modules;
 using InternshipBackend.Modules.Account;
 using InternshipBackend.Modules.CompanyManagement;
 using InternshipBackend.Modules.ForeignLanguage;
+using InternshipBackend.Modules.Internship;
 using InternshipBackend.Modules.Location;
 using InternshipBackend.Modules.UniversityEducations;
 using InternshipBackend.Modules.UserDetails;

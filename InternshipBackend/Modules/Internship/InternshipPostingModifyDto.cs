@@ -1,7 +1,6 @@
-using InternshipBackend.Data.Models;
 using InternshipBackend.Data.Models.Enums;
 
-namespace InternshipBackend.Modules.CompanyManagement;
+namespace InternshipBackend.Modules.Internship;
 
 public class InternshipPostingModifyDto
 {

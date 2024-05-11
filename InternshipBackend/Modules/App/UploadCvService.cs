@@ -50,7 +50,7 @@ public class UploadCvService(
     {
         return guid.ToString();
     }
-
+    
     public async Task<UploadResponse> UploadFile(UploadCvRequest request)
     {
         ArgumentNullException.ThrowIfNull(request.File);

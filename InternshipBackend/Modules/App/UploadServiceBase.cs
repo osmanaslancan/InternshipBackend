@@ -26,7 +26,7 @@ public abstract class UploadServiceBase(
         return $"{configuration["SupabaseStorageBaseUrl"]}/public/{FilePostfix(userSupabaseId, guid)}";
     }
     
-    public bool IsOwnedByCurrentUser(string url)
+    public virtual bool IsOwnedByCurrentUser(string url)
     {
         ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);
         

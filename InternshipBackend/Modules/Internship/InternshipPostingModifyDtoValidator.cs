@@ -1,8 +1,7 @@
 ﻿using FluentValidation;
-using InternshipBackend.Data.Models.Enums;
 using InternshipBackend.Modules.App;
 
-namespace InternshipBackend.Modules.CompanyManagement;
+namespace InternshipBackend.Modules.Internship;
 
 public class InternshipPostingModifyDtoValidator : AbstractValidator<InternshipPostingModifyDto>
 {

@@ -1,5 +1,6 @@
 using InternshipBackend.Core;
 using InternshipBackend.Data.Models.Enums;
+using InternshipBackend.Data.Models.ValueObjects;
 
 namespace InternshipBackend.Data.Models;
 
@@ -17,6 +18,7 @@ public class InternshipPosting : CompanyOwnedEntity
     public EmploymentType EmploymentType { get; set; }
     public bool HasSalary { get; set; }
     public ICollection<InternshipApplication> Applications { get; set; } = [];
+    public List<InternshipPostingComment> Comments { get; set; } = [];
     public DateTime DeadLine { get; set; }
     
     public DateTime CreatedAt { get; set; }
