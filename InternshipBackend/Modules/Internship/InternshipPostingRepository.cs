@@ -24,7 +24,8 @@ public class InternshipPostingRepository(InternshipDbContext dbContext)
     {
         return DbContext.InternshipPostings.AsNoTracking();
     }
-    
+
+
     public async Task<List<InternshipPosting>> ListCompanyPostingsAsync(int? companyId, int from)
     {
         return await DbContext.InternshipPostings

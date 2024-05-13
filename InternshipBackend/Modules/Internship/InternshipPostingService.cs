@@ -5,6 +5,7 @@ using InternshipBackend.Data.Models;
 using InternshipBackend.Data.Models.Enums;
 using InternshipBackend.Data.Models.ValueObjects;
 using InternshipBackend.Modules.Account;
+using InternshipBackend.Modules.App;
 using InternshipBackend.Modules.CompanyManagement;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,12 +18,14 @@ public interface IInternshipPostingService : IGenericEntityService<InternshipPos
     Task<PagedListDto<InternshipPostingListDto>> ListAsync(int? companyId, int from);
     Task CommentOnPosting(InternshipCommentDto dto);
     Task<InternshipPostingDto> GetPostingAsync(int id);
+    Task<List<InternshipApplicationCompanyDto>> GetApplications(int id);
 }
 
 public class InternshipPostingService(
     IServiceProvider serviceProvider,
     ICompanyService companyService,
     IInternshipPostingRepository repository,
+    IUploadCvService uploadCvService,
     IAccountRepository accountRepository)
     : GenericEntityService<InternshipPostingModifyDto, InternshipPosting>(serviceProvider), IInternshipPostingService
 {
@@ -177,16 +180,54 @@ public class InternshipPostingService(
 
         var users = await accountRepository.GetQueryable().Where(x => userIds.Contains(x.Id)).ToListAsync();
 
-        foreach (var comment in dto.Comments)  
+        foreach (var comment in dto.Comments)
         {
             var user = users.First(x => x.Id == comment.UserId);
             comment.UserName = user.Name;
             comment.UserSurname = user.Surname;
             comment.PhotoUrl = user.ProfilePhotoUrl;
         }
+
         dto.NumberOfComments = posting.Comments.Count;
         dto.AveragePoint = posting.Comments.Count > 0 ? posting.Comments.Average(x => x.Points) : 0;
         dto.NumberOfApplications = posting.Applications.Count;
+
+        return dto;
+    }
+
+    public async Task<List<InternshipApplicationCompanyDto>> GetApplications(int id)
+    {
+        var posting = await repository.GetDetailedByIdOrDefaultAsync(id);
+
+        if (posting == null)
+        {
+            throw new Exception("Posting not found");
+        }
+        
+        if (posting.CompanyId != await companyService.GetCurrentUserCompanyId())
+        {
+            throw new Exception("You can't see other company's applications");
+        }
+
+        var applications = posting.Applications.ToList();
+        var userIds = applications.Select(x => x.UserId).Distinct().ToList();
+        var users = (await accountRepository.GetQueryable().Where(x => userIds.Contains(x.Id)).ToListAsync())
+            .ToDictionary(x => x.Id);
+
+        var dto = mapper.Map<List<InternshipApplication>, List<InternshipApplicationCompanyDto>>(applications);
+
+        foreach (var application in dto)
+        {
+            var user = users[application.UserId];
+            application.Name = user.Name;
+            application.Surname = user.Surname;
+            application.ProfilePhotoUrl = user.ProfilePhotoUrl;
+
+            if (application.CvUrl != null)
+            {
+                application.CvUrl = uploadCvService.GetDownloadUrlForCurrentUser(user.SupabaseId, Guid.Parse(application.CvUrl));
+            }
+        }
 
         return dto;
     }

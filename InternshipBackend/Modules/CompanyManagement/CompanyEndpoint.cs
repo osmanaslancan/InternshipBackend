@@ -60,12 +60,22 @@ public class CompanyEndpoint(ICompanyService companyService, IInternshipPostingS
         return new EmptyResponse();
     }
     
-    [HttpGet("InternshipPosting/Get/{id:int}")]
     [AllowAnonymous]
+    [HttpGet("InternshipPosting/Get/{id:int}")]
     public async Task<ServiceResponse<InternshipPostingDto>> GetInternshipPostingAsync([FromRoute] int id)
     {
         var data = await internshipPostingService.GetPostingAsync(id);
         return new ServiceResponse<InternshipPostingDto>()
+        {
+            Data = data
+        };
+    }
+    
+    [HttpGet("InternshipPosting/GetApplications/{id:int}")]
+    public async Task<ServiceResponse<List<InternshipApplicationCompanyDto>>> GetInternshipPostingApplicationsAsync([FromRoute] int id)
+    {
+        var data = await internshipPostingService.GetApplications(id);
+        return new ServiceResponse<List<InternshipApplicationCompanyDto>>()
         {
             Data = data
         };
