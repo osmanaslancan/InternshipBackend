@@ -179,6 +179,10 @@ builder.Services.AddHttpClient("Supabase", o =>
     o.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", builder.Configuration["SupabaseAdminKey"]);
 });
 
+builder.Services.AddHttpClient("Linkedin", o =>
+{
+});
+
 builder.Services.AddRequestLocalization(o =>
 {
     o.DefaultRequestCulture = new RequestCulture("tr-TR");
