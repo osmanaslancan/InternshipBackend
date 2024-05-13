@@ -14,10 +14,15 @@ public interface IAccountRepository : IGenericRepository<User>
     Task<User> GetFullUser(Guid supabaseId);
     Task<bool> HasPermissionWithSupabaseId(Guid supabaseId, string permission);
     Task<bool> HasTypeWithSupabaseId(Guid supabaseId, AccountType accountType);
+    IQueryable<User> GetQueryable();
 }
 
 public class AccountRepository(InternshipDbContext context) : GenericRepository<User>(context), IAccountRepository
 {
+    public IQueryable<User> GetQueryable()
+    {
+        return DbContext.Users.AsNoTracking();
+    }
     public Task<User?> GetBySupabaseIdAsync(Guid id)
     {
         return DbContext.Users.FirstOrDefaultAsync(x => x.SupabaseId == id);

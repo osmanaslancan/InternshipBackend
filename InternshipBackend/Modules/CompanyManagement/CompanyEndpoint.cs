@@ -59,5 +59,15 @@ public class CompanyEndpoint(ICompanyService companyService, IInternshipPostingS
         await internshipPostingService.EndPostingAsync(id);
         return new EmptyResponse();
     }
+    
+    [HttpGet("InternshipPosting/Get/{id:int}")]
+    public async Task<ServiceResponse<InternshipPostingDto>> GetInternshipPostingAsync([FromRoute] int id)
+    {
+        var data = await internshipPostingService.GetPostingAsync(id);
+        return new ServiceResponse<InternshipPostingDto>()
+        {
+            Data = data
+        };
+    }
    
 }

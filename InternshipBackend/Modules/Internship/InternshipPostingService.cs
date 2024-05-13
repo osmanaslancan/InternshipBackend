@@ -4,10 +4,11 @@ using InternshipBackend.Core.Services;
 using InternshipBackend.Data.Models;
 using InternshipBackend.Data.Models.Enums;
 using InternshipBackend.Data.Models.ValueObjects;
+using InternshipBackend.Modules.Account;
 using InternshipBackend.Modules.CompanyManagement;
+using Microsoft.EntityFrameworkCore;
 
 namespace InternshipBackend.Modules.Internship;
-
 
 public interface IInternshipPostingService : IGenericEntityService<InternshipPostingModifyDto, InternshipPosting>
 {
@@ -15,19 +16,24 @@ public interface IInternshipPostingService : IGenericEntityService<InternshipPos
     public Task ApplyToPosting(InternshipApplicationDto dto);
     Task<PagedListDto<InternshipPostingListDto>> ListAsync(int? companyId, int from);
     Task CommentOnPosting(InternshipCommentDto dto);
+    Task<InternshipPostingDto> GetPostingAsync(int id);
 }
 
-public class InternshipPostingService(IServiceProvider serviceProvider, ICompanyService companyService, IInternshipPostingRepository repository)
+public class InternshipPostingService(
+    IServiceProvider serviceProvider,
+    ICompanyService companyService,
+    IInternshipPostingRepository repository,
+    IAccountRepository accountRepository)
     : GenericEntityService<InternshipPostingModifyDto, InternshipPosting>(serviceProvider), IInternshipPostingService
 {
     protected override async Task BeforeCreate(InternshipPosting data)
     {
         await base.BeforeCreate(data);
-        
+
         data.CompanyId = await companyService.GetCurrentUserCompanyId();
         data.CreatedAt = DateTime.UtcNow;
     }
-    
+
     protected override async Task BeforeUpdate(InternshipPosting data, InternshipPosting old)
     {
         await base.BeforeUpdate(data, old);
@@ -37,7 +43,7 @@ public class InternshipPostingService(IServiceProvider serviceProvider, ICompany
         {
             throw new Exception("You can't update other company's data");
         }
-        
+
         data.CompanyId = old.CompanyId;
         data.CreatedAt = old.CreatedAt;
         data.UpdatedAt = DateTime.UtcNow;
@@ -51,57 +57,56 @@ public class InternshipPostingService(IServiceProvider serviceProvider, ICompany
 
     public async Task<InternshipPosting> EndPostingAsync(int id)
     {
-
         var posting = await repository.GetByIdOrDefaultAsync(id);
-        
+
         if (posting == null)
         {
             throw new Exception("Posting not found");
         }
-        
+
         var userCompanyId = await companyService.GetCurrentUserCompanyId();
-        
+
         if (posting.CompanyId != userCompanyId)
         {
             throw new Exception("You can't end other company's posting");
         }
-        
+
         posting.DeadLine = DateTime.UtcNow;
         posting.UpdatedAt = DateTime.UtcNow;
 
         await _repository.UpdateAsync(posting);
         await _repository.SaveChangesAsync();
-        
+
         return posting;
     }
 
     public async Task ApplyToPosting(InternshipApplicationDto dto)
     {
         await serviceProvider.GetRequiredService<IValidator<InternshipApplicationDto>>().ValidateAndThrowAsync(dto);
-        
+
         var user = UserRetriever.GetCurrentUser();
         if (user.AccountType != AccountType.Intern)
         {
             throw new ValidationException("Only interns can apply to postings");
         }
-        
+
         var posting = await repository.GetDetailedByIdOrDefaultAsync(dto.InternshipPostingId);
-        
+
         if (posting == null)
         {
             throw new Exception("Posting not found");
         }
-        
+
         if (posting.DeadLine < DateTime.UtcNow)
         {
             throw new ValidationException("Posting is closed");
         }
-        
+
         if (posting.Applications.Any(x => x.UserId == user.Id))
         {
             throw new ValidationException("You have already applied to this posting");
         }
-        
+
         var application = new InternshipApplication()
         {
             InternshipPostingId = dto.InternshipPostingId,
@@ -110,34 +115,34 @@ public class InternshipPostingService(IServiceProvider serviceProvider, ICompany
             CvUrl = dto.CvUrl,
             CreatedAt = DateTime.UtcNow,
         };
-        
+
         posting.Applications.Add(application);
-        
+
         await _repository.UpdateAsync(posting);
     }
 
     public async Task CommentOnPosting(InternshipCommentDto dto)
     {
         await serviceProvider.GetRequiredService<IValidator<InternshipCommentDto>>().ValidateAndThrowAsync(dto);
-        
+
         var user = UserRetriever.GetCurrentUser();
         if (user.AccountType != AccountType.Intern)
         {
             throw new ValidationException("Only interns can apply to postings");
         }
-        
+
         var posting = await repository.GetDetailedByIdOrDefaultAsync(dto.InternshipPostingId);
-        
+
         if (posting == null)
         {
             throw new Exception("Posting not found");
         }
-        
+
         if (posting.DeadLine > DateTime.UtcNow)
         {
             throw new ValidationException("Cannot comment on open postings.");
         }
-        
+
         if (posting.Comments.Count(x => x.UserId == user.Id) > 2)
         {
             throw new ValidationException("You can only comment 2 times on a posting.");
@@ -150,10 +155,40 @@ public class InternshipPostingService(IServiceProvider serviceProvider, ICompany
             UserId = user.Id,
             CreatedAt = DateTime.UtcNow
         };
-        
+
         posting.Comments.Add(comment);
-        
+
         await _repository.UpdateAsync(posting);
+    }
+
+    public async Task<InternshipPostingDto> GetPostingAsync(int id)
+    {
+        var posting = await repository.GetDetailedByIdOrDefaultAsync(id);
+        if (posting == null)
+        {
+            throw new Exception("Posting not found");
+        }
+
+        var averageRating = (await companyService.GetAverageRatings(posting.CompanyId)).First();
+        var dto = mapper.Map<InternshipPosting, InternshipPostingDto>(posting);
+        dto.Company = mapper.Map<InternshipPostingCompanyDto>(averageRating);
+
+        var userIds = posting.Comments.Select(x => x.UserId).Distinct().ToList();
+
+        var users = await accountRepository.GetQueryable().Where(x => userIds.Contains(x.Id)).ToListAsync();
+
+        foreach (var comment in dto.Comments)  
+        {
+            var user = users.First(x => x.Id == comment.UserId);
+            comment.UserName = user.Name;
+            comment.UserSurname = user.Surname;
+            comment.PhotoUrl = user.ProfilePhotoUrl;
+        }
+        dto.NumberOfComments = posting.Comments.Count;
+        dto.AveragePoint = posting.Comments.Count > 0 ? posting.Comments.Average(x => x.Points) : 0;
+        dto.NumberOfApplications = posting.Applications.Count;
+
+        return dto;
     }
 
     public async Task<PagedListDto<InternshipPostingListDto>> ListAsync(int? companyId, int from)
@@ -161,7 +196,7 @@ public class InternshipPostingService(IServiceProvider serviceProvider, ICompany
         var postings = await repository.ListCompanyPostingsAsync(companyId, from);
         var total = await repository.CountCompanyPostingsAsync(companyId);
         var averageRatings = await companyService.GetAverageRatings(companyId);
-        
+
         var result = mapper.Map<List<InternshipPosting>, List<InternshipPostingListDto>>(postings, (o) =>
         {
             o.AfterMap((src, dest) =>
@@ -170,18 +205,11 @@ public class InternshipPostingService(IServiceProvider serviceProvider, ICompany
                 {
                     var companyRating = averageRatings.First(x => x.CompanyId == posting.CompanyId);
                     var destData = dest.First(x => x.Id == posting.Id);
-                    destData.Company = new InternshipPostingCompanyDto()
-                    {
-                        Name = companyRating.Name,
-                        LogoUrl = companyRating.LogoUrl,
-                        ShortDescription = companyRating.ShortDescription,
-                        AveragePoints = companyRating.Average,
-                        NumberOfComments = companyRating.NumberOfVotes,
-                    };
+                    destData.Company = mapper.Map<InternshipPostingCompanyDto>(companyRating);
                 }
             });
         });
-        
+
         return new()
         {
             Items = result,

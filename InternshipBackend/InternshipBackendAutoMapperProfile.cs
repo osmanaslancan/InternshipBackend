@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using InternshipBackend.Data;
 using InternshipBackend.Data.Models;
+using InternshipBackend.Data.Models.ValueObjects;
 using InternshipBackend.Modules;
 using InternshipBackend.Modules.Account;
 using InternshipBackend.Modules.CompanyManagement;
@@ -28,6 +29,9 @@ public class InternshipBackendAutoMapperProfile : Profile
         CreateMap<Company, CompanyDto>();
         CreateMap<InternshipPostingModifyDto, InternshipPosting>();
         CreateMap<InternshipPosting, InternshipPostingListDto>();
+        CreateMap<InternshipPosting, InternshipPostingDto>();
+        CreateMap<RatingResult, InternshipPostingCompanyDto>();
+        CreateMap<InternshipPostingComment, InternshipPostingCommentDto>();
         CreateMap<UniversityEducationModifyDto, UniversityEducation>();
         CreateMap<UniversityEducation, UniversityEducationListDto>();
         CreateMap<WorkHistory, WorkHistoryListDto>();
