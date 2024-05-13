@@ -11,6 +11,7 @@ public interface ICompanyService : IGenericEntityService<CompanyModifyDto, Data.
     Task<Company> Upsert(CompanyModifyDto dto);
     Task<int> GetCurrentUserCompanyId();
     Task<CompanyDto?> GetCurrentUsersCompany();
+    Task<List<RatingResult>> GetAverageRatings(int? companyId);
 }
 
 public class CompanyService(IServiceProvider serviceProvider, 
@@ -71,5 +72,10 @@ public class CompanyService(IServiceProvider serviceProvider,
         var company = await companyRepository.GetByUserIdOrDefaultAsync(user.Id);
         
         return mapper.Map<CompanyDto?>(company);
+    }
+
+    public Task<List<RatingResult>> GetAverageRatings(int? companyId)
+    {
+        return companyRepository.GetAverageRatings(companyId);
     }
 }

@@ -160,8 +160,27 @@ public class InternshipPostingService(IServiceProvider serviceProvider, ICompany
     {
         var postings = await repository.ListCompanyPostingsAsync(companyId, from);
         var total = await repository.CountCompanyPostingsAsync(companyId);
+        var averageRatings = await companyService.GetAverageRatings(companyId);
         
-        var result = mapper.Map<List<InternshipPostingListDto>>(postings);
+        var result = mapper.Map<List<InternshipPosting>, List<InternshipPostingListDto>>(postings, (o) =>
+        {
+            o.AfterMap((src, dest) =>
+            {
+                foreach (var posting in src)
+                {
+                    var companyRating = averageRatings.First(x => x.CompanyId == posting.CompanyId);
+                    var destData = dest.First(x => x.Id == posting.Id);
+                    destData.Company = new InternshipPostingCompanyDto()
+                    {
+                        Name = companyRating.Name,
+                        LogoUrl = companyRating.LogoUrl,
+                        ShortDescription = companyRating.ShortDescription,
+                        AveragePoints = companyRating.Average,
+                        NumberOfComments = companyRating.NumberOfVotes,
+                    };
+                }
+            });
+        });
         
         return new()
         {
