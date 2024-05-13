@@ -61,6 +61,7 @@ public class CompanyEndpoint(ICompanyService companyService, IInternshipPostingS
     }
     
     [HttpGet("InternshipPosting/Get/{id:int}")]
+    [AllowAnonymous]
     public async Task<ServiceResponse<InternshipPostingDto>> GetInternshipPostingAsync([FromRoute] int id)
     {
         var data = await internshipPostingService.GetPostingAsync(id);
