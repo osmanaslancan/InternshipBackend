@@ -15,7 +15,8 @@ public interface IInternshipPostingService : IGenericEntityService<InternshipPos
 {
     public Task<InternshipPosting> EndPostingAsync(int id);
     public Task ApplyToPosting(InternshipApplicationDto dto);
-    Task<PagedListDto<InternshipPostingListDto>> ListAsync(int? companyId, int from);
+    Task<PagedListDto<InternshipPostingListDto>> ListAsync(int? companyId, int from, int? take,
+        InternshipPostingSort sort);
     Task CommentOnPosting(InternshipCommentDto dto);
     Task<InternshipPostingDto> GetPostingAsync(int id);
     Task<List<InternshipApplicationCompanyDto>> GetApplications(int id);
@@ -232,9 +233,11 @@ public class InternshipPostingService(
         return dto;
     }
 
-    public async Task<PagedListDto<InternshipPostingListDto>> ListAsync(int? companyId, int from)
+    public async Task<PagedListDto<InternshipPostingListDto>> ListAsync(int? companyId, int from,
+        int? take,
+        InternshipPostingSort sort)
     {
-        var postings = await repository.ListCompanyPostingsAsync(companyId, from);
+        var postings = await repository.ListCompanyPostingsAsync(companyId, from, take, sort);
         var total = await repository.CountCompanyPostingsAsync(companyId);
         var averageRatings = await companyService.GetAverageRatings(companyId);
 
@@ -251,7 +254,7 @@ public class InternshipPostingService(
             });
         });
 
-        return new()
+        return new PagedListDto<InternshipPostingListDto>
         {
             Items = result,
             From = from,

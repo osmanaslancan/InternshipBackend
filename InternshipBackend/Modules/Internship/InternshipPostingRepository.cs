@@ -10,7 +10,9 @@ namespace InternshipBackend.Modules.Internship;
 
 public interface IInternshipPostingRepository : IGenericRepository<InternshipPosting>
 {
-    Task<List<InternshipPosting>> ListCompanyPostingsAsync(int? companyId, int from);
+    Task<List<InternshipPosting>> ListCompanyPostingsAsync(int? companyId, int from, int? take,
+        InternshipPostingSort sort);
+
     Task<int> CountCompanyPostingsAsync(int? companyId);
     Task<InternshipPosting?> GetDetailedByIdOrDefaultAsync(int id, bool changeTracking = true);
     IQueryable<InternshipPosting> GetQueryable();
@@ -26,14 +28,23 @@ public class InternshipPostingRepository(InternshipDbContext dbContext)
     }
 
 
-    public async Task<List<InternshipPosting>> ListCompanyPostingsAsync(int? companyId, int from)
+    public async Task<List<InternshipPosting>> ListCompanyPostingsAsync(int? companyId, int from, int? take,
+        InternshipPostingSort sort)
     {
-        return await DbContext.InternshipPostings
-            .WhereIf(companyId != null, x => x.CompanyId == companyId)
-            .OrderByDescending(x => x.CreatedAt)
-            .Skip(from)
-            .Take(100)
-            .ToListAsync();
+        var query = DbContext.InternshipPostings
+            .WhereIf(companyId != null, x => x.CompanyId == companyId);
+
+        if (sort == InternshipPostingSort.Popularity)
+        {
+            query = query.OrderByDescending(x => x.Applications.Count);
+        }
+        else
+        {
+            query = query.OrderByDescending(x => x.CreatedAt);
+        }
+
+        return await query.Skip(from)
+            .Take(Math.Min(100, take ?? 10)).ToListAsync();
     }
 
     public async Task<int> CountCompanyPostingsAsync(int? companyId)
