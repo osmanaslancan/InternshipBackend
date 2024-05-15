@@ -15,6 +15,8 @@ public interface IAccountRepository : IGenericRepository<User>
     Task<bool> HasPermissionWithSupabaseId(Guid supabaseId, string permission);
     Task<bool> HasTypeWithSupabaseId(Guid supabaseId, AccountType accountType);
     IQueryable<User> GetQueryable();
+    Task<List<UserCompanyFollow>> GetCompanyFollows(Guid userSupabaseId);
+    Task<List<UserPostingFollow>> GetPostingFollows(Guid userSupabaseId);
 }
 
 public class AccountRepository(InternshipDbContext context) : GenericRepository<User>(context), IAccountRepository
@@ -23,6 +25,23 @@ public class AccountRepository(InternshipDbContext context) : GenericRepository<
     {
         return DbContext.Users.AsNoTracking();
     }
+
+    public async Task<List<UserCompanyFollow>> GetCompanyFollows(Guid userSupabaseId)
+    {
+        var user = await DbContext.Users.Include(x => x.FollowedCompanies)
+            .FirstAsync(x => x.SupabaseId == userSupabaseId);
+        
+        return user.FollowedCompanies.ToList();
+    }
+
+    public async Task<List<UserPostingFollow>> GetPostingFollows(Guid userSupabaseId)
+    {
+        var user = await DbContext.Users.Include(x => x.FollowedPostings)
+            .FirstAsync(x => x.SupabaseId == userSupabaseId);
+        
+        return user.FollowedPostings.ToList();
+    }
+
     public Task<User?> GetBySupabaseIdAsync(Guid id)
     {
         return DbContext.Users.FirstOrDefaultAsync(x => x.SupabaseId == id);

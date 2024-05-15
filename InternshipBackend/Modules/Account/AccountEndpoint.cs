@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InternshipBackend.Modules.Account;
 
-[Route("Account/[action]")]
+[Route("Account")]
 public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
 {
-    [HttpPost]
+    [HttpPost("UpdateUserInfo")]
     public async Task<ServiceResponse> UpdateUserInfo([FromBody] UserInfoUpdateDto userInfo)
     {
         await accountService.UpdateUserInfo(userInfo);
@@ -17,7 +17,7 @@ public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
         return new EmptyResponse();
     }
 
-    [HttpPost]
+    [HttpPost("IsUserRegistered")]
     public async Task<UserRegisteredResponse> IsUserRegistered()
     {
         var userInfo = await accountService.GetCurrentUserInfoOrDefault();
@@ -28,7 +28,7 @@ public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
         };
     }
 
-    [HttpPost]
+    [HttpPost("UpdateProfileImage")]
     public async Task<ServiceResponse> UpdateProfileImage([FromForm] UpdateProfileImageRequest request)
     {
         await accountService.UpdateProfileImage(request);
@@ -36,7 +36,7 @@ public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
         return new EmptyResponse();
     }
 
-    [HttpPost]
+    [HttpPost("GetInfo")]
     public async Task<ServiceResponse<UserDTO>> GetInfo()
     {
         var userDto = await accountService.GetUser();
@@ -45,5 +45,21 @@ public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
         {
             Data = userDto,
         };
+    }
+    
+    [HttpPost("Follow/Company/{companyId:int}")]
+    public async Task<ServiceResponse> FollowCompany([FromRoute] int companyId, [FromQuery] bool follow)
+    {
+        await accountService.FollowCompany(companyId, follow);
+
+        return new EmptyResponse();
+    }
+    
+    [HttpPost("Follow/Posting/{postingId:int}")]
+    public async Task<ServiceResponse> FollowPosting([FromRoute] int postingId, [FromQuery] bool follow)
+    {
+        await accountService.FollowPosting(postingId, follow);
+
+        return new EmptyResponse();
     }
 }

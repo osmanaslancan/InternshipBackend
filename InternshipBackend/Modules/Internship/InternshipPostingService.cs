@@ -15,8 +15,10 @@ public interface IInternshipPostingService : IGenericEntityService<InternshipPos
 {
     public Task<InternshipPosting> EndPostingAsync(int id);
     public Task ApplyToPosting(InternshipApplicationDto dto);
+
     Task<PagedListDto<InternshipPostingListDto>> ListAsync(int? companyId, int from, int? take,
         InternshipPostingSort sort);
+
     Task CommentOnPosting(InternshipCommentDto dto);
     Task<InternshipPostingDto> GetPostingAsync(int id);
     Task<List<InternshipApplicationCompanyDto>> GetApplications(int id);
@@ -27,6 +29,7 @@ public class InternshipPostingService(
     ICompanyService companyService,
     IInternshipPostingRepository repository,
     IUploadCvService uploadCvService,
+    IHttpContextAccessor httpContextAccessor,
     IAccountRepository accountRepository)
     : GenericEntityService<InternshipPostingModifyDto, InternshipPosting>(serviceProvider), IInternshipPostingService
 {
@@ -167,11 +170,14 @@ public class InternshipPostingService(
 
     public async Task<InternshipPostingDto> GetPostingAsync(int id)
     {
+        ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);
+
         var posting = await repository.GetDetailedByIdOrDefaultAsync(id);
         if (posting == null)
         {
             throw new Exception("Posting not found");
         }
+
 
         var averageRating = (await companyService.GetAverageRatings(posting.CompanyId)).First();
         var dto = mapper.Map<InternshipPosting, InternshipPostingDto>(posting);
@@ -180,6 +186,16 @@ public class InternshipPostingService(
         var userIds = posting.Comments.Select(x => x.UserId).Distinct().ToList();
 
         var users = await accountRepository.GetQueryable().Where(x => userIds.Contains(x.Id)).ToListAsync();
+
+        if (httpContextAccessor.HttpContext.User.Identity?.IsAuthenticated ?? false)
+        {
+            var supabaseId = httpContextAccessor.HttpContext.User.GetSupabaseId();
+            var companyFollows = await accountRepository.GetCompanyFollows(supabaseId);
+            var postingFollows = await accountRepository.GetPostingFollows(supabaseId);
+
+            dto.IsCurrentUserFollowing = postingFollows.Any(x => x.PostingId == dto.Id);
+            dto.Company.IsCurrentUserFollowing = companyFollows.Any(x => x.CompanyId == dto.Company.CompanyId);
+        }
 
         foreach (var comment in dto.Comments)
         {
@@ -204,7 +220,7 @@ public class InternshipPostingService(
         {
             throw new Exception("Posting not found");
         }
-        
+
         if (posting.CompanyId != await companyService.GetCurrentUserCompanyId())
         {
             throw new Exception("You can't see other company's applications");
@@ -226,7 +242,8 @@ public class InternshipPostingService(
 
             if (application.CvUrl != null)
             {
-                application.CvUrl = uploadCvService.GetDownloadUrlForCurrentUser(user.SupabaseId, Guid.Parse(application.CvUrl));
+                application.CvUrl =
+                    uploadCvService.GetDownloadUrlForCurrentUser(user.SupabaseId, Guid.Parse(application.CvUrl));
             }
         }
 
@@ -237,6 +254,7 @@ public class InternshipPostingService(
         int? take,
         InternshipPostingSort sort)
     {
+        ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);
         var postings = await repository.ListCompanyPostingsAsync(companyId, from, take, sort);
         var total = await repository.CountCompanyPostingsAsync(companyId);
         var averageRatings = await companyService.GetAverageRatings(companyId);
@@ -253,6 +271,19 @@ public class InternshipPostingService(
                 }
             });
         });
+
+        if (httpContextAccessor.HttpContext.User.Identity?.IsAuthenticated ?? false)
+        {
+            var supabaseId = httpContextAccessor.HttpContext.User.GetSupabaseId();
+            var companyFollows = await accountRepository.GetCompanyFollows(supabaseId);
+            var postingFollows = await accountRepository.GetPostingFollows(supabaseId);
+
+            foreach (var item in result)
+            {
+                item.IsCurrentUserFollowing = postingFollows.Any(x => x.PostingId == item.Id);
+                item.Company.IsCurrentUserFollowing = companyFollows.Any(x => x.CompanyId == item.Company.CompanyId);
+            }
+        }
 
         return new PagedListDto<InternshipPostingListDto>
         {

@@ -35,28 +35,48 @@ public class InternshipDbContext : DbContext
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         base.ConfigureConventions(configurationBuilder);
-        
+
         configurationBuilder.Properties<string>().HaveMaxLength(255);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("public");
-        
-        modelBuilder.Entity<User>()
-            .HasIndex(x => x.SupabaseId)
-            .IsUnique();
-        modelBuilder.Entity<User>()
-            .HasIndex(x => x.Email)
-            .IsUnique();
 
         modelBuilder.Entity<StorageObject>().ToTable("storage.objects", (t) => t.ExcludeFromMigrations());
 
-        modelBuilder.Entity<User>()
-            .HasOne(x => x.Detail)
-            .WithOne(ud => ud.User)
-            .HasForeignKey<UserDetail>(x => x.Id);
+        modelBuilder.Entity<User>(b =>
+        {
+            b.HasOne(x => x.Detail)
+                .WithOne(ud => ud.User)
+                .HasForeignKey<UserDetail>(x => x.Id);
 
+            b.HasIndex(x => x.Email)
+                .IsUnique();
+
+            b.HasIndex(x => x.SupabaseId)
+                .IsUnique();
+
+            b.HasMany<UserCompanyFollow>(x => x.FollowedCompanies).WithOne()
+                .HasForeignKey(x => x.UserId);
+
+            b.HasMany<UserPostingFollow>(x => x.FollowedPostings).WithOne()
+                .HasForeignKey(x => x.UserId);
+        });
+
+        modelBuilder.Entity<UserCompanyFollow>(b =>
+        {
+            b.HasKey(x => new { x.UserId, x.CompanyId });
+            b.HasOne<Company>().WithMany().HasForeignKey(x => x.CompanyId);
+        });
+        modelBuilder.Entity<UserPostingFollow>(b =>
+        {
+            b.HasKey(x => new { x.UserId, x.PostingId });
+            b.HasOne<InternshipPosting>().WithMany().HasForeignKey(x => x.PostingId);
+            
+            
+            
+        });
 
         modelBuilder.Entity<UniversityEducation>(b =>
         {
@@ -65,7 +85,7 @@ public class InternshipDbContext : DbContext
             b.Property(x => x.EndDate).HasColumnType("date");
             b.HasOne(x => x.University).WithMany().HasForeignKey(x => x.UniversityId);
         });
-        
+
         modelBuilder.Entity<UserProject>(b =>
         {
             b.Property(x => x.ProjectName).HasMaxLength(255);
@@ -80,23 +100,17 @@ public class InternshipDbContext : DbContext
             b.Property(x => x.EndDate).HasColumnType("date");
             b.Property(x => x.Description).HasMaxLength(1000);
         });
-        
+
         modelBuilder.Entity<UserDetail>(b =>
         {
             b.Property(x => x.DateOfBirth).HasColumnType("date");
             b.Property(x => x.Extras).HasColumnType("jsonb");
             b.Property(x => x.DriverLicenses).HasColumnType("text[]");
-            b.OwnsMany(x => x.Cvs, d =>
-            {
-                d.ToJson();
-            });
+            b.OwnsMany(x => x.Cvs, d => { d.ToJson(); });
         });
 
-        modelBuilder.Entity<UserPermission>(b =>
-        {
-            b.HasKey(x => new { x.UserId, x.Permission });
-        });
-        
+        modelBuilder.Entity<UserPermission>(b => { b.HasKey(x => new { x.UserId, x.Permission }); });
+
         modelBuilder.Entity<UserReference>(b =>
         {
             b.Property(x => x.Description).HasMaxLength(500);
@@ -112,7 +126,7 @@ public class InternshipDbContext : DbContext
             b.HasOne<City>().WithMany().HasForeignKey(x => x.CityId);
             b.HasOne<User>(x => x.AdminUser).WithOne().HasForeignKey<Company>(x => x.AdminUserId);
         });
-        
+
         modelBuilder.Entity<InternshipPosting>(b =>
         {
             b.HasOne<Company>().WithMany().HasForeignKey(x => x.CompanyId);
@@ -120,16 +134,12 @@ public class InternshipDbContext : DbContext
             b.HasMany<InternshipApplication>(x => x.Applications).WithOne().HasForeignKey(x => x.InternshipPostingId);
             b.HasOne<Country>().WithMany().HasForeignKey(x => x.CountryId);
             b.HasOne<City>().WithMany().HasForeignKey(x => x.CityId);
-            b.OwnsMany(x => x.Comments, d =>
-            {
-                d.ToJson();
-            });
-        });
-        
-        modelBuilder.Entity<InternshipApplication>(b =>
-        {
-            b.HasOne<User>().WithMany().HasForeignKey(x => x.UserId);
+            b.OwnsMany(x => x.Comments, d => { d.ToJson(); });
         });
 
+        modelBuilder.Entity<InternshipApplication>(b =>
+        {
+            b.HasOne<User>().WithMany(x => x.Applications).HasForeignKey(x => x.UserId);
+        });
     }
 }
