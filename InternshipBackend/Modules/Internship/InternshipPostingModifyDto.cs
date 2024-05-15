@@ -6,6 +6,7 @@ public class InternshipPostingModifyDto
 {
     public string? Title { get; set; }
     public string? ImageUrl { get; set; }
+    public string? BackgroundPhotoUrl { get; set; }
     public string? Description { get; set; }
     public string? Sector { get; set; }
     public int? CountryId { get; set; }
