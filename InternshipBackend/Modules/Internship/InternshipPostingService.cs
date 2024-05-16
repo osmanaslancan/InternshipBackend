@@ -22,6 +22,7 @@ public interface IInternshipPostingService : IGenericEntityService<InternshipPos
     Task CommentOnPosting(InternshipCommentDto dto);
     Task<InternshipPostingDto> GetPostingAsync(int id);
     Task<List<InternshipApplicationCompanyDto>> GetApplications(int id);
+    Task<ApplicationDetailDto> GetApplicationDetail(int id);
 }
 
 public class InternshipPostingService(
@@ -248,6 +249,42 @@ public class InternshipPostingService(
         }
 
         return dto;
+    }
+
+    public async Task<ApplicationDetailDto> GetApplicationDetail(int id)
+    {
+        var application = await repository.GetInternshipApplication(id);
+        if (application == null)
+        {
+            throw new Exception("Application not found");
+        }
+
+        var posting = await repository.GetByIdOrDefaultAsync(application.InternshipPostingId);
+
+        if (posting == null)
+        {
+            throw new Exception("Posting not found");
+        }
+
+        if (posting.CompanyId != await companyService.GetCurrentUserCompanyId())
+        {
+            throw new Exception("You can't see other company's applications");
+        }
+
+        var user = await accountRepository.GetFullUser(application.UserId);
+
+        var applicationDetail = mapper.Map<User, ApplicationDetailDto>(user);
+
+        applicationDetail.InternshipPostingId = application.InternshipPostingId;
+        applicationDetail.Message = application.Message;
+        if (application.CvUrl is not null)
+        {
+            applicationDetail.CvUrl = uploadCvService.GetDownloadUrlForCurrentUser(user.SupabaseId, Guid.Parse(application.CvUrl));
+        }
+
+        applicationDetail.Id = application.Id;
+
+        return applicationDetail;
     }
 
     public async Task<PagedListDto<InternshipPostingListDto>> ListAsync(int? companyId, int from,

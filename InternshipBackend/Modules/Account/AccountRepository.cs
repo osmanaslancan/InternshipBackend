@@ -12,6 +12,7 @@ public interface IAccountRepository : IGenericRepository<User>
     Task<bool> ExistsByEmail(string email);
     Task<bool> ExistsBySupabaseId(Guid supabaseId);
     Task<User> GetFullUser(Guid supabaseId);
+    Task<User> GetFullUser(int userId);
     Task<bool> HasPermissionWithSupabaseId(Guid supabaseId, string permission);
     Task<bool> HasTypeWithSupabaseId(Guid supabaseId, AccountType accountType);
     IQueryable<User> GetQueryable();
@@ -80,6 +81,21 @@ public class AccountRepository(InternshipDbContext context) : GenericRepository<
             .Include("UniversityEducations.University")
             .Include(x => x.References)
             .FirstAsync(x => x.SupabaseId == supabaseId);
+
+        return result;
+    }
+
+    public async Task<User> GetFullUser(int userId)
+    {
+        var result = await DbContext.Users
+            .Include(x => x.ForeignLanguages)
+            .Include(x => x.UniversityEducations)
+            .Include(x => x.Works)
+            .Include(x => x.Projects)
+            .Include(x => x.Detail)
+            .Include("UniversityEducations.University")
+            .Include(x => x.References)
+            .FirstAsync(x => x.Id == userId);
 
         return result;
     }

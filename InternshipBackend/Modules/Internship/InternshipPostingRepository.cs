@@ -15,6 +15,7 @@ public interface IInternshipPostingRepository : IGenericRepository<InternshipPos
 
     Task<int> CountCompanyPostingsAsync(int? companyId);
     Task<InternshipPosting?> GetDetailedByIdOrDefaultAsync(int id, bool changeTracking = true);
+    Task<InternshipApplication?> GetInternshipApplication(int id);
     IQueryable<InternshipPosting> GetQueryable();
 }
 
@@ -67,5 +68,16 @@ public class InternshipPostingRepository(InternshipDbContext dbContext)
             .Include(x => x.Applications)
             .Include(x => x.Comments)
             .FirstOrDefaultAsync(x => x.Id.Equals(id));
+    }
+
+    public Task<InternshipApplication?> GetInternshipApplication(int id)
+    {
+        var queryable = DbContext.InternshipPostings.AsQueryable()
+            .Where(x => x.Applications.Any(x => x.Id == id))
+            .Select(x => x.Applications.First(x => x.Id == id));
+
+        var result = queryable.FirstOrDefaultAsync();
+
+        return result;
     }
 }
