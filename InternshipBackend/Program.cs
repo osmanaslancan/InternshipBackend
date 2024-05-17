@@ -19,11 +19,15 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using InternshipBackend;
 using InternshipBackend.Core.Authorization;
 using InternshipBackend.Core.Services;
 using InternshipBackend.Modules.Account.Authorization;
+using InternshipBackend.Modules.App;
 using Microsoft.AspNetCore.Authorization;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -207,6 +211,20 @@ builder.Services.AddRequestLocalization(o =>
 
 builder.Services.AddLocalization();
 
+builder.Services.AddQuartz(q =>
+{
+    // Just use the name of your job that you created in the Jobs folder.
+    var jobKey = new JobKey("NotificationSendJob");
+    q.AddJob<NotificationSendJob>(opts => opts.WithIdentity(jobKey));
+    
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("NotificationSendJob-trigger")
+        .WithCronSchedule("0 * * ? * *")
+    );
+});
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
 var app = builder.Build();
 
 app.Use(async (context, next) =>
@@ -275,6 +293,10 @@ scope.Dispose();
 
 await new SeederManager().ExecuteAsync(app.Services);
 
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = GoogleCredential.FromFile("firebase-credentials.json")
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

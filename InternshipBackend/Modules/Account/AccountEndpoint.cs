@@ -62,4 +62,12 @@ public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
 
         return new EmptyResponse();
     }
+    
+    [HttpPost("RegisterNotificationToken")]
+    public async Task<ServiceResponse> RegisterNotificationToken([FromBody] RegisterNotificationTokenDto request)
+    {
+        await accountService.RegisterNotificationToken(request);
+
+        return new EmptyResponse();
+    }
 }

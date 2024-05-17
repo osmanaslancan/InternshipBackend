@@ -15,7 +15,7 @@ public class User : Entity
     [DataType(DataType.PhoneNumber)] public string PhoneNumber { get; set; }
     public AccountType AccountType { get; set; }
 
-    public List<string> NotificationTokens { get; set; }
+    public List<string> NotificationTokens { get; set; } = [];
 
     public ICollection<ForeignLanguage> ForeignLanguages { get; set; } = [];
     public ICollection<UniversityEducation> UniversityEducations { get; set; } = [];

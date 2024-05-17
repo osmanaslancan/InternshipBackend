@@ -7,7 +7,7 @@ public class UserNotification : UserOwnedEntity
     public enum NotificationStatus
     {
         Created,
-        Send,
+        Sent,
         Failed
     }
     

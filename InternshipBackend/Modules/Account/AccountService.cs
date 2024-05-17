@@ -20,6 +20,7 @@ public interface IAccountService
     Task<UserDTO> GetUser();
     Task FollowCompany(int companyId, bool follow);
     Task FollowPosting(int postingId, bool follow);
+    Task RegisterNotificationToken(RegisterNotificationTokenDto request);
 }
 
 public class AccountService(
@@ -215,5 +216,28 @@ public class AccountService(
                 await accountRepository.UpdateAsync(user);
             }
         }
+    }
+
+    public async Task RegisterNotificationToken(RegisterNotificationTokenDto request)
+    {
+        var currentUser = await GetCurrentUserInfoOrDefault();
+
+        if (currentUser is null)
+        {
+            throw new Exception("Current User Null");
+        }
+
+        currentUser.NotificationTokens ??= new List<string>();
+        
+        if (currentUser.NotificationTokens.Contains(request.Token))
+            return;
+        
+        if (currentUser.NotificationTokens.Count >= 5)
+        {
+            currentUser.NotificationTokens.RemoveAt(0);
+        }
+        
+        currentUser.NotificationTokens.Add(request.Token);
+        await accountRepository.UpdateAsync(currentUser);
     }
 }
