@@ -34,10 +34,11 @@ public class CompanyEndpoint(ICompanyService companyService, IInternshipPostingS
     public async Task<ServiceResponse<PagedListDto<InternshipPostingListDto>>> ListInternshipPostingAsync(
         [FromQuery] int? companyId, 
         [FromQuery] int from,
+        [FromQuery] string? matchQuery,
         [FromQuery] int? take = 10,
         [FromQuery] InternshipPostingSort sort = InternshipPostingSort.CreatedAt)
     {
-        var result = await internshipPostingService.ListAsync(companyId, from, take, sort);
+        var result = await internshipPostingService.ListAsync(companyId, from, take, sort, matchQuery);
         return new()
         {
             Data = result

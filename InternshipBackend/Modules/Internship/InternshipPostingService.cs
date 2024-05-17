@@ -17,7 +17,7 @@ public interface IInternshipPostingService : IGenericEntityService<InternshipPos
     public Task ApplyToPosting(InternshipApplicationDto dto);
 
     Task<PagedListDto<InternshipPostingListDto>> ListAsync(int? companyId, int from, int? take,
-        InternshipPostingSort sort);
+        InternshipPostingSort sort, string? matchQuery);
 
     Task CommentOnPosting(InternshipCommentDto dto);
     Task<InternshipPostingDto> GetPostingAsync(int id);
@@ -289,11 +289,11 @@ public class InternshipPostingService(
 
     public async Task<PagedListDto<InternshipPostingListDto>> ListAsync(int? companyId, int from,
         int? take,
-        InternshipPostingSort sort)
+        InternshipPostingSort sort, string? matchQuery)
     {
         ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);
-        var postings = await repository.ListCompanyPostingsAsync(companyId, from, take, sort);
-        var total = await repository.CountCompanyPostingsAsync(companyId);
+        var postings = await repository.ListCompanyPostingsAsync(companyId, from, take, sort, matchQuery);
+        var total = await repository.CountCompanyPostingsAsync(companyId, matchQuery);
         var averageRatings = await companyService.GetAverageRatings(companyId);
 
         var result = mapper.Map<List<InternshipPosting>, List<InternshipPostingListDto>>(postings, (o) =>

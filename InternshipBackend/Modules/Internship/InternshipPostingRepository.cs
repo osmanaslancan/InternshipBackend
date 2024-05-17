@@ -11,9 +11,9 @@ namespace InternshipBackend.Modules.Internship;
 public interface IInternshipPostingRepository : IGenericRepository<InternshipPosting>
 {
     Task<List<InternshipPosting>> ListCompanyPostingsAsync(int? companyId, int from, int? take,
-        InternshipPostingSort sort);
+        InternshipPostingSort sort, string? matchQuery);
 
-    Task<int> CountCompanyPostingsAsync(int? companyId);
+    Task<int> CountCompanyPostingsAsync(int? companyId, string? matchQuery);
     Task<InternshipPosting?> GetDetailedByIdOrDefaultAsync(int id, bool changeTracking = true);
     Task<InternshipApplication?> GetInternshipApplication(int id);
     IQueryable<InternshipPosting> GetQueryable();
@@ -30,10 +30,13 @@ public class InternshipPostingRepository(InternshipDbContext dbContext)
 
 
     public async Task<List<InternshipPosting>> ListCompanyPostingsAsync(int? companyId, int from, int? take,
-        InternshipPostingSort sort)
+        InternshipPostingSort sort, string? matchQuery)
     {
         var query = DbContext.InternshipPostings
-            .WhereIf(companyId != null, x => x.CompanyId == companyId);
+            .WhereIf(companyId != null, x => x.CompanyId == companyId)
+            .WhereIf(!string.IsNullOrWhiteSpace(matchQuery),
+                x => x.SearchVector.Matches(EF.Functions.PlainToTsQuery("turkish", matchQuery!)) ||
+                     EF.Functions.TrigramsSimilarity(x.Title, matchQuery!) > 0.3);
 
         if (sort == InternshipPostingSort.Popularity)
         {
@@ -48,10 +51,13 @@ public class InternshipPostingRepository(InternshipDbContext dbContext)
             .Take(Math.Min(100, take ?? 10)).ToListAsync();
     }
 
-    public async Task<int> CountCompanyPostingsAsync(int? companyId)
+    public async Task<int> CountCompanyPostingsAsync(int? companyId, string? matchQuery)
     {
         return await DbContext.InternshipPostings
             .WhereIf(companyId != null, x => x.CompanyId == companyId)
+            .WhereIf(!string.IsNullOrWhiteSpace(matchQuery),
+                x => x.SearchVector.Matches(EF.Functions.PlainToTsQuery("turkish", matchQuery!)) ||
+                     EF.Functions.TrigramsSimilarity(x.Title, matchQuery!) > 0.1)
             .CountAsync();
     }
 

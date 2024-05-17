@@ -4,18 +4,20 @@ using InternshipBackend.Data;
 using InternshipBackend.Data.Models.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using NpgsqlTypes;
 
 #nullable disable
 
 namespace InternshipBackend.Migrations
 {
     [DbContext(typeof(InternshipDbContext))]
-    partial class InternshipDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240517105054_ChangeColumnType")]
+    partial class ChangeColumnType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -290,13 +292,6 @@ namespace InternshipBackend.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<NpgsqlTsVector>("SearchVector")
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("tsvector")
-                        .HasAnnotation("Npgsql:TsVectorConfig", "turkish")
-                        .HasAnnotation("Npgsql:TsVectorProperties", new[] { "Title", "Description" });
-
                     b.Property<string>("Sector")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
@@ -319,10 +314,6 @@ namespace InternshipBackend.Migrations
                     b.HasIndex("CompanyId");
 
                     b.HasIndex("CountryId");
-
-                    b.HasIndex("SearchVector");
-
-                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("SearchVector"), "GIN");
 
                     b.ToTable("InternshipPostings", "public");
                 });

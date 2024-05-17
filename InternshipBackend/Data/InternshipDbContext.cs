@@ -73,9 +73,6 @@ public class InternshipDbContext : DbContext
         {
             b.HasKey(x => new { x.UserId, x.PostingId });
             b.HasOne<InternshipPosting>().WithMany().HasForeignKey(x => x.PostingId);
-            
-            
-            
         });
 
         modelBuilder.Entity<UniversityEducation>(b =>
@@ -130,11 +127,17 @@ public class InternshipDbContext : DbContext
         modelBuilder.Entity<InternshipPosting>(b =>
         {
             b.HasOne<Company>().WithMany().HasForeignKey(x => x.CompanyId);
-            b.Property(x => x.Description).HasMaxLength(2000);
+            b.Property(x => x.Description).HasMaxLength(2000).HasColumnType("text");
             b.HasMany<InternshipApplication>(x => x.Applications).WithOne().HasForeignKey(x => x.InternshipPostingId);
             b.HasOne<Country>().WithMany().HasForeignKey(x => x.CountryId);
             b.HasOne<City>().WithMany().HasForeignKey(x => x.CityId);
             b.OwnsMany(x => x.Comments, d => { d.ToJson(); });
+            b.HasGeneratedTsVectorColumn(
+                    p => p.SearchVector,
+                    "turkish",
+                    p => new { p.Title, p.Description })
+                .HasIndex(p => p.SearchVector)
+                .HasMethod("GIN");
         });
 
         modelBuilder.Entity<InternshipApplication>(b =>
