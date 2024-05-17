@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InternshipBackend.Modules.CompanyManagement;
 
-public interface ICompanyRepository
+public interface ICompanyRepository : IGenericRepository<Company>
 {
     Task<Company?> GetByUserIdOrDefaultAsync(int userId);
     Task<List<RatingResult>> GetAverageRatings(int? companyId);

@@ -9,6 +9,7 @@ public class InternshipDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<UserProject> UserProjects { get; set; }
+    public DbSet<UserNotification> UserNotifications { get; set; }
     public DbSet<University> Universities { get; set; }
     public DbSet<DbSeed> DbSeeds { get; set; }
     public DbSet<UserDetail> UserDetails { get; set; }
@@ -62,6 +63,8 @@ public class InternshipDbContext : DbContext
 
             b.HasMany<UserPostingFollow>(x => x.FollowedPostings).WithOne()
                 .HasForeignKey(x => x.UserId);
+
+            b.Property(x => x.NotificationTokens).HasColumnType("text[]");
         });
 
         modelBuilder.Entity<UserCompanyFollow>(b =>
@@ -143,6 +146,12 @@ public class InternshipDbContext : DbContext
         modelBuilder.Entity<InternshipApplication>(b =>
         {
             b.HasOne<User>().WithMany(x => x.Applications).HasForeignKey(x => x.UserId);
+        });
+        
+        modelBuilder.Entity<UserNotification>(b =>
+        {
+            b.HasOne<User>().WithMany().HasForeignKey(x => x.UserId);
+            b.Property(x => x.UserId).IsRequired();
         });
     }
 }

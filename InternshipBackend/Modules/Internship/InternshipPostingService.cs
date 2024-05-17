@@ -27,9 +27,11 @@ public interface IInternshipPostingService : IGenericEntityService<InternshipPos
 public class InternshipPostingService(
     IServiceProvider serviceProvider,
     ICompanyService companyService,
+    ICompanyRepository companyRepository,
     IInternshipPostingRepository repository,
     IUploadCvService uploadCvService,
     IHttpContextAccessor httpContextAccessor,
+    NotificationService notificationService,
     IAccountRepository accountRepository)
     : GenericEntityService<InternshipPostingModifyDto, InternshipPosting>(serviceProvider), IInternshipPostingService
 {
@@ -39,6 +41,16 @@ public class InternshipPostingService(
 
         data.CompanyId = await companyService.GetCurrentUserCompanyId();
         data.CreatedAt = DateTime.UtcNow;
+    }
+
+    public override async Task<InternshipPosting> CreateAsync(InternshipPostingModifyDto data)
+    {
+        var result = await base.CreateAsync(data);
+        var company = await companyRepository.GetByIdOrDefaultAsync(result.CompanyId);
+        await notificationService.SendNotificationToCompanyFollowers(result.CompanyId,
+            $"Yeni Staj İlanı - {company!.Name}", result.Title[..Math.Min(result.Title.Length, 250)]);
+
+        return result;
     }
 
     protected override async Task BeforeUpdate(InternshipPosting data, InternshipPosting old)
