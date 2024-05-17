@@ -10,10 +10,9 @@ namespace InternshipBackend.Modules.Internship;
 
 public interface IInternshipPostingRepository : IGenericRepository<InternshipPosting>
 {
-    Task<List<InternshipPosting>> ListCompanyPostingsAsync(int? companyId, int from, int? take,
-        InternshipPostingSort sort, string? matchQuery);
+    Task<List<InternshipPosting>> ListCompanyPostingsAsync(InternshipPostingListRequestDto request);
 
-    Task<int> CountCompanyPostingsAsync(int? companyId, string? matchQuery);
+    Task<int> CountCompanyPostingsAsync(InternshipPostingListRequestDto request);
     Task<InternshipPosting?> GetDetailedByIdOrDefaultAsync(int id, bool changeTracking = true);
     Task<InternshipApplication?> GetInternshipApplication(int id);
     IQueryable<InternshipPosting> GetQueryable();
@@ -28,17 +27,23 @@ public class InternshipPostingRepository(InternshipDbContext dbContext)
         return DbContext.InternshipPostings.AsNoTracking();
     }
 
-
-    public async Task<List<InternshipPosting>> ListCompanyPostingsAsync(int? companyId, int from, int? take,
-        InternshipPostingSort sort, string? matchQuery)
+    private IQueryable<InternshipPosting> GetQuery(InternshipPostingListRequestDto request)
     {
-        var query = DbContext.InternshipPostings
-            .WhereIf(companyId != null, x => x.CompanyId == companyId)
-            .WhereIf(!string.IsNullOrWhiteSpace(matchQuery),
-                x => x.SearchVector.Matches(EF.Functions.PlainToTsQuery("turkish", matchQuery!)) ||
-                     EF.Functions.TrigramsSimilarity(x.Title, matchQuery!) > 0.3);
+        return DbContext.InternshipPostings
+            .WhereIf(request.CompanyId != null, x => x.CompanyId == request.CompanyId)
+            .WhereIf(!string.IsNullOrWhiteSpace(request.MatchQuery),
+                x => x.SearchVector.Matches(EF.Functions.PlainToTsQuery("turkish", request.MatchQuery!)) ||
+                     EF.Functions.TrigramsSimilarity(x.Title, request.MatchQuery!) > 0.3)
+            .WhereIf(request.WorkType != null, x => x.WorkType == request.WorkType)
+            .WhereIf(request.EmploymentType != null, x => x.EmploymentType == request.EmploymentType)
+            .WhereIf(request.Salary != null, x => x.HasSalary == request.Salary);
+    }
 
-        if (sort == InternshipPostingSort.Popularity)
+    public async Task<List<InternshipPosting>> ListCompanyPostingsAsync(InternshipPostingListRequestDto request)
+    {
+        var query = GetQuery(request);
+        
+        if (request.Sort == InternshipPostingSort.Popularity)
         {
             query = query.OrderByDescending(x => x.Applications.Count);
         }
@@ -47,18 +52,13 @@ public class InternshipPostingRepository(InternshipDbContext dbContext)
             query = query.OrderByDescending(x => x.CreatedAt);
         }
 
-        return await query.Skip(from)
-            .Take(Math.Min(100, take ?? 10)).ToListAsync();
+        return await query.Skip(request.From)
+            .Take(Math.Min(100, request.Take ?? 10)).ToListAsync();
     }
 
-    public async Task<int> CountCompanyPostingsAsync(int? companyId, string? matchQuery)
+    public async Task<int> CountCompanyPostingsAsync(InternshipPostingListRequestDto request)
     {
-        return await DbContext.InternshipPostings
-            .WhereIf(companyId != null, x => x.CompanyId == companyId)
-            .WhereIf(!string.IsNullOrWhiteSpace(matchQuery),
-                x => x.SearchVector.Matches(EF.Functions.PlainToTsQuery("turkish", matchQuery!)) ||
-                     EF.Functions.TrigramsSimilarity(x.Title, matchQuery!) > 0.1)
-            .CountAsync();
+        return await GetQuery(request).CountAsync();
     }
 
     public async Task<InternshipPosting?> GetDetailedByIdOrDefaultAsync(int id, bool changeTracking = true)

@@ -1,5 +1,6 @@
 using InternshipBackend.Core;
 using InternshipBackend.Core.Services;
+using InternshipBackend.Data.Models.Enums;
 using InternshipBackend.Modules.Account.Authorization;
 using InternshipBackend.Modules.Internship;
 using Microsoft.AspNetCore.Authorization;
@@ -35,10 +36,23 @@ public class CompanyEndpoint(ICompanyService companyService, IInternshipPostingS
         [FromQuery] int? companyId, 
         [FromQuery] int from,
         [FromQuery] string? matchQuery,
+        [FromQuery] WorkType? workType,
+        [FromQuery] EmploymentType? employmentType,
+        [FromQuery] bool? salary,
         [FromQuery] int? take = 10,
         [FromQuery] InternshipPostingSort sort = InternshipPostingSort.CreatedAt)
     {
-        var result = await internshipPostingService.ListAsync(companyId, from, take, sort, matchQuery);
+        var result = await internshipPostingService.ListAsync(new InternshipPostingListRequestDto()
+        {
+            CompanyId = companyId,
+            From = from,
+            MatchQuery = matchQuery,
+            WorkType = workType,
+            EmploymentType = employmentType,
+            Salary = salary,
+            Take = take,
+            Sort = sort
+        });
         return new()
         {
             Data = result

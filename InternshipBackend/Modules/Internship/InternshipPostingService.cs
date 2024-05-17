@@ -16,8 +16,7 @@ public interface IInternshipPostingService : IGenericEntityService<InternshipPos
     public Task<InternshipPosting> EndPostingAsync(int id);
     public Task ApplyToPosting(InternshipApplicationDto dto);
 
-    Task<PagedListDto<InternshipPostingListDto>> ListAsync(int? companyId, int from, int? take,
-        InternshipPostingSort sort, string? matchQuery);
+    Task<PagedListDto<InternshipPostingListDto>> ListAsync(InternshipPostingListRequestDto listRequest);
 
     Task CommentOnPosting(InternshipCommentDto dto);
     Task<InternshipPostingDto> GetPostingAsync(int id);
@@ -279,7 +278,8 @@ public class InternshipPostingService(
         applicationDetail.Message = application.Message;
         if (application.CvUrl is not null)
         {
-            applicationDetail.CvUrl = uploadCvService.GetDownloadUrlForCurrentUser(user.SupabaseId, Guid.Parse(application.CvUrl));
+            applicationDetail.CvUrl =
+                uploadCvService.GetDownloadUrlForCurrentUser(user.SupabaseId, Guid.Parse(application.CvUrl));
         }
 
         applicationDetail.Id = application.Id;
@@ -287,14 +287,13 @@ public class InternshipPostingService(
         return applicationDetail;
     }
 
-    public async Task<PagedListDto<InternshipPostingListDto>> ListAsync(int? companyId, int from,
-        int? take,
-        InternshipPostingSort sort, string? matchQuery)
+    public async Task<PagedListDto<InternshipPostingListDto>> ListAsync(InternshipPostingListRequestDto listRequest)
     {
         ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);
-        var postings = await repository.ListCompanyPostingsAsync(companyId, from, take, sort, matchQuery);
-        var total = await repository.CountCompanyPostingsAsync(companyId, matchQuery);
-        var averageRatings = await companyService.GetAverageRatings(companyId);
+        var postings =
+            await repository.ListCompanyPostingsAsync(listRequest);
+        var total = await repository.CountCompanyPostingsAsync(listRequest);
+        var averageRatings = await companyService.GetAverageRatings(listRequest.CompanyId);
 
         var result = mapper.Map<List<InternshipPosting>, List<InternshipPostingListDto>>(postings, (o) =>
         {
@@ -325,7 +324,7 @@ public class InternshipPostingService(
         return new PagedListDto<InternshipPostingListDto>
         {
             Items = result,
-            From = from,
+            From = listRequest.From,
             Count = result.Count,
             Total = total
         };
