@@ -1,0 +1,27 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set image tag
+      id: set_tag
+      run: echo "TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
+    - name: Log in to GitHub Container Registry
+      run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "osmanaslancan" --password-stdin
+
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag ghcr.io/osmanaslancan/internship-backend:${{ env.TIMESTAMP }}
+
+    - name: Push the Docker image
+      run: docker push ghcr.io/osmanaslancan/internship-backend:${{ env.TIMESTAMP }}
