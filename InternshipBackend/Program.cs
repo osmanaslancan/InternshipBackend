@@ -75,7 +75,7 @@ builder.Services.AddAuthentication(o =>
                 {
                     if (context.Request.Path.Value is "/Account/UpdateUserInfo" or "/Account/IsUserRegistered")
                         return Task.CompletedTask;
-                    
+
                     context.Fail("Unauthorized missing claims");
                     return Task.CompletedTask;
                 }
@@ -111,14 +111,14 @@ builder.Services.AddCors(o =>
 {
     o.AddDefaultPolicy(policy =>
     {
-        policy.SetIsOriginAllowed(origin => new Uri(origin).Host is "localhost" or "stajbuldum.osman.tech").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        policy.SetIsOriginAllowed(origin => new Uri(origin).Host is "10.0.2.2" or "localhost" or "stajbuldum.osman.tech").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
         // policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
         // policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
-        
+
     });
 });
 
-builder.Services.AddAutoMapper(o => 
+builder.Services.AddAutoMapper(o =>
 {
     o.AddProfile<InternshipBackendAutoMapperProfile>();
 }, typeof(Program));
@@ -150,7 +150,7 @@ builder.Services.AddSwaggerGen(o =>
 
     o.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement()
     {
-          { 
+          {
             new OpenApiSecurityScheme
             {
                 Reference = new OpenApiReference
@@ -159,7 +159,7 @@ builder.Services.AddSwaggerGen(o =>
                     Id = "Bearer"
                 }
             },
-            Array.Empty<string>() 
+            Array.Empty<string>()
         },
     });
 
@@ -174,7 +174,7 @@ builder.Services.AddSwaggerGen(o =>
         o.IncludeXmlComments(xmlFile);
     }
 
-    
+
 });
 builder.Services.AddHttpContextAccessor();
 
@@ -200,7 +200,7 @@ builder.Services.AddRequestLocalization(o =>
         new CultureInfo("en"),
         new CultureInfo("en-US"),
     ];
-    
+
     o.RequestCultureProviders =
     [
         new QueryStringRequestCultureProvider(),
@@ -216,7 +216,7 @@ builder.Services.AddQuartz(q =>
     // Just use the name of your job that you created in the Jobs folder.
     var jobKey = new JobKey("NotificationSendJob");
     q.AddJob<NotificationSendJob>(opts => opts.WithIdentity(jobKey));
-    
+
     q.AddTrigger(opts => opts
         .ForJob(jobKey)
         .WithIdentity("NotificationSendJob-trigger")
@@ -292,11 +292,22 @@ scope.Dispose();
 #endregion
 
 await new SeederManager().ExecuteAsync(app.Services);
-
-FirebaseApp.Create(new AppOptions()
+if (app.Environment.IsDevelopment())
 {
-    Credential = GoogleCredential.FromFile("firebase-credentials.json")
-});
+    FirebaseApp.Create(new AppOptions()
+    {
+        Credential = GoogleCredential.FromFile("firebase-credentials.json")
+    });
+}
+else
+{
+    FirebaseApp.Create(new AppOptions()
+    {
+        Credential = GoogleCredential.FromJson(app.Configuration["FirebaseCredentials"])
+    });
+
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
