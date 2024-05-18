@@ -23,8 +23,11 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag ghcr.io/osmanaslancan/internship-backend:${{ env.TIMESTAMP }} ghcr.io/osmanaslancan/internship-backend:latest
 
+    - name: Tag Docker image as latest
+      run: docker tag ghcr.io/osmanaslancan/internship-backend:${{ env.TIMESTAMP }} ghcr.io/osmanaslancan/internship-backend:latest
+      
     - name: Push the Docker image
       run: docker push ghcr.io/osmanaslancan/internship-backend:${{ env.TIMESTAMP }}
       
-    - name: Push the Docker image
+    - name: Push the Docker latest image
       run: docker push ghcr.io/osmanaslancan/internship-backend:latest
