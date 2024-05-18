@@ -189,7 +189,7 @@ public class AccountService(
     public async Task FollowPosting(int postingId, bool follow)
     {
         var supabaseId = httpContextAccessor.HttpContext!.User.GetSupabaseId()!;
-        var user = await accountRepository.GetQueryable().Include(x => x.FollowedPostings)
+        var user = await accountRepository.GetQueryable().AsTracking().Include(x => x.FollowedPostings)
             .FirstAsync(x => x.SupabaseId == supabaseId);
 
         if (follow)
@@ -221,7 +221,7 @@ public class AccountService(
     public async Task RegisterNotificationToken(RegisterNotificationTokenDto request)
     {
         var currentUser = await GetCurrentUserInfoOrDefault();
-
+        
         if (currentUser is null)
         {
             throw new Exception("Current User Null");
