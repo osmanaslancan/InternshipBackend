@@ -10,4 +10,5 @@ public static class ErrorCodes
     public const string InvalidPhoto = nameof(InvalidPhoto);
     public const string CompanyNotFound = nameof(CompanyNotFound);
     public const string ExceededComments = nameof(ExceededComments);
+    public const string CommentOpenPosting = nameof(CommentOpenPosting);
 }

@@ -141,4 +141,7 @@
   <data name="ExceededComments" xml:space="preserve">
     <value>Bir ilana sadece bir kere yorum yapabilirsiniz!</value>
   </data>
+  <data name="CommentOpenPosting" xml:space="preserve">
+    <value>Başvuruları devam eden ilanlarda yorum yapamazsınız.</value>
+  </data>
 </root>

@@ -159,7 +159,7 @@ public class InternshipPostingService(
 
         if (posting.DeadLine > DateTime.UtcNow)
         {
-            throw new ValidationException("Cannot comment on open postings.");
+            throw new ValidationException(ErrorCodes.CommentOpenPosting);
         }
 
         if (posting.Comments.Any(x => x.UserId == user.Id))
