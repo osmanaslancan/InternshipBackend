@@ -150,7 +150,7 @@ public class InternshipDbContext : DbContext
         
         modelBuilder.Entity<UserNotification>(b =>
         {
-            b.HasOne<User>().WithMany().HasForeignKey(x => x.UserId);
+            b.HasOne<User>().WithMany(x => x.Notifications).HasForeignKey(x => x.UserId);
             b.Property(x => x.UserId).IsRequired();
         });
     }

@@ -24,6 +24,7 @@ public class User : Entity
     public ICollection<UserPermission> UserPermissions { get; set; } = [];
     public ICollection<UserReference> References { get; set; } = [];
     public ICollection<UserCompanyFollow> FollowedCompanies { get; set; } = [];
+    public ICollection<UserNotification> Notifications { get; set; } = [];
     public ICollection<UserPostingFollow> FollowedPostings { get; set; } = [];
     public ICollection<InternshipApplication> Applications { get; set; } = [];
 

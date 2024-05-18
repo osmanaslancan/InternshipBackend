@@ -15,13 +15,14 @@ public class NotificationService(IAccountRepository accountRepository, Notificat
 
         if (!users.Any())
             return;
-        
+        var time = DateTime.UtcNow;        
         var notifications = users.Select(x => new UserNotification
         {
             UserId = x,
             Title = title,
             Body = body,
-            Status = UserNotification.NotificationStatus.Created
+            Status = UserNotification.NotificationStatus.Created,
+            CreatedAt = time
         }).ToList();
 
         await notificationRepository.CreateAsync(notifications);

@@ -21,6 +21,7 @@ public interface IAccountService
     Task FollowCompany(int companyId, bool follow);
     Task FollowPosting(int postingId, bool follow);
     Task RegisterNotificationToken(RegisterNotificationTokenDto request);
+    Task<List<UserNotificationDto>> GetCurrentUserMessages();
 }
 
 public class AccountService(
@@ -172,8 +173,8 @@ public class AccountService(
                 UserId = user.Id,
                 CreatedAt = DateTime.UtcNow,
             });
-        
-            await accountRepository.UpdateAsync(user);    
+
+            await accountRepository.UpdateAsync(user);
         }
         else
         {
@@ -185,7 +186,20 @@ public class AccountService(
             }
         }
     }
-    
+
+    public async Task<List<UserNotificationDto>> GetCurrentUserMessages()
+    {
+        var supabaseId = httpContextAccessor.HttpContext!.User.GetSupabaseId()!;
+        var user = await accountRepository.GetQueryable().Include(x => x.Notifications)
+            .FirstAsync(x => x.SupabaseId == supabaseId);
+
+        var notifications = user.Notifications;
+
+        var dto = mapper.Map<List<UserNotificationDto>>(notifications);
+
+        return dto;
+    }
+
     public async Task FollowPosting(int postingId, bool follow)
     {
         var supabaseId = httpContextAccessor.HttpContext!.User.GetSupabaseId()!;
@@ -204,8 +218,8 @@ public class AccountService(
                 UserId = user.Id,
                 CreatedAt = DateTime.UtcNow,
             });
-        
-            await accountRepository.UpdateAsync(user); 
+
+            await accountRepository.UpdateAsync(user);
         }
         else
         {
@@ -221,22 +235,22 @@ public class AccountService(
     public async Task RegisterNotificationToken(RegisterNotificationTokenDto request)
     {
         var currentUser = await GetCurrentUserInfoOrDefault();
-        
+
         if (currentUser is null)
         {
             throw new Exception("Current User Null");
         }
 
         currentUser.NotificationTokens ??= new List<string>();
-        
+
         if (currentUser.NotificationTokens.Contains(request.Token))
             return;
-        
+
         if (currentUser.NotificationTokens.Count >= 5)
         {
             currentUser.NotificationTokens.RemoveAt(0);
         }
-        
+
         currentUser.NotificationTokens.Add(request.Token);
         await accountRepository.UpdateAsync(currentUser);
     }

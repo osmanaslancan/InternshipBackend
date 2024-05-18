@@ -46,7 +46,7 @@ public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
             Data = userDto,
         };
     }
-    
+
     [HttpPost("Follow/Company/{companyId:int}")]
     public async Task<ServiceResponse> FollowCompany([FromRoute] int companyId, [FromQuery] bool follow)
     {
@@ -54,7 +54,7 @@ public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
 
         return new EmptyResponse();
     }
-    
+
     [HttpPost("Follow/Posting/{postingId:int}")]
     public async Task<ServiceResponse> FollowPosting([FromRoute] int postingId, [FromQuery] bool follow)
     {
@@ -62,12 +62,23 @@ public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
 
         return new EmptyResponse();
     }
-    
+
     [HttpPost("RegisterNotificationToken")]
     public async Task<ServiceResponse> RegisterNotificationToken([FromBody] RegisterNotificationTokenDto request)
     {
         await accountService.RegisterNotificationToken(request);
 
         return new EmptyResponse();
+    }
+
+    [HttpGet("Messages")]
+    public async Task<ServiceResponse<List<UserNotificationDto>>> Messages()
+    {
+        var result = await accountService.GetCurrentUserMessages();
+
+        return new ServiceResponse<List<UserNotificationDto>>
+        {
+            Data = result
+        };
     }
 }

@@ -21,6 +21,7 @@ public class InternshipBackendAutoMapperProfile : Profile
     {
         CreateMap<UserInfoUpdateDto, User>();
         CreateMap<User, UserDTO>();
+        CreateMap<UserNotification, UserNotificationDto>();
         CreateMap<ForeignLanguageModifyDto, ForeignLanguage>();
         CreateMap<ForeignLanguage, ForeignLanguageListDto>();
         CreateMap<City, CityDTO>();

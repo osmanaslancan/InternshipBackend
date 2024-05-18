@@ -14,4 +14,5 @@ public class UserNotification : UserOwnedEntity
     public required string Title { get; set; }
     public required string Body { get; set; }
     public NotificationStatus Status { get; set; }
+    public required DateTime CreatedAt { get; set; }
 }
