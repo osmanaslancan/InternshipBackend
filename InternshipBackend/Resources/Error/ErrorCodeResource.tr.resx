@@ -138,4 +138,7 @@
   <data name="CompanyNotFound" xml:space="preserve">
     <value>Kullanıcıya ait şirket bulunamadı!</value>
   </data>
+  <data name="ExceededComments" xml:space="preserve">
+    <value>Bir ilana sadece bir kere yorum yapabilirsiniz!</value>
+  </data>
 </root>

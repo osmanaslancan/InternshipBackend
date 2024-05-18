@@ -138,4 +138,7 @@
   <data name="CompanyNotFound" xml:space="preserve">
     <value>Company is Not Created By this User!</value>
   </data>
+  <data name="ExceededComments" xml:space="preserve">
+    <value>You can only comment 1 times!</value>
+  </data>
 </root>

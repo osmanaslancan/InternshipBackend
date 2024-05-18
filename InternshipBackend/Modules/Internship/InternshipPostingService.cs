@@ -162,9 +162,9 @@ public class InternshipPostingService(
             throw new ValidationException("Cannot comment on open postings.");
         }
 
-        if (posting.Comments.Count(x => x.UserId == user.Id) > 2)
+        if (posting.Comments.Any(x => x.UserId == user.Id))
         {
-            throw new ValidationException("You can only comment 2 times on a posting.");
+            throw new ValidationException(ErrorCodes.ExceededComments);
         }
 
         var comment = new InternshipPostingComment()
