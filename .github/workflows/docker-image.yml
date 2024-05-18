@@ -21,7 +21,7 @@ jobs:
       run: echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "osmanaslancan" --password-stdin
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ghcr.io/osmanaslancan/internship-backend:${{ env.TIMESTAMP }} ghcr.io/osmanaslancan/internship-backend:latest
+      run: docker build . --file Dockerfile --tag ghcr.io/osmanaslancan/internship-backend:${{ env.TIMESTAMP }}
 
     - name: Tag Docker image as latest
       run: docker tag ghcr.io/osmanaslancan/internship-backend:${{ env.TIMESTAMP }} ghcr.io/osmanaslancan/internship-backend:latest
