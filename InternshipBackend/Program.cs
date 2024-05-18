@@ -75,7 +75,7 @@ builder.Services.AddAuthentication(o =>
                     appMetadata?.GetValueOrDefault("user_name") is null ||
                     appMetadata?.GetValueOrDefault("user_surname") is null)
                 {
-                    if (context.Request.Path.Value is "/Account/UpdateUserInfo" or "/Account/IsUserRegistered")
+                    if (context.Request.Path.Value is "/Account/UpdateUserInfo" or "/Account/IsUserRegistered" or "/Account/GetInfo")
                         return Task.CompletedTask;
 
                     context.Fail("Unauthorized missing claims");
