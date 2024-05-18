@@ -71,7 +71,9 @@ builder.Services.AddAuthentication(o =>
                 }
 
                 var appMetadata = JsonSerializer.Deserialize<Dictionary<string, object>>(data);
-                if (appMetadata?.GetValueOrDefault("user_type") is null)
+                if (appMetadata?.GetValueOrDefault("user_type") is null ||
+                    appMetadata?.GetValueOrDefault("user_name") is null ||
+                    appMetadata?.GetValueOrDefault("user_surname") is null)
                 {
                     if (context.Request.Path.Value is "/Account/UpdateUserInfo" or "/Account/IsUserRegistered")
                         return Task.CompletedTask;
@@ -111,22 +113,17 @@ builder.Services.AddCors(o =>
 {
     o.AddDefaultPolicy(policy =>
     {
-        policy.SetIsOriginAllowed(origin => new Uri(origin).Host is "10.0.2.2" or "localhost" or "stajbuldum.osman.tech").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        policy.SetIsOriginAllowed(
+                origin => new Uri(origin).Host is "10.0.2.2" or "localhost" or "stajbuldum.osman.tech").AllowAnyMethod()
+            .AllowAnyHeader().AllowCredentials();
         // policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
         // policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
-
     });
 });
 
-builder.Services.AddAutoMapper(o =>
-{
-    o.AddProfile<InternshipBackendAutoMapperProfile>();
-}, typeof(Program));
+builder.Services.AddAutoMapper(o => { o.AddProfile<InternshipBackendAutoMapperProfile>(); }, typeof(Program));
 
-builder.Services.AddControllers(o =>
-{
-    o.Filters.Add<ExceptionFilter>(0);
-}).AddJsonOptions(o =>
+builder.Services.AddControllers(o => { o.Filters.Add<ExceptionFilter>(0); }).AddJsonOptions(o =>
 {
     o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
     o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -150,7 +147,7 @@ builder.Services.AddSwaggerGen(o =>
 
     o.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement()
     {
-          {
+        {
             new OpenApiSecurityScheme
             {
                 Reference = new OpenApiReference
@@ -173,15 +170,15 @@ builder.Services.AddSwaggerGen(o =>
     {
         o.IncludeXmlComments(xmlFile);
     }
-
-
 });
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddHttpClient("Supabase", o =>
-{
-    o.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", builder.Configuration["SupabaseAdminKey"]);
-});
+builder.Services.AddHttpClient("Supabase",
+    o =>
+    {
+        o.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", builder.Configuration["SupabaseAdminKey"]);
+    });
 
 builder.Services.AddRequestLocalization(o =>
 {
@@ -271,7 +268,7 @@ query += """
          DO $$
          BEGIN
            IF NOT EXISTS (
-              select 1 from pg_policies 
+              select 1 from pg_policies
               where policyname = 'Enable access for supabase auth admin'
            ) THEN
              -- Apply the policy
@@ -305,7 +302,6 @@ else
     {
         Credential = GoogleCredential.FromJson(app.Configuration["FirebaseCredentials"])
     });
-
 }
 
 
