@@ -25,4 +25,5 @@ public class ApplicationDetailDto
     public ICollection<WorkHistoryListDto> Works { get; set; } = [];
     public ICollection<UserProjectListDto> Projects { get; set; } = [];
     public ICollection<UserReferenceListDto> References { get; set; } = [];
+    public required UserDetailDto Detail { get; set; }
 }

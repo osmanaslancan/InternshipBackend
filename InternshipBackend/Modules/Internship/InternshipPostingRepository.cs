@@ -33,7 +33,7 @@ public class InternshipPostingRepository(InternshipDbContext dbContext)
             .WhereIf(request.CompanyId != null, x => x.CompanyId == request.CompanyId)
             .WhereIf(!string.IsNullOrWhiteSpace(request.MatchQuery),
                 x => x.SearchVector.Matches(EF.Functions.PlainToTsQuery("turkish", request.MatchQuery!)) ||
-                     EF.Functions.TrigramsSimilarity(x.Title, request.MatchQuery!) > 0.3)
+                     EF.Functions.TrigramsSimilarity(x.Title, request.MatchQuery!) > 0.01)
             .WhereIf(request.WorkType != null, x => x.WorkType == request.WorkType)
             .WhereIf(request.EmploymentType != null, x => x.EmploymentType == request.EmploymentType)
             .WhereIf(request.Salary != null, x => x.HasSalary == request.Salary);

@@ -43,6 +43,7 @@ public class InternshipBackendAutoMapperProfile : Profile
         CreateMap<WorkHistoryModifyDto, WorkHistory>();
         CreateMap<UserDetailDto, UserDetail>();
         CreateMap<UserDetail, UserDetailListDto>();
+        CreateMap<UserDetail, UserDetailDto>();
         CreateMap<UserProject, UserProjectListDto>();
         CreateMap<UserProjectModifyDto, UserProject>();
         CreateMap<UserReferenceModifyDto, UserReference>();
