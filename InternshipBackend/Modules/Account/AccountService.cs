@@ -6,6 +6,7 @@ using FluentValidation.Validators;
 using InternshipBackend.Core;
 using InternshipBackend.Data.Models;
 using InternshipBackend.Data.Models.Enums;
+using InternshipBackend.Modules.App;
 using InternshipBackend.Modules.CompanyManagement;
 using InternshipBackend.Modules.Internship;
 using Microsoft.EntityFrameworkCore;
@@ -33,8 +34,8 @@ public class AccountService(
     IValidator<UserInfoUpdateDto> userInfoUpdateDtoValidator,
     IHttpClientFactory clientFactory,
     InternshipPostingRepository postingRepository,
-    ICompanyRepository companyRepository,
     ICompanyService companyService,
+    IUploadCvService uploadCvService,
     IConfiguration configuration,
     IMapper mapper) : IScopedService, IAccountService
 {
@@ -236,6 +237,9 @@ public class AccountService(
             dto.Posting.IsCurrentUserApplied = true;
             dto.Posting.IsCurrentUserFollowing = x.IsUserFollowingPosting;
             dto.Posting.Company.IsCurrentUserFollowing = x.IsUserFollowingCompany;
+            dto.CvUrl = dto.CvUrl is not null
+                ? uploadCvService.GetDownloadUrlForCurrentUser(supabaseId, Guid.Parse(dto.CvUrl))
+                : dto.CvUrl;
             return dto;
         }).ToList();
 
