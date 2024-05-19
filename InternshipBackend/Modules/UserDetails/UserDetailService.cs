@@ -35,7 +35,7 @@ public class UserDetailService(IServiceProvider serviceProvider)
 
     public async Task AddCvToCurrentUser(string filename, string cvUrl)
     {
-        var user = UserRetriever.GetCurrentUser(x => x.Include(y => y.Detail)) ?? throw new Exception("User not found");
+        var user = UserRetriever.GetCurrentUser(x => x.AsTracking().Include(y => y.Detail)) ?? throw new Exception("User not found");
         user.Detail ??= new UserDetail()
         {
             User = user,
