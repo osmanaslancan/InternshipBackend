@@ -6,6 +6,8 @@ using FluentValidation.Validators;
 using InternshipBackend.Core;
 using InternshipBackend.Data.Models;
 using InternshipBackend.Data.Models.Enums;
+using InternshipBackend.Modules.CompanyManagement;
+using InternshipBackend.Modules.Internship;
 using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
@@ -22,6 +24,7 @@ public interface IAccountService
     Task FollowPosting(int postingId, bool follow);
     Task RegisterNotificationToken(RegisterNotificationTokenDto request);
     Task<List<UserNotificationDto>> GetCurrentUserMessages();
+    Task<List<InternshipApplicationInternListDto>> ListApplications();
 }
 
 public class AccountService(
@@ -29,6 +32,9 @@ public class AccountService(
     IHttpContextAccessor httpContextAccessor,
     IValidator<UserInfoUpdateDto> userInfoUpdateDtoValidator,
     IHttpClientFactory clientFactory,
+    InternshipPostingRepository postingRepository,
+    ICompanyRepository companyRepository,
+    ICompanyService companyService,
     IConfiguration configuration,
     IMapper mapper) : IScopedService, IAccountService
 {
@@ -196,6 +202,42 @@ public class AccountService(
         var notifications = user.Notifications;
 
         var dto = mapper.Map<List<UserNotificationDto>>(notifications);
+
+        return dto;
+    }
+
+    public async Task<List<InternshipApplicationInternListDto>> ListApplications()
+    {
+        var supabaseId = httpContextAccessor.HttpContext!.User.GetSupabaseId()!;
+        var query =
+            from user in accountRepository.GetQueryable()
+            where user.SupabaseId == supabaseId
+            from application in user.Applications
+            join posting in postingRepository.GetQueryable() on application.InternshipPostingId equals posting.Id
+            select new
+            {
+                Application = application,
+                Posting = posting,
+                IsUserFollowingPosting = user.FollowedPostings.Any(x => x.PostingId == posting.Id),
+                IsUserFollowingCompany = user.FollowedCompanies.Any(x => x.CompanyId == posting.CompanyId),
+            };
+        var result = await query.ToListAsync();
+        
+        var averageRatings = await companyService.GetAverageRatings(null);
+        
+        var dto = result.Select(x =>
+        {
+            var application = x.Application;
+            var posting = x.Posting;
+            var company = averageRatings.FirstOrDefault(y => y.CompanyId == posting.CompanyId);
+            var dto = mapper.Map<InternshipApplicationInternListDto>(application);
+            dto.Posting = mapper.Map<InternshipPostingListDto>(posting);
+            dto.Posting.Company = mapper.Map<InternshipPostingCompanyDto>(company);
+            dto.Posting.IsCurrentUserApplied = true;
+            dto.Posting.IsCurrentUserFollowing = x.IsUserFollowingPosting;
+            dto.Posting.Company.IsCurrentUserFollowing = x.IsUserFollowingCompany;
+            return dto;
+        }).ToList();
 
         return dto;
     }

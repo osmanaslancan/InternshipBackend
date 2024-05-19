@@ -1,6 +1,6 @@
 namespace InternshipBackend.Modules.Internship;
 
-public class InternshipApplicationCompanyDto
+public class InternshipApplicationCompanyListDto
 {
     public int Id { get; set; }
     public int UserId { get; set; }

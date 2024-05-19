@@ -32,7 +32,8 @@ public class InternshipBackendAutoMapperProfile : Profile
         CreateMap<InternshipPostingModifyDto, InternshipPosting>();
         CreateMap<InternshipPosting, InternshipPostingListDto>();
         CreateMap<InternshipPosting, InternshipPostingDto>();
-        CreateMap<InternshipApplication, InternshipApplicationCompanyDto>();
+        CreateMap<InternshipApplication, InternshipApplicationCompanyListDto>();
+        CreateMap<InternshipApplication, InternshipApplicationInternListDto>();
         CreateMap<User, ApplicationDetailDto>();
         CreateMap<RatingResult, InternshipPostingCompanyDto>();
         CreateMap<InternshipPostingComment, InternshipPostingCommentDto>();

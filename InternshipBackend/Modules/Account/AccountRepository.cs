@@ -18,6 +18,7 @@ public interface IAccountRepository : IGenericRepository<User>
     IQueryable<User> GetQueryable();
     Task<List<UserCompanyFollow>> GetCompanyFollows(Guid userSupabaseId);
     Task<List<UserPostingFollow>> GetPostingFollows(Guid userSupabaseId);
+    Task<List<InternshipApplication>> GetApplications(Guid userSupabaseId);
 }
 
 public class AccountRepository(InternshipDbContext context) : GenericRepository<User>(context), IAccountRepository
@@ -41,6 +42,14 @@ public class AccountRepository(InternshipDbContext context) : GenericRepository<
             .FirstAsync(x => x.SupabaseId == userSupabaseId);
         
         return user.FollowedPostings.ToList();
+    }
+    
+    public async Task<List<InternshipApplication>> GetApplications(Guid userSupabaseId)
+    {
+        var user = await DbContext.Users.Include(x => x.Applications)
+            .FirstAsync(x => x.SupabaseId == userSupabaseId);
+        
+        return user.Applications.ToList();
     }
 
     public Task<User?> GetBySupabaseIdAsync(Guid id)

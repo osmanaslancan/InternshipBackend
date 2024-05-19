@@ -104,11 +104,11 @@ public class CompanyEndpoint(ICompanyService companyService, IInternshipPostingS
     }
 
     [HttpGet("InternshipPosting/GetApplications/{id:int}")]
-    public async Task<ServiceResponse<List<InternshipApplicationCompanyDto>>> GetInternshipPostingApplicationsAsync(
+    public async Task<ServiceResponse<List<InternshipApplicationCompanyListDto>>> GetInternshipPostingApplicationsAsync(
         [FromRoute] int id)
     {
         var data = await internshipPostingService.GetApplications(id);
-        return new ServiceResponse<List<InternshipApplicationCompanyDto>>()
+        return new ServiceResponse<List<InternshipApplicationCompanyListDto>>()
         {
             Data = data
         };

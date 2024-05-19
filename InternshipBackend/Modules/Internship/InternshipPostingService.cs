@@ -20,7 +20,7 @@ public interface IInternshipPostingService : IGenericEntityService<InternshipPos
 
     Task CommentOnPosting(InternshipCommentDto dto);
     Task<InternshipPostingDto> GetPostingAsync(int id);
-    Task<List<InternshipApplicationCompanyDto>> GetApplications(int id);
+    Task<List<InternshipApplicationCompanyListDto>> GetApplications(int id);
     Task<ApplicationDetailDto> GetApplicationDetail(int id);
 }
 
@@ -209,6 +209,14 @@ public class InternshipPostingService(
             dto.Company.IsCurrentUserFollowing = companyFollows.Any(x => x.CompanyId == dto.Company.CompanyId);
         }
 
+        if (httpContextAccessor.HttpContext.User.IsIntern())
+        {
+            var supabaseId = httpContextAccessor.HttpContext.User.GetSupabaseId();
+            var applications = await accountRepository.GetApplications(supabaseId);
+            
+            dto.IsCurrentUserApplied = applications.Any(x => x.InternshipPostingId == dto.Id);
+        }
+        
         foreach (var comment in dto.Comments)
         {
             var user = users.First(x => x.Id == comment.UserId);
@@ -224,7 +232,7 @@ public class InternshipPostingService(
         return dto;
     }
 
-    public async Task<List<InternshipApplicationCompanyDto>> GetApplications(int id)
+    public async Task<List<InternshipApplicationCompanyListDto>> GetApplications(int id)
     {
         var posting = await repository.GetDetailedByIdOrDefaultAsync(id);
 
@@ -243,7 +251,7 @@ public class InternshipPostingService(
         var users = (await accountRepository.GetQueryable().Where(x => userIds.Contains(x.Id)).ToListAsync())
             .ToDictionary(x => x.Id);
 
-        var dto = Mapper.Map<List<InternshipApplication>, List<InternshipApplicationCompanyDto>>(applications);
+        var dto = Mapper.Map<List<InternshipApplication>, List<InternshipApplicationCompanyListDto>>(applications);
 
         foreach (var application in dto)
         {
@@ -330,6 +338,17 @@ public class InternshipPostingService(
             {
                 item.IsCurrentUserFollowing = postingFollows.Any(x => x.PostingId == item.Id);
                 item.Company.IsCurrentUserFollowing = companyFollows.Any(x => x.CompanyId == item.Company.CompanyId);
+            }
+        }
+
+        if (httpContextAccessor.HttpContext.User.IsIntern())
+        {
+            var supabaseId = httpContextAccessor.HttpContext.User.GetSupabaseId();
+            var applications = await accountRepository.GetApplications(supabaseId);
+            
+            foreach (var item in result)
+            {
+                item.IsCurrentUserApplied = applications.Any(x => x.InternshipPostingId == item.Id);
             }
         }
 

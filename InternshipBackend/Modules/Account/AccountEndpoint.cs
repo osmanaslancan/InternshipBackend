@@ -1,6 +1,7 @@
 ﻿using InternshipBackend.Core;
 using InternshipBackend.Core.Services;
 using InternshipBackend.Modules.Account.Authorization;
+using InternshipBackend.Modules.Internship;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -61,6 +62,18 @@ public class AccountEndpoint(IAccountService accountService) : BaseEndpoint
         await accountService.FollowPosting(postingId, follow);
 
         return new EmptyResponse();
+    }
+    
+    [HttpGet("ListApplications")]
+    [Authorize(PermissionKeys.Intern)]
+    public async Task<ServiceResponse<List<InternshipApplicationInternListDto>>> ListApplications()
+    {
+        var result = await accountService.ListApplications();
+
+        return new ServiceResponse<List<InternshipApplicationInternListDto>>()
+        {
+            Data = result,
+        };
     }
 
     [HttpPost("RegisterNotificationToken")]
