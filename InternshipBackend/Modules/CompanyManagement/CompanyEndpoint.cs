@@ -23,6 +23,17 @@ public class CompanyEndpoint(ICompanyService companyService, IInternshipPostingS
         };
     }
 
+    [HttpGet("Get/{id:int}")]
+    [AllowAnonymous]
+    public async Task<ServiceResponse<CompanyDetailDto>> GetCompanyWithId([FromRoute] int id)
+    {
+        var company = await companyService.GetDetailedCompany(id);
+        return new ServiceResponse<CompanyDetailDto>()
+        {
+            Data = company
+        };
+    }
+
     [HttpPost("Update")]
     public async Task<ServiceResponse> UpdateAsync([FromBody] CompanyModifyDto dto)
     {
@@ -33,7 +44,7 @@ public class CompanyEndpoint(ICompanyService companyService, IInternshipPostingS
     [HttpGet("InternshipPosting/List")]
     [AllowAnonymous]
     public async Task<ServiceResponse<PagedListDto<InternshipPostingListDto>>> ListInternshipPostingAsync(
-        [FromQuery] int? companyId, 
+        [FromQuery] int? companyId,
         [FromQuery] int from,
         [FromQuery] string? matchQuery,
         [FromQuery] WorkType? workType,
@@ -102,7 +113,7 @@ public class CompanyEndpoint(ICompanyService companyService, IInternshipPostingS
             Data = data
         };
     }
-    
+
     [HttpGet("InternshipPosting/GetApplicationDetail/{id:int}")]
     public async Task<ServiceResponse<ApplicationDetailDto>> ApplicationDetailAsync(
         [FromRoute] int id)

@@ -12,27 +12,27 @@ public interface ICompanyService : IGenericEntityService<CompanyModifyDto, Data.
     Task<int> GetCurrentUserCompanyId();
     Task<CompanyDto?> GetCurrentUsersCompany();
     Task<List<RatingResult>> GetAverageRatings(int? companyId);
+    Task<CompanyDetailDto> GetDetailedCompany(int companyId);
 }
 
-public class CompanyService(IServiceProvider serviceProvider, 
-    ICompanyRepository companyRepository,
-    IStringLocalizer<ErrorCodeResource> stringLocalizer,
+public class CompanyService(IServiceProvider serviceProvider,
+    ICompanyRepository companyRepository, 
     IUserRetrieverService userRetrieverService)
     : GenericEntityService<CompanyModifyDto, Data.Models.Company>(serviceProvider), ICompanyService
 {
     protected override Task BeforeCreate(Company data)
     {
         var user = userRetrieverService.GetCurrentUser();
-        
+
         data.AdminUserId = user.Id;
-        
+
         return base.BeforeCreate(data);
     }
 
     protected override Task BeforeUpdate(Company data, Company old)
     {
         data.AdminUserId = old.AdminUserId;
-        
+
         return base.BeforeUpdate(data, old);
     }
 
@@ -58,10 +58,10 @@ public class CompanyService(IServiceProvider serviceProvider,
 
         if (company is null)
         {
-            throw new ValidationException(stringLocalizer[ErrorCodes.CompanyNotFound]);
+            throw new ValidationException(ErrorCodes.CompanyNotFound);
         }
-        
-        
+
+
         return company.Id;
     }
 
@@ -70,8 +70,20 @@ public class CompanyService(IServiceProvider serviceProvider,
         var user = userRetrieverService.GetCurrentUser();
 
         var company = await companyRepository.GetByUserIdOrDefaultAsync(user.Id);
-        
-        return mapper.Map<CompanyDto?>(company);
+
+        return Mapper.Map<CompanyDto?>(company);
+    }
+
+    public async Task<CompanyDetailDto> GetDetailedCompany(int companyId)
+    {
+        var company = await companyRepository.GetDetailedCompany(companyId);
+
+        if (company is null)
+        {
+            throw new ValidationException(ErrorCodes.CompanyNotFound);
+        }
+
+        return Mapper.Map<CompanyDetailDto>(company);
     }
 
     public Task<List<RatingResult>> GetAverageRatings(int? companyId)

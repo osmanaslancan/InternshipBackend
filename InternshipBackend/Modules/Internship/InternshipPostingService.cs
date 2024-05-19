@@ -93,15 +93,15 @@ public class InternshipPostingService(
         posting.DeadLine = DateTime.UtcNow;
         posting.UpdatedAt = DateTime.UtcNow;
 
-        await _repository.UpdateAsync(posting);
-        await _repository.SaveChangesAsync();
+        await Repository.UpdateAsync(posting);
+        await Repository.SaveChangesAsync();
 
         return posting;
     }
 
     public async Task ApplyToPosting(InternshipApplicationDto dto)
     {
-        await serviceProvider.GetRequiredService<IValidator<InternshipApplicationDto>>().ValidateAndThrowAsync(dto);
+        await ServiceProvider.GetRequiredService<IValidator<InternshipApplicationDto>>().ValidateAndThrowAsync(dto);
 
         var user = UserRetriever.GetCurrentUser();
         if (user.AccountType != AccountType.Intern)
@@ -137,12 +137,12 @@ public class InternshipPostingService(
 
         posting.Applications.Add(application);
 
-        await _repository.UpdateAsync(posting);
+        await Repository.UpdateAsync(posting);
     }
 
     public async Task CommentOnPosting(InternshipCommentDto dto)
     {
-        await serviceProvider.GetRequiredService<IValidator<InternshipCommentDto>>().ValidateAndThrowAsync(dto);
+        await ServiceProvider.GetRequiredService<IValidator<InternshipCommentDto>>().ValidateAndThrowAsync(dto);
 
         var user = UserRetriever.GetCurrentUser();
         if (user.AccountType != AccountType.Intern)
@@ -177,7 +177,7 @@ public class InternshipPostingService(
 
         posting.Comments.Add(comment);
 
-        await _repository.UpdateAsync(posting);
+        await Repository.UpdateAsync(posting);
     }
 
     public async Task<InternshipPostingDto> GetPostingAsync(int id)
@@ -192,8 +192,8 @@ public class InternshipPostingService(
 
 
         var averageRating = (await companyService.GetAverageRatings(posting.CompanyId)).First();
-        var dto = mapper.Map<InternshipPosting, InternshipPostingDto>(posting);
-        dto.Company = mapper.Map<InternshipPostingCompanyDto>(averageRating);
+        var dto = Mapper.Map<InternshipPosting, InternshipPostingDto>(posting);
+        dto.Company = Mapper.Map<InternshipPostingCompanyDto>(averageRating);
 
         var userIds = posting.Comments.Select(x => x.UserId).Distinct().ToList();
 
@@ -243,7 +243,7 @@ public class InternshipPostingService(
         var users = (await accountRepository.GetQueryable().Where(x => userIds.Contains(x.Id)).ToListAsync())
             .ToDictionary(x => x.Id);
 
-        var dto = mapper.Map<List<InternshipApplication>, List<InternshipApplicationCompanyDto>>(applications);
+        var dto = Mapper.Map<List<InternshipApplication>, List<InternshipApplicationCompanyDto>>(applications);
 
         foreach (var application in dto)
         {
@@ -284,7 +284,7 @@ public class InternshipPostingService(
 
         var user = await accountRepository.GetFullUser(application.UserId);
 
-        var applicationDetail = mapper.Map<User, ApplicationDetailDto>(user);
+        var applicationDetail = Mapper.Map<User, ApplicationDetailDto>(user);
 
         applicationDetail.InternshipPostingId = application.InternshipPostingId;
         applicationDetail.Message = application.Message;
@@ -307,7 +307,7 @@ public class InternshipPostingService(
         var total = await repository.CountCompanyPostingsAsync(listRequest);
         var averageRatings = await companyService.GetAverageRatings(listRequest.CompanyId);
 
-        var result = mapper.Map<List<InternshipPosting>, List<InternshipPostingListDto>>(postings, (o) =>
+        var result = Mapper.Map<List<InternshipPosting>, List<InternshipPostingListDto>>(postings, (o) =>
         {
             o.AfterMap((src, dest) =>
             {
@@ -315,7 +315,7 @@ public class InternshipPostingService(
                 {
                     var companyRating = averageRatings.First(x => x.CompanyId == posting.CompanyId);
                     var destData = dest.First(x => x.Id == posting.Id);
-                    destData.Company = mapper.Map<InternshipPostingCompanyDto>(companyRating);
+                    destData.Company = Mapper.Map<InternshipPostingCompanyDto>(companyRating);
                 }
             });
         });

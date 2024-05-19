@@ -47,6 +47,6 @@ public class UserDetailService(IServiceProvider serviceProvider)
             FileName = filename,
         });
         
-        await _repository.UpdateAsync(user.Detail);
+        await Repository.UpdateAsync(user.Detail);
     }
 }

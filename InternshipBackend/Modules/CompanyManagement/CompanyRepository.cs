@@ -9,6 +9,7 @@ public interface ICompanyRepository : IGenericRepository<Company>
 {
     Task<Company?> GetByUserIdOrDefaultAsync(int userId);
     Task<List<RatingResult>> GetAverageRatings(int? companyId);
+    Task<Company?> GetDetailedCompany(int companyId);
 }
 
 public class CompanyRepository(InternshipDbContext dbContext) 
@@ -51,5 +52,11 @@ public class CompanyRepository(InternshipDbContext dbContext)
             Average = x.NumberOfVotes > 0 ? (double)x.SumOfVotes / x.NumberOfVotes : 0,
             CompanyId = x.CompanyId
         }).ToList();
+    }
+
+    public Task<Company?> GetDetailedCompany(int companyId)
+    {
+        return DbContext.Companies.AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == companyId);
     }
 }

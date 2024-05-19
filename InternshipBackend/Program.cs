@@ -24,6 +24,7 @@ using Google.Apis.Auth.OAuth2;
 using InternshipBackend;
 using InternshipBackend.Core.Authorization;
 using InternshipBackend.Core.Services;
+using InternshipBackend.Data.Models.Enums;
 using InternshipBackend.Modules.Account.Authorization;
 using InternshipBackend.Modules.App;
 using Microsoft.AspNetCore.Authorization;
@@ -71,11 +72,22 @@ builder.Services.AddAuthentication(o =>
                 }
 
                 var appMetadata = JsonSerializer.Deserialize<Dictionary<string, object>>(data);
-                if (appMetadata?.GetValueOrDefault("user_type") is null ||
-                    appMetadata?.GetValueOrDefault("user_name") is null ||
-                    appMetadata?.GetValueOrDefault("user_surname") is null)
+
+                int? userType =
+                    appMetadata?.GetValueOrDefault("user_type") is JsonElement
+                    {
+                        ValueKind: JsonValueKind.Number
+                    } element
+                        ? element.GetInt32()
+                        : null;
+                var userName = appMetadata?.GetValueOrDefault("user_name");
+                var userSurname = appMetadata?.GetValueOrDefault("user_surname");
+
+                if (userType is null ||
+                    (userType == (int)AccountType.Intern && (userName is null || userSurname is null)))
                 {
-                    if (context.Request.Path.Value is "/Account/UpdateUserInfo" or "/Account/IsUserRegistered" or "/Account/GetInfo")
+                    if (context.Request.Path.Value is "/Account/UpdateUserInfo" or "/Account/IsUserRegistered"
+                        or "/Account/GetInfo")
                         return Task.CompletedTask;
 
                     context.Fail("Unauthorized missing claims");

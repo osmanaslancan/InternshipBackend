@@ -15,7 +15,7 @@ public class UserProjectService(IServiceProvider serviceProvider, IHttpContextAc
 {
     public async Task<UserProject> UpdateThumbnail(int id, string? url)
     {
-        var old = await _repository.GetByIdOrDefaultAsync(id, changeTracking: false) ?? throw new Exception("Record not found");
+        var old = await Repository.GetByIdOrDefaultAsync(id, changeTracking: false) ?? throw new Exception("Record not found");
         await ValidateOwnedByCurrentUser(old);
         
         ArgumentNullException.ThrowIfNull(contextAccessor.HttpContext);
@@ -28,7 +28,7 @@ public class UserProjectService(IServiceProvider serviceProvider, IHttpContextAc
 
         old.ProjectThumbnail = url;
 
-        await _repository.UpdateAsync(old);
+        await Repository.UpdateAsync(old);
         
         return old;
     }

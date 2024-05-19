@@ -25,7 +25,7 @@ public class UploadCvService(
 
     private string CreateToken(string url, string? issuedForId = null)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["SupabaseSigningKey"]!));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SupabaseSigningKey"]!));
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new[]
@@ -61,11 +61,11 @@ public class UploadCvService(
     
     public string GetDownloadUrlForCurrentUser(Guid ownerId, Guid file)
     {
-        ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);
+        ArgumentNullException.ThrowIfNull(HttpContextAccessor.HttpContext);
         
-        var id = httpContextAccessor.HttpContext.User.GetSupabaseId();
+        var id = HttpContextAccessor.HttpContext.User.GetSupabaseId();
         
-        var result = $"{configuration["SupabaseStorageBaseUrl"]}/sign/{FilePostfix(ownerId, file)}";
+        var result = $"{Configuration["SupabaseStorageBaseUrl"]}/sign/{FilePostfix(ownerId, file)}";
         var token = CreateToken(FilePostfix(ownerId, file), id.ToString());
         
         return $"{result}?token={token}";
