@@ -146,6 +146,8 @@ public class InternshipDbContext : DbContext
         modelBuilder.Entity<InternshipApplication>(b =>
         {
             b.HasOne<User>().WithMany(x => x.Applications).HasForeignKey(x => x.UserId);
+            b.Property(x => x.Message).HasMaxLength(1000);
+            
         });
         
         modelBuilder.Entity<UserNotification>(b =>
