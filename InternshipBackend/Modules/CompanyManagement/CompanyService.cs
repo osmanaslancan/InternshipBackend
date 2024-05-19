@@ -2,6 +2,7 @@
 using InternshipBackend.Core;
 using InternshipBackend.Core.Services;
 using InternshipBackend.Data.Models;
+using InternshipBackend.Modules.Account;
 using Microsoft.Extensions.Localization;
 
 namespace InternshipBackend.Modules.CompanyManagement;
@@ -17,6 +18,8 @@ public interface ICompanyService : IGenericEntityService<CompanyModifyDto, Data.
 
 public class CompanyService(IServiceProvider serviceProvider,
     ICompanyRepository companyRepository, 
+    IAccountRepository accountRepository,
+    IHttpContextAccessor httpContextAccessor,
     IUserRetrieverService userRetrieverService)
     : GenericEntityService<CompanyModifyDto, Data.Models.Company>(serviceProvider), ICompanyService
 {
@@ -76,14 +79,27 @@ public class CompanyService(IServiceProvider serviceProvider,
 
     public async Task<CompanyDetailDto> GetDetailedCompany(int companyId)
     {
+        ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);
+        
         var company = await companyRepository.GetDetailedCompany(companyId);
-
+        
         if (company is null)
         {
             throw new ValidationException(ErrorCodes.CompanyNotFound);
         }
 
-        return Mapper.Map<CompanyDetailDto>(company);
+        var dto = Mapper.Map<CompanyDetailDto>(company);
+        
+        if (httpContextAccessor.HttpContext.User.Identity?.IsAuthenticated == true)
+        {
+            var supabaseId = httpContextAccessor.HttpContext.User.GetSupabaseId();
+        
+            var companyFollows = await accountRepository.GetCompanyFollows(supabaseId);
+        
+            dto.IsCurrentUserFollowing = companyFollows.Any(x => x.CompanyId == dto.Id);
+        }
+        
+        return dto;
     }
 
     public Task<List<RatingResult>> GetAverageRatings(int? companyId)
