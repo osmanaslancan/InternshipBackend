@@ -260,6 +260,7 @@ app.Use(async (context, next) =>
 var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<InternshipDbContext>();
 context.Database.Migrate();
+var script = context.Database.GenerateCreateScript();
 
 #region Enable Row Level Security
 
@@ -293,9 +294,62 @@ query += """
            END IF;
          END$$;
          """;
+// //Access token hook
+// query += """
+// create or replace function public.custom_access_token_hook(event jsonb) returns jsonb language plpgsql as $$
+// declare
+// claims jsonb;
+// user_type int4;
+// user_name text;
+// user_surname text;
+// begin
+//     -- Check if the user is marked as admin in the profiles table
+//     SELECT "AccountType", "Name", "Surname" into user_type, user_name, user_surname from public."Users" where "SupabaseId" = (event->>'user_id')::uuid;
+//
+// claims := event->'claims';
+//
+// -- Check if 'app_metadata' exists in claims
+// if jsonb_typeof(claims->'app_metadata') is null then
+// -- If 'app_metadata' does not exist, create an empty object
+// claims := jsonb_set(claims, '{app_metadata}', '{}');
+// end if;
+//     
+// if user_type is null then
+// claims := jsonb_set(claims, '{app_metadata, user_type}', 'null');
+// else
+// claims := jsonb_set(claims, '{app_metadata, user_type}', user_type::text::jsonb);
+// end if;
+//
+// if user_name is null then
+// claims := jsonb_set(claims, '{app_metadata, user_name}', 'null');
+// else
+// claims := jsonb_set(claims, '{app_metadata, user_name}', to_jsonb(user_name));
+// end if;
+//
+// if user_surname is null then
+// claims := jsonb_set(claims, '{app_metadata, user_surname}', 'null');
+// else
+// claims := jsonb_set(claims, '{app_metadata, user_surname}', to_jsonb(user_surname));
+// end if;
+//     
+// -- Update the 'claims' object in the original event
+// event := jsonb_set(event, '{claims}', claims);
+//
+// -- Return the modified or original event
+// return event;
+// end;
+// $$;
+//
+// grant execute
+// on function public.custom_access_token_hook
+// to supabase_auth_admin;
+// grant all
+// on table public."Users"
+// to supabase_auth_admin;
 
-context.Database.ExecuteSqlRaw(query);
+// """;
 
+await context.Database.ExecuteSqlRawAsync(query);
 scope.Dispose();
 
 #endregion

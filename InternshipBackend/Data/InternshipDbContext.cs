@@ -104,7 +104,6 @@ public class InternshipDbContext : DbContext
         modelBuilder.Entity<UserDetail>(b =>
         {
             b.Property(x => x.DateOfBirth).HasColumnType("date");
-            b.Property(x => x.Extras).HasColumnType("jsonb");
             b.Property(x => x.DriverLicenses).HasColumnType("text[]");
             b.OwnsMany(x => x.Cvs, d => { d.ToJson(); });
         });
