@@ -53,9 +53,9 @@ public class CompanyRepository(InternshipDbContext dbContext)
         {
             Name = x.Name,
             ShortDescription = x.ShortDescription,
-            NumberOfVotes = x.NumberOfVotes,
+            NumberOfComments = x.NumberOfVotes,
             LogoUrl = x.LogoUrl,
-            Average = x.NumberOfVotes > 0 ? (double)x.SumOfVotes / x.NumberOfVotes : 0,
+            AveragePoints = x.NumberOfVotes > 0 ? (double)x.SumOfVotes / x.NumberOfVotes : 0,
             CompanyId = x.CompanyId
         }).ToList();
     }

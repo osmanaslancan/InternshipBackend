@@ -6,6 +6,6 @@ public class RatingResult
     public string? ShortDescription { get; set; }
     public string? LogoUrl { get; set; }
     public int CompanyId { get; set; }
-    public int NumberOfVotes { get; set; }
-    public double Average { get; set; }
+    public int NumberOfComments { get; set; }
+    public double AveragePoints { get; set; }
 }
