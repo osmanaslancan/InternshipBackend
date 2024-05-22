@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using InternshipBackend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -13,9 +14,11 @@ using NpgsqlTypes;
 namespace InternshipBackend.Migrations
 {
     [DbContext(typeof(InternshipDbContext))]
-    partial class InternshipDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240522145858_AddSuggestionCache")]
+    partial class AddSuggestionCache
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

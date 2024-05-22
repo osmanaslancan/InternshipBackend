@@ -146,13 +146,20 @@ public class InternshipDbContext : DbContext
         {
             b.HasOne<User>().WithMany(x => x.Applications).HasForeignKey(x => x.UserId);
             b.Property(x => x.Message).HasMaxLength(1000);
-            
         });
-        
+
         modelBuilder.Entity<UserNotification>(b =>
         {
             b.HasOne<User>().WithMany(x => x.Notifications).HasForeignKey(x => x.UserId);
             b.Property(x => x.UserId).IsRequired();
+        });
+
+        modelBuilder.Entity<UserSuggestion>(b =>
+        {
+            b.HasOne<User>().WithMany().HasForeignKey(x => x.UserId);
+            b.Property(x => x.CreatedAt).IsRequired();
+            b.Property(x => x.QuestionHash).IsRequired().HasMaxLength(1000);
+            b.Property(x => x.Response).IsRequired().HasMaxLength(10000);
         });
     }
 }

@@ -15,9 +15,8 @@ public interface IInternshipPostingService : IGenericEntityService<InternshipPos
 {
     public Task<InternshipPosting> EndPostingAsync(int id);
     public Task ApplyToPosting(InternshipApplicationDto dto);
-
+    Task<List<InternshipPostingListDto>> ListByIds(List<int> ids);
     Task<PagedListDto<InternshipPostingListDto>> ListAsync(InternshipPostingListRequestDto listRequest);
-
     Task CommentOnPosting(InternshipCommentDto dto);
     Task<InternshipPostingDto> GetPostingAsync(int id);
     Task<List<InternshipApplicationCompanyListDto>> GetApplications(int id);
@@ -307,13 +306,19 @@ public class InternshipPostingService(
         return applicationDetail;
     }
 
-    public async Task<PagedListDto<InternshipPostingListDto>> ListAsync(InternshipPostingListRequestDto listRequest)
+    public async Task<List<InternshipPostingListDto>> ListByIds(List<int> ids)
+    {
+        var postings = await repository.GetQueryable().Where(x => ids.Contains(x.Id)).ToListAsync();
+        var result = await FillComputedData(postings, null);
+        
+        return result;
+    }
+
+    private async Task<List<InternshipPostingListDto>> FillComputedData(List<InternshipPosting> postings, int? companyId)
     {
         ArgumentNullException.ThrowIfNull(httpContextAccessor.HttpContext);
-        var postings =
-            await repository.ListCompanyPostingsAsync(listRequest);
-        var total = await repository.CountCompanyPostingsAsync(listRequest);
-        var averageRatings = await companyService.GetAverageRatings(listRequest.CompanyId);
+
+        var averageRatings = await companyService.GetAverageRatings(companyId);
 
         var result = Mapper.Map<List<InternshipPosting>, List<InternshipPostingListDto>>(postings, (o) =>
         {
@@ -351,6 +356,17 @@ public class InternshipPostingService(
                 item.IsCurrentUserApplied = applications.Any(x => x.InternshipPostingId == item.Id);
             }
         }
+
+        return result;
+    }
+    
+    public async Task<PagedListDto<InternshipPostingListDto>> ListAsync(InternshipPostingListRequestDto listRequest)
+    {
+        var postings =
+            await repository.ListCompanyPostingsAsync(listRequest);
+        var total = await repository.CountCompanyPostingsAsync(listRequest);
+        
+        var result = await FillComputedData(postings, listRequest.CompanyId);
 
         return new PagedListDto<InternshipPostingListDto>
         {

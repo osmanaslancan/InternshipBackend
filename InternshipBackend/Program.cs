@@ -28,6 +28,8 @@ using InternshipBackend.Data.Models.Enums;
 using InternshipBackend.Modules.Account.Authorization;
 using InternshipBackend.Modules.App;
 using Microsoft.AspNetCore.Authorization;
+using OpenAI.Extensions;
+using OpenAI.ObjectModels;
 using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -216,6 +218,11 @@ builder.Services.AddRequestLocalization(o =>
         new UserCultureProvider(),
         new AcceptLanguageHeaderRequestCultureProvider()
     ];
+});
+
+builder.Services.AddOpenAIService(o =>
+{
+    o.ApiKey = builder.Configuration["OpenAISecret"] ?? throw new ArgumentNullException("OpenAISecret");
 });
 
 builder.Services.AddLocalization();

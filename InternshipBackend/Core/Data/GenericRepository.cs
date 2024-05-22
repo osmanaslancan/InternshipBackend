@@ -67,4 +67,9 @@ public abstract class GenericRepository<T>(InternshipDbContext dbContext) :
     {
         return DbContext.SaveChangesAsync();
     }
+
+    public virtual IQueryable<T> GetQueryable()
+    {
+        return DbContext.Set<T>().AsQueryable();
+    }
 }
