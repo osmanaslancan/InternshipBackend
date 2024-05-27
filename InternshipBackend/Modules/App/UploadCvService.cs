@@ -2,6 +2,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using FluentValidation;
+using InternshipBackend.Core;
+using InternshipBackend.Data.Models;
 using InternshipBackend.Modules.UserDetails;
 using Microsoft.IdentityModel.Tokens;
 
@@ -10,6 +12,7 @@ namespace InternshipBackend.Modules.App;
 public interface IUploadCvService
 {
     Task<UploadResponse> UploadFile(UploadCvRequest request);
+    string GetDownloadUrlForCurrentUser(Guid ownerId, Guid file);
 }
 
 public class UploadCvService(
@@ -20,9 +23,9 @@ public class UploadCvService(
 {
     protected override string Bucket => "PrivateCvs";
 
-    private string CreateToken(string url)
+    private string CreateToken(string url, string? issuedForId = null)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["SupabaseSigningKey"]!));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SupabaseSigningKey"]!));
         var tokenDescriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity(new[]
@@ -32,6 +35,11 @@ public class UploadCvService(
             Expires = DateTime.UtcNow.AddMinutes(100),
             SigningCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature)
         };
+        
+        if (issuedForId != null)
+        {
+            tokenDescriptor.Subject.AddClaim(new Claim("sub", issuedForId));
+        }
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -49,6 +57,18 @@ public class UploadCvService(
     protected override string DownloadDirectory(Guid userSupabaseId, Guid guid)
     {
         return guid.ToString();
+    }
+    
+    public string GetDownloadUrlForCurrentUser(Guid ownerId, Guid file)
+    {
+        ArgumentNullException.ThrowIfNull(HttpContextAccessor.HttpContext);
+        
+        var id = HttpContextAccessor.HttpContext.User.GetSupabaseId();
+        
+        var result = $"{Configuration["SupabaseStorageBaseUrl"]}/sign/{FilePostfix(ownerId, file)}";
+        var token = CreateToken(FilePostfix(ownerId, file), id.ToString());
+        
+        return $"{result}?token={token}";
     }
     
     public async Task<UploadResponse> UploadFile(UploadCvRequest request)

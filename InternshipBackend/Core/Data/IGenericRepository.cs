@@ -7,5 +7,6 @@ public interface IGenericRepository<T>
     public Task<T> UpdateAsync(T record, bool save = true);
     public Task<T> DeleteAsync(T record, bool save = true);
     public Task<T?> GetByIdOrDefaultAsync(int id, bool changeTracking = true);
+    IQueryable<T> GetQueryable();
     public Task SaveChangesAsync();
 }

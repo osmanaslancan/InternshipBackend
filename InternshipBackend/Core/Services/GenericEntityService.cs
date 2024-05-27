@@ -8,10 +8,11 @@ public abstract class GenericEntityService<TDto, TData>(IServiceProvider service
     : BaseService, IGenericEntityService<TDto, TData>, IScopedService
     where TData : class, IHasIdField
 {
-    protected readonly IGenericRepository<TData> _repository = serviceProvider.GetRequiredService<IGenericRepository<TData>>();
-    protected readonly IMapper mapper = serviceProvider.GetRequiredService<IMapper>();
+    protected readonly IGenericRepository<TData> Repository = serviceProvider.GetRequiredService<IGenericRepository<TData>>();
+    protected readonly IMapper Mapper = serviceProvider.GetRequiredService<IMapper>();
     protected readonly IUserRetrieverService UserRetriever = serviceProvider.GetRequiredService<IUserRetrieverService>();
-    
+    protected readonly IServiceProvider ServiceProvider = serviceProvider;
+
     protected virtual Task BeforeCreate(TData data) 
     {
         if (data is IHasUserIdField userField)
@@ -60,12 +61,12 @@ public abstract class GenericEntityService<TDto, TData>(IServiceProvider service
 
     protected virtual void ValidateDto(TDto data)
     {
-        serviceProvider.GetService<IValidator<TDto>>()?.ValidateAndThrow(data);
+        ServiceProvider.GetService<IValidator<TDto>>()?.ValidateAndThrow(data);
     }
 
     protected virtual TData MapDto(TDto data)
     {
-        return mapper.Map<TDto, TData>(data);
+        return Mapper.Map<TDto, TData>(data);
     }
 
     public virtual async Task<TData> CreateAsync(TDto data)
@@ -73,7 +74,7 @@ public abstract class GenericEntityService<TDto, TData>(IServiceProvider service
         ValidateDto(data);
         var record = MapDto(data);
         await BeforeCreate(record);
-        return await _repository.CreateAsync(record);
+        return await Repository.CreateAsync(record);
     }
 
     public virtual async Task<TData> UpdateAsync(int id, TDto dto)
@@ -81,15 +82,15 @@ public abstract class GenericEntityService<TDto, TData>(IServiceProvider service
         ValidateDto(dto);
         var newData = MapDto(dto);
         newData.Id = id;
-        var old = await _repository.GetByIdOrDefaultAsync(id, changeTracking: false) ?? throw new Exception("Record not found");
+        var old = await Repository.GetByIdOrDefaultAsync(id, changeTracking: false) ?? throw new Exception("Record not found");
         await BeforeUpdate(newData, old);
-        return await _repository.UpdateAsync(newData);
+        return await Repository.UpdateAsync(newData);
     }
 
     public virtual async Task<TData> DeleteAsync(int id)
     {
-        var data = await _repository.GetByIdOrDefaultAsync(id, changeTracking: false) ?? throw new Exception("Record not found");
+        var data = await Repository.GetByIdOrDefaultAsync(id, changeTracking: false) ?? throw new Exception("Record not found");
         await BeforeDelete(data);
-        return await _repository.DeleteAsync(data);
+        return await Repository.DeleteAsync(data);
     }
 }

@@ -2,3 +2,7 @@
 	path = frontend
 	url = https://github.com/MelihAfsar/internship_frontend.git
 	branch = main
+[submodule "mobile"]
+	path = mobile
+	url = https://github.com/osmanaslancan/internship_mobile_app.git
+	branch = master

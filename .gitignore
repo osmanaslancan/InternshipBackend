@@ -398,3 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 appsettings.machine.json
 .idea
+firebase-credentials.json

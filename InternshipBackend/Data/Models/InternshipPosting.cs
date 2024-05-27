@@ -1,6 +1,7 @@
 using InternshipBackend.Core;
 using InternshipBackend.Data.Models.Enums;
 using InternshipBackend.Data.Models.ValueObjects;
+using NpgsqlTypes;
 
 namespace InternshipBackend.Data.Models;
 
@@ -8,7 +9,9 @@ public class InternshipPosting : CompanyOwnedEntity
 {
     public required string Title { get; set; }
     public string? ImageUrl { get; set; }
+    public string? BackgroundPhotoUrl { get; set; }
     public required string Description { get; set; }
+    public NpgsqlTsVector SearchVector { get; set; } = default!;
     public string? Sector { get; set; }
     public int? CountryId { get; set; }
     public int? CityId { get; set; }

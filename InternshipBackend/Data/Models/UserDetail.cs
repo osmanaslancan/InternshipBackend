@@ -22,8 +22,5 @@ public class UserDetail : Entity, IHasUserIdField
     public int? CityId { get; set; }
     public string? District { get; set; }
     public string? Address { get; set; }
-
-    public UserDetailExtras? Extras { get; set; }
-
     int IHasUserIdField.UserId { get => Id; set => Id = value; }
 }

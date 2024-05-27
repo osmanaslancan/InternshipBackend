@@ -19,11 +19,18 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using InternshipBackend;
 using InternshipBackend.Core.Authorization;
 using InternshipBackend.Core.Services;
+using InternshipBackend.Data.Models.Enums;
 using InternshipBackend.Modules.Account.Authorization;
+using InternshipBackend.Modules.App;
 using Microsoft.AspNetCore.Authorization;
+using OpenAI.Extensions;
+using OpenAI.ObjectModels;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -67,11 +74,24 @@ builder.Services.AddAuthentication(o =>
                 }
 
                 var appMetadata = JsonSerializer.Deserialize<Dictionary<string, object>>(data);
-                if (appMetadata?.GetValueOrDefault("user_type") is null)
+
+                int? userType =
+                    appMetadata?.GetValueOrDefault("user_type") is JsonElement
+                    {
+                        ValueKind: JsonValueKind.Number
+                    } element
+                        ? element.GetInt32()
+                        : null;
+                var userName = appMetadata?.GetValueOrDefault("user_name");
+                var userSurname = appMetadata?.GetValueOrDefault("user_surname");
+
+                if (userType is null ||
+                    (userType == (int)AccountType.Intern && (userName is null || userSurname is null)))
                 {
-                    if (context.Request.Path.Value is "/Account/UpdateUserInfo" or "/Account/IsUserRegistered")
+                    if (context.Request.Path.Value is "/Account/UpdateUserInfo" or "/Account/IsUserRegistered"
+                        or "/Account/GetInfo")
                         return Task.CompletedTask;
-                    
+
                     context.Fail("Unauthorized missing claims");
                     return Task.CompletedTask;
                 }
@@ -107,22 +127,17 @@ builder.Services.AddCors(o =>
 {
     o.AddDefaultPolicy(policy =>
     {
-        policy.SetIsOriginAllowed(origin => new Uri(origin).Host is "localhost" or "stajbuldum.osman.tech").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
+        policy.SetIsOriginAllowed(
+                origin => new Uri(origin).Host is "10.0.2.2" or "localhost" or "stajbuldum.osman.tech").AllowAnyMethod()
+            .AllowAnyHeader().AllowCredentials();
         // policy.SetIsOriginAllowed(origin => new Uri(origin).Host == "").AllowAnyMethod().AllowAnyHeader().AllowCredentials();
         // policy.AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin();
-        
     });
 });
 
-builder.Services.AddAutoMapper(o => 
-{
-    o.AddProfile<InternshipBackendAutoMapperProfile>();
-}, typeof(Program));
+builder.Services.AddAutoMapper(o => { o.AddProfile<InternshipBackendAutoMapperProfile>(); }, typeof(Program));
 
-builder.Services.AddControllers(o =>
-{
-    o.Filters.Add<ExceptionFilter>(0);
-}).AddJsonOptions(o =>
+builder.Services.AddControllers(o => { o.Filters.Add<ExceptionFilter>(0); }).AddJsonOptions(o =>
 {
     o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
     o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -146,7 +161,7 @@ builder.Services.AddSwaggerGen(o =>
 
     o.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement()
     {
-          { 
+        {
             new OpenApiSecurityScheme
             {
                 Reference = new OpenApiReference
@@ -155,7 +170,7 @@ builder.Services.AddSwaggerGen(o =>
                     Id = "Bearer"
                 }
             },
-            Array.Empty<string>() 
+            Array.Empty<string>()
         },
     });
 
@@ -169,15 +184,15 @@ builder.Services.AddSwaggerGen(o =>
     {
         o.IncludeXmlComments(xmlFile);
     }
-
-    
 });
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddHttpClient("Supabase", o =>
-{
-    o.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", builder.Configuration["SupabaseAdminKey"]);
-});
+builder.Services.AddHttpClient("Supabase",
+    o =>
+    {
+        o.DefaultRequestHeaders.Authorization =
+            new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", builder.Configuration["SupabaseAdminKey"]);
+    });
 
 builder.Services.AddHttpClient("Linkedin", o =>
 {
@@ -200,7 +215,7 @@ builder.Services.AddRequestLocalization(o =>
         new CultureInfo("en"),
         new CultureInfo("en-US"),
     ];
-    
+
     o.RequestCultureProviders =
     [
         new QueryStringRequestCultureProvider(),
@@ -209,7 +224,26 @@ builder.Services.AddRequestLocalization(o =>
     ];
 });
 
+builder.Services.AddOpenAIService(o =>
+{
+    o.ApiKey = builder.Configuration["OpenAISecret"] ?? throw new ArgumentNullException("OpenAISecret");
+});
+
 builder.Services.AddLocalization();
+
+builder.Services.AddQuartz(q =>
+{
+    // Just use the name of your job that you created in the Jobs folder.
+    var jobKey = new JobKey("NotificationSendJob");
+    q.AddJob<NotificationSendJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("NotificationSendJob-trigger")
+        .WithCronSchedule("0 * * ? * *")
+    );
+});
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 
@@ -237,6 +271,7 @@ app.Use(async (context, next) =>
 var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<InternshipDbContext>();
 context.Database.Migrate();
+var script = context.Database.GenerateCreateScript();
 
 #region Enable Row Level Security
 
@@ -257,7 +292,7 @@ query += """
          DO $$
          BEGIN
            IF NOT EXISTS (
-              select 1 from pg_policies 
+              select 1 from pg_policies
               where policyname = 'Enable access for supabase auth admin'
            ) THEN
              -- Apply the policy
@@ -270,14 +305,81 @@ query += """
            END IF;
          END$$;
          """;
+// //Access token hook
+// query += """
+// create or replace function public.custom_access_token_hook(event jsonb) returns jsonb language plpgsql as $$
+// declare
+// claims jsonb;
+// user_type int4;
+// user_name text;
+// user_surname text;
+// begin
+//     -- Check if the user is marked as admin in the profiles table
+//     SELECT "AccountType", "Name", "Surname" into user_type, user_name, user_surname from public."Users" where "SupabaseId" = (event->>'user_id')::uuid;
+//
+// claims := event->'claims';
+//
+// -- Check if 'app_metadata' exists in claims
+// if jsonb_typeof(claims->'app_metadata') is null then
+// -- If 'app_metadata' does not exist, create an empty object
+// claims := jsonb_set(claims, '{app_metadata}', '{}');
+// end if;
+//     
+// if user_type is null then
+// claims := jsonb_set(claims, '{app_metadata, user_type}', 'null');
+// else
+// claims := jsonb_set(claims, '{app_metadata, user_type}', user_type::text::jsonb);
+// end if;
+//
+// if user_name is null then
+// claims := jsonb_set(claims, '{app_metadata, user_name}', 'null');
+// else
+// claims := jsonb_set(claims, '{app_metadata, user_name}', to_jsonb(user_name));
+// end if;
+//
+// if user_surname is null then
+// claims := jsonb_set(claims, '{app_metadata, user_surname}', 'null');
+// else
+// claims := jsonb_set(claims, '{app_metadata, user_surname}', to_jsonb(user_surname));
+// end if;
+//     
+// -- Update the 'claims' object in the original event
+// event := jsonb_set(event, '{claims}', claims);
+//
+// -- Return the modified or original event
+// return event;
+// end;
+// $$;
+//
+// grant execute
+// on function public.custom_access_token_hook
+// to supabase_auth_admin;
+// grant all
+// on table public."Users"
+// to supabase_auth_admin;
 
-context.Database.ExecuteSqlRaw(query);
+// """;
 
+await context.Database.ExecuteSqlRawAsync(query);
 scope.Dispose();
 
 #endregion
 
 await new SeederManager().ExecuteAsync(app.Services);
+if (app.Environment.IsDevelopment())
+{
+    FirebaseApp.Create(new AppOptions()
+    {
+        Credential = GoogleCredential.FromFile("firebase-credentials.json")
+    });
+}
+else
+{
+    FirebaseApp.Create(new AppOptions()
+    {
+        Credential = GoogleCredential.FromJson(app.Configuration["FirebaseCredentials"])
+    });
+}
 
 
 // Configure the HTTP request pipeline.

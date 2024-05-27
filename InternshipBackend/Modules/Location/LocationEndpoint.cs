@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using InternshipBackend.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InternshipBackend.Modules.Location;
 
 [Route("Location/[action]")]
+[AllowAnonymous]
 public class LocationEndpoint(ILocationService locationService, IMapper mapper) 
     : BaseEndpoint
 {
