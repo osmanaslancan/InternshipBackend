@@ -15,14 +15,13 @@ public interface IInternshipPostingRepository : IGenericRepository<InternshipPos
     Task<int> CountCompanyPostingsAsync(InternshipPostingListRequestDto request);
     Task<InternshipPosting?> GetDetailedByIdOrDefaultAsync(int id, bool changeTracking = true);
     Task<InternshipApplication?> GetInternshipApplication(int id);
-    IQueryable<InternshipPosting> GetQueryable();
 }
 
 public class InternshipPostingRepository(InternshipDbContext dbContext)
     : GenericRepository<InternshipPosting>(dbContext),
         IGenericRepository<InternshipPosting>, IInternshipPostingRepository
 {
-    public IQueryable<InternshipPosting> GetQueryable()
+    public override IQueryable<InternshipPosting> GetQueryable()
     {
         return DbContext.InternshipPostings.AsNoTracking();
     }

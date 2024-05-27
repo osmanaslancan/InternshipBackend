@@ -15,7 +15,6 @@ public interface IAccountRepository : IGenericRepository<User>
     Task<User> GetFullUser(int userId);
     Task<bool> HasPermissionWithSupabaseId(Guid supabaseId, string permission);
     Task<bool> HasTypeWithSupabaseId(Guid supabaseId, AccountType accountType);
-    IQueryable<User> GetQueryable();
     Task<List<UserCompanyFollow>> GetCompanyFollows(Guid userSupabaseId);
     Task<List<UserPostingFollow>> GetPostingFollows(Guid userSupabaseId);
     Task<List<InternshipApplication>> GetApplications(Guid userSupabaseId);
@@ -23,7 +22,7 @@ public interface IAccountRepository : IGenericRepository<User>
 
 public class AccountRepository(InternshipDbContext context) : GenericRepository<User>(context), IAccountRepository
 {
-    public IQueryable<User> GetQueryable()
+    public override IQueryable<User> GetQueryable()
     {
         return DbContext.Users.AsNoTracking();
     }

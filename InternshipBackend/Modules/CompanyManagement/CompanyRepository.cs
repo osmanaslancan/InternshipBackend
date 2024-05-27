@@ -7,7 +7,6 @@ namespace InternshipBackend.Modules.CompanyManagement;
 
 public interface ICompanyRepository : IGenericRepository<Company>
 {
-    IQueryable<Company> GetQueryable();
     Task<Company?> GetByUserIdOrDefaultAsync(int userId);
     Task<List<RatingResult>> GetAverageRatings(int? companyId);
     Task<Company?> GetDetailedCompany(int companyId);
@@ -17,7 +16,7 @@ public class CompanyRepository(InternshipDbContext dbContext)
     : GenericRepository<Company>(dbContext), 
     IGenericRepository<Company>, ICompanyRepository
 {
-    public IQueryable<Company> GetQueryable()
+    public override IQueryable<Company> GetQueryable()
     {
         return DbContext.Companies.AsNoTracking();
     }
