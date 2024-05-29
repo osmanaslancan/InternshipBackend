@@ -99,7 +99,7 @@ public class GenericEntityServiceTests : TestBase
             await service.DeleteAsync(createdRecord.Id);
         });
             
-        Assert.Equal("You can't delete other user's data", exp.Message);
+        Assert.Equal("You can't update other user's data", exp.Message);
     }
         
     [Fact]

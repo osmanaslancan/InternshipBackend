@@ -1,4 +1,5 @@
-﻿using InternshipBackend.Data.Models;
+﻿using InternshipBackend.Core;
+using InternshipBackend.Data.Models;
 using InternshipBackend.Data.Models.Supabase;
 using InternshipBackend.Data.Models.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ namespace InternshipBackend.Data;
 
 public class InternshipDbContext : DbContext
 {
+    private readonly IEnumerable<IDbContextModelCustomizer> _modelCustomizers;
     public DbSet<User> Users { get; set; }
     public DbSet<UserProject> UserProjects { get; set; }
     public DbSet<UserNotification> UserNotifications { get; set; }
@@ -28,9 +30,10 @@ public class InternshipDbContext : DbContext
     {
     }
 
-    public InternshipDbContext(DbContextOptions options)
+    public InternshipDbContext(DbContextOptions options, IEnumerable<IDbContextModelCustomizer> modelCustomizers)
         : base(options)
     {
+        _modelCustomizers = modelCustomizers;
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -161,5 +164,10 @@ public class InternshipDbContext : DbContext
             b.Property(x => x.QuestionHash).IsRequired().HasMaxLength(1000);
             b.Property(x => x.Response).IsRequired().HasMaxLength(10000);
         });
+
+        foreach (var customizer in _modelCustomizers)
+        {
+            customizer.Customize(modelBuilder);
+        }
     }
 }

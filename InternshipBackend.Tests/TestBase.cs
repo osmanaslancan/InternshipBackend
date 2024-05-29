@@ -5,10 +5,17 @@ using InternshipBackend.Core;
 using InternshipBackend.Core.Data;
 using InternshipBackend.Data;
 using InternshipBackend.Data.Models;
+using InternshipBackend.Modules.Account;
+using InternshipBackend.Modules.App;
+using InternshipBackend.Modules.CompanyManagement;
+using InternshipBackend.Modules.Internship;
 using InternshipBackend.Tests.Mocks;
+using InternshipBackend.Tests.Modules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http;
 
@@ -67,6 +74,12 @@ public class TestBase
         {
             GetCurrentUserOrDefaultAction = (edit) => user
         });
+        builder.Services.AddSingleton<IDbContextModelCustomizer, SqliteModelCustomizer>();
+        builder.Services.AddScoped<InternshipPostingRepository, InternshipPostingRepository>();
+        builder.Services.AddScoped<ICompanyService, CompanyService>();
+        builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+        builder.Services.AddScoped<IUploadCvService, MockUploadCvService>();
+        builder.Services.AddScoped<IAccountRepository, AccountRepository>();
         builder.Services.AddDbContext<InternshipDbContext>(o =>
         {
             o.UseSqlite("Data Source=:memory:");
@@ -78,7 +91,7 @@ public class TestBase
         using var scope = application.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<InternshipDbContext>();
         await context.Database.OpenConnectionAsync();
-        await context.Database.MigrateAsync();
+        context.GetService<IRelationalDatabaseCreator>().CreateTables();
         context.Users.Add(user);
         await context.SaveChangesAsync();
         
