@@ -40,7 +40,7 @@ builder.Configuration.AddEnvironmentVariables();
 
 builder.Services.AddDbContext<InternshipDbContext>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Supabase"));
+    options.UseNpgsql(builder.Configuration["SupabaseConnectionString"]);
     options.EnableDetailedErrors();
 });
 
